@@ -87,5 +87,5 @@ jobs:
           VERCEL_PROJECT_ID: ${{ vars.VERCEL_PROJECT_ID }}
           APP_ORIGIN: ${{ vars.APP_ORIGIN }}
         run: |
-          npx --yes vercel@59.16.0 curl /api/health --deployment "$APP_ORIGIN" --token="$VERCEL_TOKEN" -- --silent --show-error --fail > /tmp/health.json
+          npx --yes vercel@59.16.0 curl /api/health --deployment "$APP_ORIGIN" -- --silent --show-error --fail > /tmp/health.json
           node -e 'const fs=require("fs"); if(JSON.parse(fs.readFileSync("/tmp/health.json")).status!=="ok") process.exit(1)'
