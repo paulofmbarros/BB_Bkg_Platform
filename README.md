@@ -25,7 +25,7 @@ The overview reports actual configuration counts. It does not invent bookings, r
 
 ## Run locally
 
-Prerequisites: Node.js 22+ and Docker Desktop running. Use the committed dependency lockfile.
+Prerequisites: Node.js 22 and Docker Desktop running. Use the committed dependency lockfile.
 
 ```sh
 npm ci
