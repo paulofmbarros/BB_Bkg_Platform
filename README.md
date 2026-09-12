@@ -1,6 +1,6 @@
 # Barbershop OS
 
-The approved V0 foundation, booking engine and first CRM increment: guest booking, a daily calendar, customer profiles and visit history. This is a local demonstrator; no hosted service or payments are connected.
+The approved V0 foundation, booking engine and first CRM increment: guest booking, a daily calendar, customer profiles and visit history. The app runs locally and in a private hosted staging environment with synthetic data. Payments are not connected.
 
 ## What works
 
@@ -95,6 +95,6 @@ Read [the architecture decisions](docs/architecture.md) and [the booking handoff
 
 ## Hosted pilot prerequisites
 
-Deployment has not been performed and no paid resources have been created. Use a separate EU Supabase project and Vercel Pro for a commercial pilot. Apply migrations without the synthetic seed; provision the owner and membership through a trusted administrative process. Configure `APP_ORIGIN` to the central HTTPS workspace, the publishable Supabase settings, recovery redirect allowlist, transactional SMTP, backup/restore procedures, monitoring and verified tenant domains. Never deploy the local `.env.local` or use localhost domain entries for a live tenant.
+A protected synthetic staging deployment is available; see [staging access and verification](docs/staging.md). No paid plan upgrade has been performed. Use a separate EU Supabase project and Vercel Pro for a commercial pilot. Apply migrations without the synthetic seed; provision the owner and membership through a trusted administrative process. Configure `APP_ORIGIN` to the central HTTPS workspace, the publishable Supabase settings, recovery redirect allowlist, transactional SMTP, backup/restore procedures, monitoring and verified tenant domains. Never deploy the local `.env.local` or use localhost domain entries for a live tenant.
 
 No service-role credential is needed by the current Next.js runtime. Public booking is enabled only for fictional demo tenants. Before enabling it for a live shop, add verified email delivery/recovery, production abuse protection, reviewed booking/privacy policies, and the remaining release checks in `docs/phase-2.md`. Payments remain unimplemented.
