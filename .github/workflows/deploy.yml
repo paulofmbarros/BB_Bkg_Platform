@@ -1,0 +1,91 @@
+name: Deploy
+on:
+  push:
+    branches: [main, production]
+permissions:
+  contents: read
+  pull-requests: read
+  actions: read
+concurrency:
+  group: deploy-${{ github.ref_name }}
+  cancel-in-progress: false
+jobs:
+  release:
+    name: Verify merged PR
+    runs-on: ubuntu-latest
+    outputs:
+      environment: ${{ steps.target.outputs.environment }}
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - name: Require a merged PR for this commit
+        id: target
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node scripts/check-release.mjs
+  checks:
+    name: Validate
+    needs: release
+    uses: ./.github/workflows/checks.yml
+  deploy:
+    name: Deploy ${{ needs.release.outputs.environment }}
+    needs: [release, checks]
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment:
+      name: ${{ needs.release.outputs.environment }}
+      url: ${{ vars.APP_ORIGIN }}
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Validate deployment destination and protection
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DEPLOY_ENVIRONMENT: ${{ needs.release.outputs.environment }}
+          DEPLOY_ENABLED: ${{ vars.DEPLOY_ENABLED }}
+          SUPABASE_PROJECT_REF: ${{ vars.SUPABASE_PROJECT_REF }}
+          VERCEL_PROJECT_ID: ${{ vars.VERCEL_PROJECT_ID }}
+          VERCEL_ORG_ID: ${{ vars.VERCEL_ORG_ID }}
+          APP_ORIGIN: ${{ vars.APP_ORIGIN }}
+        run: node scripts/check-deploy-target.mjs
+      - name: Build application before changing the database
+        env:
+          EXPECTED_SUPABASE_PROJECT_REF: ${{ vars.SUPABASE_PROJECT_REF }}
+          EXPECTED_APP_ORIGIN: ${{ vars.APP_ORIGIN }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ vars.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ vars.VERCEL_PROJECT_ID }}
+        run: |
+          test -n "$VERCEL_TOKEN"
+          npx --yes vercel@59.16.0 pull --yes --environment=production --token="$VERCEL_TOKEN"
+          node scripts/check-pulled-env.mjs
+          npx --yes vercel@59.16.0 build --prod --token="$VERCEL_TOKEN"
+      - name: Apply migrations to the selected environment
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_PROJECT_REF: ${{ vars.SUPABASE_PROJECT_REF }}
+        run: |
+          test -n "$SUPABASE_ACCESS_TOKEN"
+          npx supabase migration up --linked --project-ref "$SUPABASE_PROJECT_REF"
+      - name: Deploy the built application
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ vars.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ vars.VERCEL_PROJECT_ID }}
+        run: npx --yes vercel@59.16.0 deploy --prebuilt --prod --yes --token="$VERCEL_TOKEN"
+      - name: Verify deployed database connectivity
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ vars.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ vars.VERCEL_PROJECT_ID }}
+          APP_ORIGIN: ${{ vars.APP_ORIGIN }}
+        run: |
+          npx --yes vercel@59.16.0 curl /api/health --deployment "$APP_ORIGIN" --token="$VERCEL_TOKEN" -- --silent --show-error --fail > /tmp/health.json
+          node -e 'const fs=require("fs"); if(JSON.parse(fs.readFileSync("/tmp/health.json")).status!=="ok") process.exit(1)'
