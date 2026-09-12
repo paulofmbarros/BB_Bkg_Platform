@@ -1,0 +1,12 @@
+begin;
+create extension if not exists pgtap with schema extensions;
+select plan(7);
+select is((select count(*)::integer from pg_tables where schemaname='public' and not rowsecurity),0,'Every public table has RLS');
+select is((select count(*)::integer from pg_proc p join pg_namespace n on n.oid=p.pronamespace where n.nspname='public' and p.prosecdef),0,'No elevated functions exposed in public schema');
+select ok(not has_table_privilege('anon','public.services','SELECT'),'Anonymous visitors cannot query service tables directly');
+select ok(not has_table_privilege('authenticated','public.tenant_memberships','UPDATE'),'Members cannot self-promote');
+select ok(not has_table_privilege('authenticated','public.audit_events','INSERT'),'Clients cannot fabricate audit events');
+select ok(has_column_privilege('authenticated','public.tenants','name','UPDATE'),'Owner name edits remain possible after grant hardening');
+select ok(not has_column_privilege('authenticated','public.staff_members','user_id','INSERT'),'Staff identity linking is provisioning-only');
+select * from finish();
+rollback;

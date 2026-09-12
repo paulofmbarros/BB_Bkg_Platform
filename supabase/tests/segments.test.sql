@@ -1,0 +1,17 @@
+begin;
+create extension if not exists pgtap with schema extensions;
+select plan(12);
+select is(private.classify_customer(0,null,0,0,0),'new','No completed visits is new');
+select is(private.classify_customer(1,59,0,0,0),'new','One visit before risk threshold is new');
+select is(private.classify_customer(2,59,0,0,0),'returning','Two recent visits is returning');
+select is(private.classify_customer(3,59,0,0,0),'regular','Three recent visits is regular');
+select is(private.classify_customer(1,60,0,0,0),'at_risk','Risk begins exactly at 60 days');
+select is(private.classify_customer(3,119,0,0,0),'at_risk','119 days is still at risk');
+select is(private.classify_customer(3,120,0,0,0),'inactive','Inactivity begins exactly at 120 days');
+select is(private.classify_customer(3,180,1,0,0),'regular','A future booking suppresses inactivity');
+select is(private.classify_customer(3,180,0,1,0),'needs_review','Unresolved outcome takes priority');
+select is(private.classify_customer(3,180,0,0,1),'needs_review','Potential duplicate takes priority');
+select is(private.classify_customer(1,-1,0,0,0),'needs_review','Future-dated completed visit needs review');
+select ok((select reloptions @> array['security_invoker=true'] from pg_class where oid='public.customer_segments'::regclass),'Segmentation view preserves caller RLS');
+select * from finish();
+rollback;

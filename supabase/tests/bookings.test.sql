@@ -1,0 +1,21 @@
+begin;
+create extension if not exists pgtap with schema extensions;
+select plan(9);
+select ok(not has_table_privilege('anon','public.appointments','SELECT'),'Guest cannot list appointments');
+select ok(not has_table_privilege('authenticated','public.appointments','UPDATE'),'All appointment changes use authorized transaction functions');
+select ok(not has_table_privilege('authenticated','private.booking_capabilities','SELECT'),'Management capabilities are private');
+select ok(not has_function_privilege('anon','private.available_slots(uuid,uuid,uuid,date,uuid,timestamptz)','EXECUTE'),'Guests cannot bypass the public scheduling boundary or supply a clock');
+update public.business_hours set enabled=true,start_time='00:00',end_time='04:00',break_start=null,break_end=null where tenant_id='11111111-1111-4111-8111-111111111111' and weekday=0;
+update public.staff_working_hours set enabled=true,start_time='00:00',end_time='04:00',break_start=null,break_end=null where tenant_id='11111111-1111-4111-8111-111111111111' and staff_id='30000000-0000-4000-8000-000000000001' and weekday=0;
+-- Isolate the deterministic clock fixtures inside this rolled-back transaction.
+delete from public.appointments where tenant_id='11111111-1111-4111-8111-111111111111';
+delete from public.availability_exceptions where tenant_id='11111111-1111-4111-8111-111111111111';
+create temp table spring as select * from private.available_slots('11111111-1111-4111-8111-111111111111','10000000-0000-4000-8000-000000000001','30000000-0000-4000-8000-000000000001','2026-03-29',null,'2026-03-28T00:00:00Z');
+select ok((select count(*)>0 from spring),'Spring transition still has bookable times');
+select is((select count(*)::int from spring where extract(hour from starts_at at time zone 'Europe/Lisbon')=1),0,'Spring missing hour is never offered');
+create temp table autumn as select * from private.available_slots('11111111-1111-4111-8111-111111111111','10000000-0000-4000-8000-000000000001','30000000-0000-4000-8000-000000000001','2026-10-25',null,'2026-10-24T00:00:00Z');
+select is((select count(*)::int from autumn where (starts_at at time zone 'Europe/Lisbon')::time='01:00'),2,'Autumn repeated wall time maps to two distinct bookable instants');
+select is((select count(*)::int-count(distinct starts_at)::int from autumn),0,'No duplicate UTC instants');
+select is((select count(*)::int from autumn where (blocked_until at time zone 'Europe/Lisbon')-(starts_at at time zone 'Europe/Lisbon')<>blocked_until-starts_at),0,'No offered appointment straddles an offset transition');
+select * from finish();
+rollback;
