@@ -36,6 +36,11 @@ export function checkHostedEnv(env) {
     "SUPABASE_ACCESS_TOKEN",
     "SUPABASE_DB_PASSWORD",
     "DATABASE_URL",
+    "SUPABASE_JWT_SECRET",
+    "POSTGRES_URL",
+    "POSTGRES_PRISMA_URL",
+    "POSTGRES_URL_NON_POOLING",
+    "POSTGRES_PASSWORD",
   ])
     if (env[name])
       errors.push(

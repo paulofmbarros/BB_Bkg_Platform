@@ -1,0 +1,60 @@
+name: Checks
+on:
+  pull_request:
+    branches: [main, production]
+  workflow_call:
+permissions:
+  contents: read
+jobs:
+  quality:
+    name: Quality checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - name: Validate release PR source
+        if: github.event_name == 'pull_request' && github.base_ref == 'production'
+        env:
+          HEAD_BRANCH: ${{ github.head_ref }}
+          HEAD_REPOSITORY: ${{ github.event.pull_request.head.repo.full_name }}
+        run: |
+          test "$HEAD_BRANCH" = main
+          test "$HEAD_REPOSITORY" = "$GITHUB_REPOSITORY"
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run lint && npm run format:check
+      - name: Check types before integration setup
+        run: npx next typegen && npm run typecheck
+      - name: Start disposable local database
+        run: npm run db:start
+      - name: Configure and seed local fixtures
+        run: |
+          node scripts/configure-local.mjs
+          npm run demo:users
+          npm run demo:bookings
+          npm run demo:history
+          npm run demo:segments
+      - name: Unit and integration checks
+        run: npm test
+      - name: Database checks
+        run: npm run db:test
+      - run: npx playwright install --with-deps chromium
+      - name: Browser checks
+        run: npm run test:e2e
+      - name: Production build and types
+        run: npm run build && npm run typecheck
+      - name: Browser failure artifacts
+        if: failure()
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
+        with:
+          name: browser-failures-${{ github.run_id }}
+          path: test-results/
+          retention-days: 3
+      - name: Stop disposable database
+        if: always()
+        run: npx supabase stop --no-backup

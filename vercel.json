@@ -3,5 +3,8 @@
   "framework": "nextjs",
   "installCommand": "npm ci",
   "buildCommand": "node scripts/check-hosted-env.mjs && npm run build",
-  "regions": ["fra1"]
+  "regions": ["fra1"],
+  "git": {
+    "deploymentEnabled": false
+  }
 }

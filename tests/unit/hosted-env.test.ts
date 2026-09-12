@@ -38,6 +38,16 @@ describe("hosted configuration guard", () => {
       }).length,
     ).toBeGreaterThan(0);
   });
+  it("rejects database secrets injected by hosting integrations", () => {
+    for (const key of [
+      "POSTGRES_URL",
+      "POSTGRES_PASSWORD",
+      "SUPABASE_JWT_SECRET",
+    ])
+      expect(
+        checkHostedEnv({ ...valid, [key]: "private-test-value" }).length,
+      ).toBeGreaterThan(0);
+  });
   it("requires the local demo shortcut to be explicitly disabled", () => {
     expect(
       checkHostedEnv({ ...valid, LOCAL_DEMO: "true" }).length,

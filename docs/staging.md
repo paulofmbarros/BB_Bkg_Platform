@@ -1,6 +1,6 @@
 # Private staging deployment
 
-Status: deployment prepared; hosting sign-in and project provisioning are still pending. No cloud database or deployment has been created. Local data stays in the local Docker database.
+Status: private staging deployed and verified on 12 September 2026. The local Docker database remains separate and unchanged.
 
 ## Target
 
@@ -40,3 +40,19 @@ Keep the previous successful Vercel deployment available for application rollbac
 Before a live pilot, finish booking email delivery and secure link recovery, stronger public abuse controls, backup restoration verification, monitoring, and reviewed customer retention/deletion and booking policies. Staging is for invited reviewers and synthetic data only.
 
 References: [Vercel configuration](https://vercel.com/docs/project-configuration/vercel-json), [deployment protection](https://vercel.com/docs/deployment-protection), and [Supabase environments](https://supabase.com/docs/guides/deployment/managing-environments).
+
+## Deployment record · 12 September 2026
+
+- Application commit: `e84995d`; Vercel deployment `dpl_5SD9e38EqtC6TR1uvEofYSBjz3U1`.
+- Vercel: `paulo-s-team1/barbershop-os-staging`, project `prj_BUOlUKCaZf8kTgA9PEkzO8TZKxfb`. Node.js 22; functions configured for Frankfurt. The build itself ran in Vercel's US build region.
+- Supabase: `atliuoyvxnpetqhwfakm`, organization `BB_Booking_System`, Ireland (`eu-west-1`). This pre-existing empty project was used as the separate staging database; no production data was imported.
+- Workspace: https://barbershop-os-staging.vercel.app
+- Shop booking: https://porto-gentlemen-staging.vercel.app/book
+- All 13 migrations applied through the CLI, with migration history preserved. Two synthetic shops were provisioned; only Porto has a hosted shop domain. Calendar, history and segment fixtures were added separately.
+- Three unique staging reviewer accounts were created without sending email. Owner access details are in the ignored local `.vercel/staging-access.md`; no credentials are committed.
+- Vercel authentication protects all deployments and aliases. Both stable domains redirect unauthenticated requests to Vercel SSO. Public account registration is disabled; the recovery callback is restricted to the workspace HTTPS address.
+- The Supabase integration initially injected privileged credentials into Vercel. Its service-role, secret, JWT and database-password/connection variables were removed before the successful build. The build guard rejects their reintroduction.
+- Hosted clean install and production build pass. The lockfile was repaired under Linux/Node.js 22 to include two missing optional dependencies. Five configuration tests, TypeScript, lint and formatting checks pass.
+- Hosted checks passed for database health, three reviewer logins, tenant/role isolation, anonymous customer isolation, shop catalogue, booking, private receipt, rescheduling and cancellation. The temporary smoke appointment and contact were removed. Browser checks confirmed owner sign-in, customer segments and the shop booking form.
+- One hosted security-advisor warning remains: leaked-password protection is disabled. Email delivery/recovery and a full hosted mobile/accessibility regression were not tested. The existing 88-check local regression passed before deployment preparation.
+- No paid plan upgrade, Git push or automatic Git deployment connection was performed. The app is deployed to the dedicated staging project's stable alias; Vercel calls that target “production,” but it remains a protected synthetic demo. Current plans are Vercel Hobby and Supabase Free; review commercial plan requirements before a business pilot.
