@@ -18,7 +18,7 @@ Each environment owns these variables:
 | `VERCEL_ORG_ID`        | Owning Vercel team                         |
 | `APP_ORIGIN`           | Stable HTTPS workspace address             |
 
-Each environment owns two encrypted secrets: `SUPABASE_ACCESS_TOKEN` for migrations and `VERCEL_TOKEN` for building/deploying its Vercel project. Never use repository-wide production secrets. The Vercel staging token is project-scoped and expires 11 December 2026; replace it before expiry. Use a separate production token. Limit Supabase management access as far as the provider supports and rotate it when membership or access changes.
+Each environment owns two encrypted secrets: `SUPABASE_ACCESS_TOKEN` for migrations and `VERCEL_TOKEN` for building/deploying its Vercel project. Never use repository-wide production secrets. The Vercel staging token is scoped to `paulo-s-team1` and expires 11 December 2026; replace it before expiry. Team scope is required by the current [Vercel CLI project-token limitation](https://github.com/vercel/vercel/issues/17506), and grants access to every project in that team. It is stored only in GitHub's staging environment. Use a separate production token and consider a separate Vercel team for credential isolation. Limit Supabase management access as far as the provider supports and rotate it when membership or access changes.
 
 The migration credential exists only in the migration step. It is not sent to Vercel or loaded into the application build. Vercel settings are checked against the selected database and workspace before migrations. Hosted runtime still uses only the publishable Supabase key and caller sessions.
 
