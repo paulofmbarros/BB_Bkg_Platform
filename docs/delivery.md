@@ -4,7 +4,7 @@ Feature branches open pull requests into `main`. The required **Quality checks**
 
 A merged PR into `main` triggers the Deploy workflow. It verifies that the triggering commit belongs to a merged PR, repeats validation for the merged code, builds using the staging Vercel settings, applies pending migrations to the staging database, and deploys the built application. A health request verifies database connectivity. Deployments are serialized per environment; active deployment jobs are not cancelled midway through migrations.
 
-To release, open a PR from `main` into `production`. Other source branches are rejected. After review and merge, the same pipeline targets the GitHub `production` environment and waits for the configured deployment reviewer. Production settings must be enabled, distinct from staging, and have required environment reviewers. No production resources are provisioned by the workflow itself.
+To release, open a PR from `main` into `production`. Other source branches are rejected. After review and merge, the same pipeline targets the GitHub `production` environment and waits for the configured deployment reviewer. After a production release, merge `production` back into `main` through a PR so the branches remain synchronized for the next release. Production settings must be enabled, distinct from staging, and have required environment reviewers. No production resources are provisioned by the workflow itself.
 
 ## GitHub environments
 
