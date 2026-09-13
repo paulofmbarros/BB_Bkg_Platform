@@ -480,6 +480,62 @@ export type Database = {
           },
         ]
       }
+      platform_invitations: {
+        Row: {
+          accepted_at: string | null
+          attempt_id: string | null
+          attempted_at: string | null
+          cancelled_at: string | null
+          created_at: string
+          created_by: string
+          delivery_error: string | null
+          delivery_state: string
+          email: string
+          expires_at: string
+          id: string
+          sent_at: string | null
+          tenant_id: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          attempt_id?: string | null
+          attempted_at?: string | null
+          cancelled_at?: string | null
+          created_at?: string
+          created_by: string
+          delivery_error?: string | null
+          delivery_state?: string
+          email: string
+          expires_at?: string
+          id?: string
+          sent_at?: string | null
+          tenant_id: string
+        }
+        Update: {
+          accepted_at?: string | null
+          attempt_id?: string | null
+          attempted_at?: string | null
+          cancelled_at?: string | null
+          created_at?: string
+          created_by?: string
+          delivery_error?: string | null
+          delivery_state?: string
+          email?: string
+          expires_at?: string
+          id?: string
+          sent_at?: string | null
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "platform_invitations_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       services: {
         Row: {
           active: boolean
@@ -679,18 +735,21 @@ export type Database = {
           hostname: string
           is_primary: boolean
           tenant_id: string
+          verification_token: string
           verified_at: string | null
         }
         Insert: {
           hostname: string
           is_primary?: boolean
           tenant_id: string
+          verification_token?: string
           verified_at?: string | null
         }
         Update: {
           hostname?: string
           is_primary?: boolean
           tenant_id?: string
+          verification_token?: string
           verified_at?: string | null
         }
         Relationships: [
@@ -837,6 +896,7 @@ export type Database = {
       }
     }
     Functions: {
+      accept_platform_invitation: { Args: { p_id: string }; Returns: string }
       booking_slots: {
         Args: {
           p_day: string
@@ -844,6 +904,10 @@ export type Database = {
           p_service: string
           p_staff: string
         }
+        Returns: Json
+      }
+      claim_platform_invitation: {
+        Args: { p_actor: string; p_id: string }
         Returns: Json
       }
       create_booking: {
@@ -864,6 +928,7 @@ export type Database = {
         Returns: Json
       }
       get_public_shop: { Args: { p_hostname: string }; Returns: Json }
+      is_platform_admin: { Args: never; Returns: boolean }
       link_customers: {
         Args: {
           p_confirmation: string
@@ -905,6 +970,11 @@ export type Database = {
           p_tenant: string
         }
         Returns: Json
+      }
+      platform_clients: { Args: { p_id?: string }; Returns: Json }
+      platform_mutate: {
+        Args: { p_action: string; p_payload: Json; p_tenant: string }
+        Returns: string
       }
       rebook_customer: {
         Args: {

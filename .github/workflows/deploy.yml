@@ -74,6 +74,14 @@ jobs:
         run: |
           test -n "$SUPABASE_ACCESS_TOKEN"
           npx supabase migration up --linked --project-ref "$SUPABASE_PROJECT_REF"
+      - name: Configure and deploy owner invitation delivery
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_PROJECT_REF: ${{ vars.SUPABASE_PROJECT_REF }}
+          PLATFORM_APP_ORIGIN: ${{ vars.APP_ORIGIN }}
+        run: |
+          npx supabase secrets set "PLATFORM_APP_ORIGIN=$PLATFORM_APP_ORIGIN" --project-ref "$SUPABASE_PROJECT_REF"
+          npx supabase functions deploy platform-invite --project-ref "$SUPABASE_PROJECT_REF"
       - name: Deploy the built application
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}

@@ -37,6 +37,8 @@ export default async function Home() {
     data: { user },
   } = await db.auth.getUser();
   if (!user) redirect("/login");
+  const { data: platformAdmin } = await db.rpc("is_platform_admin");
+  if (platformAdmin) redirect("/admin");
   const { data: tenants } = await db
     .from("tenants")
     .select("slug,name")
