@@ -43,6 +43,14 @@ After the first setup, normal development only needs:
 npm run dev:all
 ```
 
+To debug server-side Next.js code, start the same stack with the Node inspector:
+
+```sh
+npm run dev:debug
+```
+
+In VS Code, open **Run and Debug**, select **Attach to Next.js server**, and press F5. Server actions, route handlers and Server Components can then stop on breakpoints. Use the browser's developer tools for client components.
+
 `configure-local.mjs` reads local Supabase credentials into ignored `.env.local` and refuses to overwrite an existing file. The service-role key stays server-side and supports local provisioning, tests and authenticated platform support mode.
 
 Open http://127.0.0.1:3000. In local development, **Open Porto Gentlemen demo** signs into a real local Supabase account. That shortcut is disabled outside development and on non-loopback hosts.
@@ -65,7 +73,7 @@ Local-only accounts:
 
 Never provision these accounts into a hosted environment. The user seed refuses non-local Supabase URLs. All names, businesses, numbers and addresses are synthetic demo content; do not contact them.
 
-Supabase Studio: http://127.0.0.1:54323. Local recovery emails are captured by Mailpit: http://127.0.0.1:54324. No real email provider is connected.
+Supabase Studio: http://127.0.0.1:54323. Choose **Table Editor** to browse rows or **SQL Editor** to query the local database. Local recovery emails are captured by Mailpit: http://127.0.0.1:54324. No real email provider is connected.
 
 ## Validation
 

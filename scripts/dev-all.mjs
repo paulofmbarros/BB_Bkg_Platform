@@ -3,6 +3,7 @@ import { spawn, spawnSync } from "node:child_process";
 
 const npm = process.platform === "win32" ? "npm.cmd" : "npm";
 const npx = process.platform === "win32" ? "npx.cmd" : "npx";
+const debug = process.argv.includes("--debug");
 
 if (!existsSync(".env.local")) {
   throw new Error("Local setup is missing. Run npm run setup:local first.");
@@ -25,9 +26,11 @@ if (!existsSync("supabase/functions/.env")) {
 
 const children = [
   spawn(npx, ["supabase", "functions", "serve"], { stdio: "inherit" }),
-  spawn(npm, ["run", "dev", "--", "--port", "3000"], {
-    stdio: "inherit",
-  }),
+  spawn(
+    npm,
+    ["run", "dev", "--", "--port", "3000", ...(debug ? ["--inspect"] : [])],
+    { stdio: "inherit" },
+  ),
 ];
 let stopping = false;
 
@@ -65,4 +68,5 @@ for (const child of children) {
 }
 
 console.log("Local app: http://127.0.0.1:3000");
+if (debug) console.log("Next.js server debugger: 127.0.0.1:9229");
 console.log("Press Ctrl+C once to stop the app and invitation function.");
