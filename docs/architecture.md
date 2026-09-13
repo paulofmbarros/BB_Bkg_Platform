@@ -27,6 +27,7 @@ Audit triggers record tenant, actor, operation, entity and timestamp without cop
 ## Deliberate constraints
 
 - Owner access can be provisioned through the platform administrator client/invitation flow; platform operator access itself still requires trusted administration. See `platform-administration.md` for the separate invitation delivery boundary. There is no public self-onboarding.
+- Platform support mode uses a server-only privileged client after verifying the caller's active platform role. Customer routes and customer mutations remain unavailable in that mode, and the calendar omits customer identity.
 - Staff can read foundation catalogue and scheduling configuration, but cannot edit it. Appointment/customer access must be narrowed in Phase 2.
 - One recurring interval and optional break per day; exceptions are full-day closures or leave. No overnight shifts or arbitrary split shifts yet.
 - Phase 2 implements availability and bookings as described below.

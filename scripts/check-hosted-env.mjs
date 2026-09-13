@@ -28,10 +28,13 @@ export function checkHostedEnv(env) {
   }
   if (!env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY?.startsWith("sb_publishable_"))
     errors.push("Use the staging project's Supabase publishable key.");
+  if (!env.SUPABASE_SERVICE_ROLE_KEY)
+    errors.push(
+      "Set SUPABASE_SERVICE_ROLE_KEY for server-side platform support.",
+    );
   if (env.LOCAL_DEMO !== "false")
     errors.push("Set LOCAL_DEMO=false for hosting.");
   for (const name of [
-    "SUPABASE_SERVICE_ROLE_KEY",
     "SUPABASE_SECRET_KEY",
     "SUPABASE_ACCESS_TOKEN",
     "SUPABASE_DB_PASSWORD",

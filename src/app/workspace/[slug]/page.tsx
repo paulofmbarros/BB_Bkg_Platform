@@ -9,6 +9,9 @@ import {
   Palette,
   CheckCircle2,
   CalendarDays,
+  CircleCheck,
+  LifeBuoy,
+  TriangleAlert,
 } from "lucide-react";
 import { getBusiness } from "@/modules/businesses/queries";
 import { weeklyHours, trimHours, weekdays } from "@/modules/scheduling/hours";
@@ -55,6 +58,51 @@ export default async function Overview({
     },
   ];
   const completed = setup.filter((s) => s.done).length;
+  const activeAssignments = b.assignments.filter((assignment) =>
+    activeStaff.some((staff) => staff.id === assignment.staff_id),
+  ).length;
+  const supportChecks = [
+    {
+      label: "Services available",
+      detail: `${activeServices.length} active service${activeServices.length === 1 ? "" : "s"}`,
+      ready: activeServices.length > 0,
+      path: "/services",
+    },
+    {
+      label: "Barbers assigned to services",
+      detail: `${activeAssignments} active assignment${activeAssignments === 1 ? "" : "s"}`,
+      ready: activeAssignments > 0,
+      path: "/team",
+    },
+    {
+      label: "Opening hours configured",
+      detail: `${hours} hours open each week`,
+      ready: hours > 0 && b.staffHours.some((row) => row.enabled),
+      path: "/hours",
+    },
+    {
+      label: "Customer booking address",
+      detail: b.domains.some((domain) => domain.verified_at)
+        ? "Verified and ready"
+        : "No verified address",
+      ready: b.domains.some((domain) => domain.verified_at),
+      path: "",
+    },
+    {
+      label: "Online booking",
+      detail: b.entitlements.some(
+        (entitlement) =>
+          entitlement.feature === "booking" && entitlement.enabled,
+      )
+        ? "Enabled"
+        : "Disabled by platform settings",
+      ready: b.entitlements.some(
+        (entitlement) =>
+          entitlement.feature === "booking" && entitlement.enabled,
+      ),
+      path: "",
+    },
+  ];
   return (
     <>
       <div className="page-heading">
@@ -73,6 +121,57 @@ export default async function Overview({
           Preview your shop <ArrowUpRight size={16} />
         </Link>
       </div>
+      {b.supportMode && (
+        <section className="panel support-diagnostics">
+          <div className="panel-heading">
+            <div>
+              <span className="eyebrow">SUPPORT CHECKS</span>
+              <h2>Find setup problems quickly</h2>
+              <p>
+                These checks cover the configuration required for customers to
+                find services and available booking times.
+              </p>
+            </div>
+            <LifeBuoy size={24} />
+          </div>
+          <div className="support-check-list">
+            {supportChecks.map((check) => {
+              const content = (
+                <>
+                  {check.ready ? (
+                    <CircleCheck size={20} />
+                  ) : (
+                    <TriangleAlert size={20} />
+                  )}
+                  <span>
+                    <strong>{check.label}</strong>
+                    <small>{check.detail}</small>
+                  </span>
+                  <span
+                    className={`support-check-state ${check.ready ? "ready" : "attention"}`}
+                  >
+                    {check.ready ? "Ready" : "Check"}
+                  </span>
+                </>
+              );
+              return check.path ? (
+                <Link
+                  key={check.label}
+                  href={`/workspace/${slug}${check.path}`}
+                >
+                  {content}
+                </Link>
+              ) : (
+                <div key={check.label}>{content}</div>
+              );
+            })}
+          </div>
+          <p className="field-help">
+            Booking access and domain verification are controlled from the
+            client administration page.
+          </p>
+        </section>
+      )}
       <section className="welcome-card">
         <div className="welcome-copy">
           <span className="pill-light">

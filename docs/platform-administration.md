@@ -12,7 +12,9 @@ The central workspace now has an administrator area at `/admin`. Platform operat
 
 You can edit contact details, suspend/restore a shop, control its foundation and booking features, invite another owner, cancel a pending invitation, and revoke/restore individual memberships. Inviting another owner leaves existing owners in place. The last active owner cannot be revoked; invite their replacement first or suspend the shop. Suspension retains records and appointments while denying private tenant data access through existing sessions and disabling its public catalogue. Permanent deletion, subscription billing and automatic domain hosting configuration are outside this increment.
 
-Platform administration does not implicitly grant access to each shop's customers or calendar. It exposes account/setup metadata and membership contacts through narrow database functions. Regular workspace access still requires explicit membership.
+The client header can copy the owner workspace address for onboarding, open the customer booking page after a hostname is verified, and open the shop in **Platform support mode**. Support mode does not require the owner's password or a shop membership. It provides configuration access to services, team, hours, availability, branding and business settings.
+
+Support mode stays visibly marked throughout the workspace. Its overview checks active services, service assignments, business and staff hours, booking addresses, and the booking entitlement. The customer directory and direct customer-profile routes are unavailable. The calendar remains useful for schedule troubleshooting, but customer names and email addresses are not queried or displayed and appointment changes are disabled. Outside this server-side support path, the platform administrator still has no direct tenant-table access.
 
 ## Local use
 
@@ -48,12 +50,13 @@ Migrations and the invitation function are included in the existing reviewed dep
    Revocation uses `update private.platform_admins set active=false where user_id=...` and takes effect for existing sessions. No application endpoint can grant this role; shop roles and editable account metadata never confer platform privileges.
 
 3. Configure transactional email and the central workspace Site URL in Supabase Auth. Keep public registration disabled. Add the exact central-host redirect pattern `https://YOUR_WORKSPACE_HOST/accept-invite/*` alongside the existing recovery callback. Keep the default invitation and magic-link templates using `{{ .ConfirmationURL }}`. If customized, preserve its redirect; otherwise the owner may land on the wrong page.
-4. Deploy `platform-invite` with `PLATFORM_APP_ORIGIN` set to the stable workspace origin. The deployment workflow sets this automatically from the environment's existing `APP_ORIGIN`. The function uses Supabase's built-in server credentials inside the Edge runtime. No service-role key or management token is added to the Next.js/Vercel runtime.
-5. Verify the flow with a synthetic recipient first, including mail delivery, acceptance, password setup and tenant isolation. Hosted staging protection still applies to invitation links: reviewers must also have hosting access.
+4. Deploy `platform-invite` with `PLATFORM_APP_ORIGIN` set to the stable workspace origin. The deployment workflow sets this automatically from the environment's existing `APP_ORIGIN`. The function uses Supabase's built-in server credentials inside the Edge runtime.
+5. Set `SUPABASE_SERVICE_ROLE_KEY` as a server-only secret in the Next.js deployment. Support mode creates this privileged client only after the current session passes `is_platform_admin`; the key must never use a `NEXT_PUBLIC_` name or appear in browser code, logs, or client responses.
+6. Verify the flow with a synthetic recipient first, including mail delivery, acceptance, password setup, support access and tenant isolation. Hosted staging protection still applies to invitation links: reviewers must also have hosting access.
 
 ## Security and failure handling
 
-Privileged SQL implementations remain in `private`, use fixed empty search paths and recheck current operator access. Public functions are caller-privilege wrappers. Operator grants cannot be changed through the data API. Invitation records have RLS; ordinary users cannot list invitations. Creation, membership changes, account changes and invitation transitions are audited without copying email addresses or tokens into the audit log.
+Privileged SQL implementations remain in `private`, use fixed empty search paths and recheck current operator access. Public functions are caller-privilege wrappers. Operator grants cannot be changed through the data API. Invitation records have RLS; ordinary users cannot list invitations. The Next.js support path authenticates the current user and checks their active platform role before constructing its server-only privileged client. Creation, membership changes, account changes and invitation transitions are audited without copying email addresses or tokens into the audit log.
 
 The Edge Function verifies the caller's Auth token using `getUser`, checks platform administration, and atomically claims the saved invitation before reading its email. It accepts an invitation ID, not an arbitrary recipient or redirect URL. Modern signing keys are supported by disabling the legacy gateway JWT check and performing verification inside the handler. Unauthenticated and non-admin callers are rejected before any privileged operation.
 

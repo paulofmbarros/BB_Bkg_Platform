@@ -11,6 +11,8 @@ import {
 import { publicShopUrl } from "@/modules/bookings/public-context";
 import { money } from "@/lib/format";
 import { AppointmentControls } from "@/components/appointment-controls";
+
+type CustomerBrief = { display_name: string; email: string };
 export default async function Calendar({
   params,
   searchParams,
@@ -24,13 +26,21 @@ export default async function Calendar({
   const day = z.iso.date().safeParse(search.day).success
     ? search.day!
     : shopDate();
-  const { data, error } = await b.db
-    .from("appointments")
-    .select("*,customers(display_name,email),staff_members(display_name)")
-    .eq("tenant_id", b.tenant.id)
-    .gte("starts_at", `${addDays(day, -1)}T23:00:00Z`)
-    .lt("starts_at", `${addDays(day, 1)}T00:00:00Z`)
-    .order("starts_at");
+  const { data, error } = b.supportMode
+    ? await b.db
+        .from("appointments")
+        .select("*,staff_members(display_name)")
+        .eq("tenant_id", b.tenant.id)
+        .gte("starts_at", `${addDays(day, -1)}T23:00:00Z`)
+        .lt("starts_at", `${addDays(day, 1)}T00:00:00Z`)
+        .order("starts_at")
+    : await b.db
+        .from("appointments")
+        .select("*,customers(display_name,email),staff_members(display_name)")
+        .eq("tenant_id", b.tenant.id)
+        .gte("starts_at", `${addDays(day, -1)}T23:00:00Z`)
+        .lt("starts_at", `${addDays(day, 1)}T00:00:00Z`)
+        .order("starts_at");
   if (error) throw new Error("Could not load your calendar.");
   const appointments = (data ?? []).filter(
     (a) =>
@@ -58,7 +68,7 @@ export default async function Calendar({
               : "A clear view of who’s coming in and what’s next."}
           </p>
         </div>
-        {domain && b.role !== "staff" && (
+        {domain && b.role !== "staff" && !b.supportMode && (
           <a
             className="button primary"
             href={`${publicShopUrl(domain.hostname)}/book`}
@@ -146,26 +156,40 @@ export default async function Calendar({
                   {a.status.replace("_", " ")}
                 </span>
                 <h2>
-                  <Link href={`/workspace/${slug}/customers/${a.customer_id}`}>
-                    {a.customers?.display_name}
-                  </Link>
+                  {b.supportMode ? (
+                    "Customer details hidden"
+                  ) : (
+                    <Link
+                      href={`/workspace/${slug}/customers/${a.customer_id}`}
+                    >
+                      {"customers" in a
+                        ? (a.customers as CustomerBrief | null)?.display_name
+                        : ""}
+                    </Link>
+                  )}
                 </h2>
                 <p>
                   {a.service_name} · {a.staff_members?.display_name}
                 </p>
-                <p className="field-help">{a.customers?.email}</p>
-                <strong>{money(a.price_minor)}</strong>
-                {a.status === "confirmed" && b.role !== "staff" && (
-                  <AppointmentControls
-                    slug={slug}
-                    id={a.id}
-                    version={a.version}
-                    service={a.service_id}
-                    staff={a.staff_id}
-                    startsAt={a.starts_at}
-                    endsAt={a.ends_at}
-                  />
+                {!b.supportMode && "customers" in a && (
+                  <p className="field-help">
+                    {(a.customers as CustomerBrief | null)?.email}
+                  </p>
                 )}
+                <strong>{money(a.price_minor)}</strong>
+                {a.status === "confirmed" &&
+                  b.role !== "staff" &&
+                  !b.supportMode && (
+                    <AppointmentControls
+                      slug={slug}
+                      id={a.id}
+                      version={a.version}
+                      service={a.service_id}
+                      staff={a.staff_id}
+                      startsAt={a.starts_at}
+                      endsAt={a.ends_at}
+                    />
+                  )}
               </div>
             </article>
           ))

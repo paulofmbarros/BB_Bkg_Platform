@@ -1,7 +1,7 @@
 "use server";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { requireManager } from "@/modules/tenancy/context";
+import { requireMemberManager } from "@/modules/tenancy/context";
 import { customerEditSchema } from "./model";
 export async function editCustomer(
   slug: string,
@@ -9,7 +9,7 @@ export async function editCustomer(
   _previous: { ok: boolean; message: string },
   form: FormData,
 ) {
-  const { db, tenant } = await requireManager(slug);
+  const { db, tenant } = await requireMemberManager(slug);
   const parsed = customerEditSchema.safeParse(Object.fromEntries(form));
   if (!parsed.success || !z.uuid().safeParse(id).success)
     return { ok: false, message: "Enter a name and valid email address." };
@@ -41,7 +41,7 @@ export async function linkCustomers(
   _previous: { ok: boolean; message: string },
   form: FormData,
 ) {
-  const { db, tenant } = await requireManager(slug);
+  const { db, tenant } = await requireMemberManager(slug);
   const parsed = z
     .object({
       source_version: z.coerce.number().int().positive(),
@@ -89,7 +89,7 @@ export async function linkCustomers(
   };
 }
 export async function undoCustomerLink(slug: string, id: string) {
-  const { db, tenant } = await requireManager(slug);
+  const { db, tenant } = await requireMemberManager(slug);
   if (!z.uuid().safeParse(id).success)
     return { ok: false, message: "Invalid customer link." };
   const { error } = await db.rpc("undo_customer_link", {
