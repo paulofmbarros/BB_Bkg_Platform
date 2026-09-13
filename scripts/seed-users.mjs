@@ -1,4 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
+import { execFileSync } from "node:child_process";
+import { readFileSync } from "node:fs";
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
 if (!url || !["127.0.0.1", "localhost"].includes(new URL(url).hostname))
   throw new Error("Demo users may only be seeded into local Supabase.");
@@ -62,3 +64,42 @@ for (const [email, password, tenant_id, role, id] of users) {
   }
   console.log(`Ready: ${role} account for ${email}`);
 }
+
+// A separate synthetic platform operator; never elevate a demo shop owner.
+const adminEmail = "platform@barbershop-os.example";
+let platformUser = existing.users.find((u) => u.email === adminEmail);
+if (!platformUser) {
+  const { data, error } = await db.auth.admin.createUser({
+    email: adminEmail,
+    password: "PlatformDemo!2026",
+    email_confirm: true,
+  });
+  if (error) throw error;
+  platformUser = data.user;
+}
+const project = readFileSync("supabase/config.toml", "utf8").match(
+  /^project_id = "([a-zA-Z0-9_-]+)"/m,
+)?.[1];
+if (!project || !/^[0-9a-f-]{36}$/i.test(platformUser.id))
+  throw new Error("Invalid local fixture configuration");
+execFileSync(
+  "docker",
+  [
+    "exec",
+    "-i",
+    `supabase_db_${project}`,
+    "psql",
+    "-X",
+    "-U",
+    "postgres",
+    "-d",
+    "postgres",
+    "-v",
+    "ON_ERROR_STOP=1",
+  ],
+  {
+    input: `insert into private.platform_admins(user_id) values ('${platformUser.id}') on conflict(user_id) do update set active=true;`,
+    stdio: ["pipe", "ignore", "pipe"],
+  },
+);
+console.log(`Ready: platform account for ${adminEmail}`);

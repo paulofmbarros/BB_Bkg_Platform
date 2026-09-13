@@ -4,6 +4,8 @@ The approved V0 foundation, booking engine and first CRM increment: guest bookin
 
 ## What works
 
+- Platform client administration: barbershop creation, owner invitations, account suspension, access management and domain ownership verification. See [platform administration](docs/platform-administration.md) for local access and hosted setup.
+
 - Supabase owner sign-in, sign-out and password recovery.
 - Two isolated synthetic businesses: Porto Gentlemen and Atelier Lisboa.
 - Owner / manager / staff permissions checked server-side and through PostgreSQL RLS.
@@ -74,6 +76,8 @@ npm run test:e2e
 npm run build
 npx supabase db advisors --local --type security --level warn
 ```
+
+Browser tests now also need the local invitation function running. In another terminal, copy `supabase/functions/.env.example` to `supabase/functions/.env` and run `npx supabase functions serve`. See [platform administration](docs/platform-administration.md).
 
 Run integration and browser tests sequentially: they intentionally edit and restore synthetic data. Integration tests refuse a non-local database. Browser tests use port 3000, the local demo accounts and the calendar/history/segment fixtures above.
 
