@@ -17,9 +17,10 @@ Set these values in Vercel for the environment used by this dedicated staging pr
 | `APP_ORIGIN`                           | Stable HTTPS workspace origin, no path |
 | `NEXT_PUBLIC_SUPABASE_URL`             | New staging Supabase project URL       |
 | `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | That project's `sb_publishable_…` key  |
+| `SUPABASE_SERVICE_ROLE_KEY`            | Server-only support-mode credential    |
 | `LOCAL_DEMO`                           | `false`                                |
 
-Do not copy `.env.local`. No service-role key, database password or management access token belongs in Vercel. The deployment build runs `scripts/check-hosted-env.mjs` first and reports configuration problems without printing credentials. `.vercelignore` excludes local environment files and generated output from CLI uploads. These checks do not validate account permissions, deployment protection or database migrations.
+Do not copy `.env.local`. Set only the staging project's service-role key for the authenticated server-side support path. Database passwords, management access tokens, JWT secrets and connection strings do not belong in Vercel. The deployment build runs `scripts/check-hosted-env.mjs` first and reports configuration problems without printing credentials. `.vercelignore` excludes local environment files and generated output from CLI uploads. These checks do not validate account permissions, deployment protection or database migrations.
 
 ## Provisioning order
 
@@ -51,7 +52,7 @@ References: [Vercel configuration](https://vercel.com/docs/project-configuration
 - All 13 migrations applied through the CLI, with migration history preserved. Two synthetic shops were provisioned; only Porto has a hosted shop domain. Calendar, history and segment fixtures were added separately.
 - Three unique staging reviewer accounts were created without sending email. Owner access details are in the ignored local `.vercel/staging-access.md`; no credentials are committed.
 - Vercel authentication protects all deployments and aliases. Both stable domains redirect unauthenticated requests to Vercel SSO. Public account registration is disabled; the recovery callback is restricted to the workspace HTTPS address.
-- The Supabase integration initially injected privileged credentials into Vercel. Its service-role, secret, JWT and database-password/connection variables were removed before the successful build. The build guard rejects their reintroduction.
+- The Supabase integration initially injected several privileged credentials into Vercel. Its secret, JWT and database-password/connection variables were removed before the successful build. Platform support mode now requires only the service-role key to be restored as an explicit server-only variable; the build guard continues to reject the other credentials.
 - Hosted clean install and production build pass. The lockfile was repaired under Linux/Node.js 22 to include two missing optional dependencies. Five configuration tests, TypeScript, lint and formatting checks pass.
 - Hosted checks passed for database health, three reviewer logins, tenant/role isolation, anonymous customer isolation, shop catalogue, booking, private receipt, rescheduling and cancellation. The temporary smoke appointment and contact were removed. Browser checks confirmed owner sign-in, customer segments and the shop booking form.
 - One hosted security-advisor warning remains: leaked-password protection is disabled. Email delivery/recovery and a full hosted mobile/accessibility regression were not tested. The existing 88-check local regression passed before deployment preparation.

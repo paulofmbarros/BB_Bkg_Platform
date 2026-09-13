@@ -4,10 +4,11 @@ const valid = {
   APP_ORIGIN: "https://workspace.example.com",
   NEXT_PUBLIC_SUPABASE_URL: "https://staging-project.supabase.co",
   NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: "sb_publishable_synthetic_test_value",
+  SUPABASE_SERVICE_ROLE_KEY: "synthetic-server-only-test-value",
   LOCAL_DEMO: "false",
 };
 describe("hosted configuration guard", () => {
-  it("accepts public credentials with HTTPS origins", () => {
+  it("accepts the public settings and server-only support credential", () => {
     expect(checkHostedEnv(valid)).toEqual([]);
   });
   it("rejects missing or local settings", () => {
@@ -24,13 +25,13 @@ describe("hosted configuration guard", () => {
       ).toBeGreaterThan(0);
     }
   });
-  it("rejects privileged credentials without disclosing their values", () => {
+  it("requires the support credential without disclosing its value", () => {
     const errors = checkHostedEnv({
       ...valid,
-      SUPABASE_SERVICE_ROLE_KEY: "private-test-value",
+      SUPABASE_SERVICE_ROLE_KEY: undefined,
     });
     expect(errors.join()).toContain("SUPABASE_SERVICE_ROLE_KEY");
-    expect(errors.join()).not.toContain("private-test-value");
+    expect(errors.join()).not.toContain(valid.SUPABASE_SERVICE_ROLE_KEY);
     expect(
       checkHostedEnv({
         ...valid,
