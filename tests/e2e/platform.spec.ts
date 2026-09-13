@@ -1,6 +1,7 @@
 import { test, expect, type Page } from "@playwright/test";
 import { createClient } from "@supabase/supabase-js";
 import { execFileSync } from "node:child_process";
+import { randomUUID } from "node:crypto";
 import { readFileSync } from "node:fs";
 import AxeBuilder from "@axe-core/playwright";
 const ids: string[] = [];
@@ -166,26 +167,80 @@ test("verified clients link to their customer booking page", async ({
   await expect(link).toHaveAttribute("target", "_blank");
 });
 test("operator can troubleshoot a client in support mode", async ({ page }) => {
-  await login(page);
-  await page.goto("/admin/clients/11111111-1111-4111-8111-111111111111");
-  await page.getByRole("link", { name: "Open support workspace" }).click();
-  await expect(page).toHaveURL("/workspace/porto-gentlemen");
-  await expect(
-    page.getByText("Platform support mode", { exact: true }),
-  ).toBeVisible();
-  await expect(
-    page.getByRole("heading", { name: "Find setup problems quickly" }),
-  ).toBeVisible();
-  await expect(
-    page.getByRole("link", { name: "Customers", exact: true }),
-  ).toHaveCount(0);
+  const tenantId = "11111111-1111-4111-8111-111111111111";
+  const supportDay = "2035-06-18";
+  const supportCustomerId = randomUUID();
+  const supportAppointmentId = randomUUID();
   const supportService = `Support check ${Date.now()}`;
   const serviceDb = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
     { auth: { persistSession: false, autoRefreshToken: false } },
   );
+  const [{ data: location }, { data: service }, { data: staff }] =
+    await Promise.all([
+      serviceDb
+        .from("locations")
+        .select("id")
+        .eq("tenant_id", tenantId)
+        .single(),
+      serviceDb
+        .from("services")
+        .select("id,name,price_minor")
+        .eq("tenant_id", tenantId)
+        .limit(1)
+        .single(),
+      serviceDb
+        .from("staff_members")
+        .select("id")
+        .eq("tenant_id", tenantId)
+        .limit(1)
+        .single(),
+    ]);
+  expect(location).toBeTruthy();
+  expect(service).toBeTruthy();
+  expect(staff).toBeTruthy();
+  expect(
+    (
+      await serviceDb.from("customers").insert({
+        id: supportCustomerId,
+        tenant_id: tenantId,
+        display_name: "Support Redaction Fixture",
+        email: `support-${supportCustomerId}@example.com`,
+      })
+    ).error,
+  ).toBeNull();
+  expect(
+    (
+      await serviceDb.from("appointments").insert({
+        id: supportAppointmentId,
+        tenant_id: tenantId,
+        location_id: location!.id,
+        customer_id: supportCustomerId,
+        service_id: service!.id,
+        staff_id: staff!.id,
+        service_name: service!.name,
+        price_minor: service!.price_minor,
+        starts_at: `${supportDay}T10:00:00Z`,
+        ends_at: `${supportDay}T10:30:00Z`,
+        blocked_until: `${supportDay}T10:35:00Z`,
+      })
+    ).error,
+  ).toBeNull();
+  await login(page);
   try {
+    await page.goto(`/admin/clients/${tenantId}`);
+    await page.getByRole("link", { name: "Open support workspace" }).click();
+    await expect(page).toHaveURL("/workspace/porto-gentlemen");
+    await expect(
+      page.getByText("Platform support mode", { exact: true }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: "Find setup problems quickly" }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("link", { name: "Customers", exact: true }),
+    ).toHaveCount(0);
     await page.getByRole("link", { name: "Services", exact: true }).click();
     await page
       .getByRole("button", { name: "Add service", exact: true })
@@ -201,23 +256,30 @@ test("operator can troubleshoot a client in support mode", async ({ page }) => {
     await expect(
       page.getByRole("heading", { name: supportService }),
     ).toBeVisible();
+    await expect(
+      page.getByRole("link", { name: "Calendar", exact: true }),
+    ).toBeVisible();
+    await page.goto(`/workspace/porto-gentlemen/calendar?day=${supportDay}`);
+    await expect(
+      page.getByText("Customer details hidden").first(),
+    ).toBeVisible();
+    await expect(page.locator(".appointment-controls")).toHaveCount(0);
+    await page.goto("/workspace/porto-gentlemen/customers");
+    await expect(
+      page.getByRole("heading", { name: "This page isn’t available." }),
+    ).toBeVisible();
   } finally {
+    await serviceDb
+      .from("appointments")
+      .delete()
+      .eq("id", supportAppointmentId);
+    await serviceDb.from("customers").delete().eq("id", supportCustomerId);
     await serviceDb
       .from("services")
       .delete()
-      .eq("tenant_id", "11111111-1111-4111-8111-111111111111")
+      .eq("tenant_id", tenantId)
       .eq("name", supportService);
   }
-  await expect(
-    page.getByRole("link", { name: "Calendar", exact: true }),
-  ).toBeVisible();
-  await page.goto("/workspace/porto-gentlemen/calendar?day=2026-04-15");
-  await expect(page.getByText("Customer details hidden").first()).toBeVisible();
-  await expect(page.locator(".appointment-controls")).toHaveCount(0);
-  await page.goto("/workspace/porto-gentlemen/customers");
-  await expect(
-    page.getByRole("heading", { name: "This page isn’t available." }),
-  ).toBeVisible();
 });
 for (const existingAccount of [false, true]) {
   test(`emailed invitation finishes setup for ${existingAccount ? "an existing" : "a new"} account`, async ({
