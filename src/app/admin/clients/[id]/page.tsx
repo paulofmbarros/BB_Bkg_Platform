@@ -8,6 +8,7 @@ import {
   PlatformForm,
   PlatformSettingsForm,
 } from "@/components/platform-forms";
+import { PlatformClientLinks } from "@/components/platform-client-links";
 export default async function ClientPage({
   params,
 }: {
@@ -18,6 +19,17 @@ export default async function ClientPage({
   const { clients, live_booking_ready } = await getPlatformClients(id);
   const client = clients[0];
   if (!client) notFound();
+  const centralOrigin = new URL(
+    process.env.APP_ORIGIN ?? "http://127.0.0.1:3000",
+  );
+  const workspaceUrl = new URL(
+    `/workspace/${encodeURIComponent(client.slug)}`,
+    centralOrigin,
+  ).toString();
+  const primaryDomain = client.domains.find((domain) => domain.verified_at);
+  const bookingUrl = primaryDomain
+    ? `${centralOrigin.protocol}//${primaryDomain.hostname}${centralOrigin.port ? `:${centralOrigin.port}` : ""}/book`
+    : null;
   return (
     <>
       <Link className="text-link" href="/admin">
@@ -29,9 +41,15 @@ export default async function ClientPage({
           <h1>{client.name}</h1>
           <p>{client.slug} · EUR · Europe/Lisbon</p>
         </div>
-        <span className="status-pill">
-          {client.active ? "Access enabled" : "Suspended"}
-        </span>
+        <div className="platform-client-heading-actions">
+          <span className="status-pill">
+            {client.active ? "Access enabled" : "Suspended"}
+          </span>
+          <PlatformClientLinks
+            workspaceUrl={workspaceUrl}
+            bookingUrl={bookingUrl}
+          />
+        </div>
       </div>
       <div className="platform-detail-grid">
         <div>

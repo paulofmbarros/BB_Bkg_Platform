@@ -12,6 +12,8 @@ The central workspace now has an administrator area at `/admin`. Platform operat
 
 You can edit contact details, suspend/restore a shop, control its foundation and booking features, invite another owner, cancel a pending invitation, and revoke/restore individual memberships. Inviting another owner leaves existing owners in place. The last active owner cannot be revoked; invite their replacement first or suspend the shop. Suspension retains records and appointments while denying private tenant data access through existing sessions and disabling its public catalogue. Permanent deletion, subscription billing and automatic domain hosting configuration are outside this increment.
 
+The client header can copy the owner workspace address for onboarding and support. A customer booking-page link appears after at least one booking hostname has verified ownership. Opening the owner address still requires an explicit shop membership; platform administration alone does not grant access to customer or appointment data.
+
 Platform administration does not implicitly grant access to each shop's customers or calendar. It exposes account/setup metadata and membership contacts through narrow database functions. Regular workspace access still requires explicit membership.
 
 ## Local use

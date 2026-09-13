@@ -3425,6 +3425,24 @@ textarea {
   margin-top: 8px;
   color: var(--muted);
 }
+.platform-client-heading-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 14px;
+}
+.platform-client-links {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.platform-copy-failure {
+  flex-basis: 100%;
+  max-width: 520px;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
 .platform-detail-grid {
   display: grid;
   grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
@@ -3552,6 +3570,12 @@ textarea {
   .platform-client-meta {
     margin-left: 58px;
     text-align: left;
+  }
+  .platform-client-heading-actions {
+    align-items: flex-start;
+  }
+  .platform-client-links {
+    justify-content: flex-start;
   }
   .platform-shop-icon {
     padding: 10px;

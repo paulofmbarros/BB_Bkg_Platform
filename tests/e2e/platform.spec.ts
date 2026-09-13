@@ -96,6 +96,16 @@ test("operator creates, finds and manages a barbershop on desktop and mobile", a
   await expect(
     page.getByRole("heading", { name: "Downtown Barbers Test", exact: true }),
   ).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Copy owner workspace link" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: "Open customer booking page" }),
+  ).toHaveCount(0);
+  await page.getByRole("button", { name: "Copy owner workspace link" }).click();
+  await expect(
+    page.getByRole("button", { name: "Workspace link copied" }),
+  ).toBeVisible();
   await expect(page.getByText("Not sent", { exact: true })).toBeVisible();
   await expect(
     page.getByLabel("Booking enabled", { exact: true }),
@@ -117,6 +127,9 @@ test("operator creates, finds and manages a barbershop on desktop and mobile", a
   await expect(
     page.getByText("Awaiting verification", { exact: true }),
   ).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: "Open customer booking page" }),
+  ).toHaveCount(0);
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
   await page.screenshot({
     path: testInfo.outputPath("client-desktop.png"),
@@ -138,6 +151,19 @@ test("operator creates, finds and manages a barbershop on desktop and mobile", a
   await page.getByLabel("Search clients").fill(slug);
   await page.getByRole("button", { name: "Search", exact: true }).click();
   await expect(page.locator(".platform-client-row")).toHaveCount(1);
+});
+test("verified clients link to their customer booking page", async ({
+  page,
+}) => {
+  await login(page);
+  await page.goto("/admin/clients/11111111-1111-4111-8111-111111111111");
+  const link = page.getByRole("link", { name: "Open customer booking page" });
+  await expect(link).toBeVisible();
+  await expect(link).toHaveAttribute(
+    "href",
+    "http://porto-gentlemen.localhost:3000/book",
+  );
+  await expect(link).toHaveAttribute("target", "_blank");
 });
 for (const existingAccount of [false, true]) {
   test(`emailed invitation finishes setup for ${existingAccount ? "an existing" : "a new"} account`, async ({
