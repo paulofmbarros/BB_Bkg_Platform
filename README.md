@@ -31,16 +31,19 @@ Prerequisites: Node.js 22 and Docker Desktop running. Use the committed dependen
 
 ```sh
 npm ci
-npm run db:start
-node scripts/configure-local.mjs
-npm run demo:users
-npm run demo:bookings
-npm run demo:history
-npm run demo:segments
-npm run dev -- --port 3000
+npm run setup:local
+npm run dev:all
 ```
 
-`configure-local.mjs` reads local Supabase credentials into ignored `.env.local` and refuses to overwrite an existing file. The privileged key is used only by local provisioning and tests; the Next.js application uses the publishable key and caller sessions.
+`setup:local` starts Supabase, creates the ignored local environment files when missing, and provisions the demo accounts and data. It is safe to rerun and refuses to seed a non-local database. `dev:all` starts Supabase, the local invitation function and Next.js together; press Ctrl+C once to stop the foreground services.
+
+After the first setup, normal development only needs:
+
+```sh
+npm run dev:all
+```
+
+`configure-local.mjs` reads local Supabase credentials into ignored `.env.local` and refuses to overwrite an existing file. The service-role key stays server-side and supports local provisioning, tests and authenticated platform support mode.
 
 Open http://127.0.0.1:3000. In local development, **Open Porto Gentlemen demo** signs into a real local Supabase account. That shortcut is disabled outside development and on non-loopback hosts.
 
@@ -77,7 +80,7 @@ npm run build
 npx supabase db advisors --local --type security --level warn
 ```
 
-Browser tests now also need the local invitation function running. In another terminal, copy `supabase/functions/.env.example` to `supabase/functions/.env` and run `npx supabase functions serve`. See [platform administration](docs/platform-administration.md).
+`dev:all` includes the local invitation function. If Next.js is already running separately, you can instead run `npx supabase functions serve` in another terminal. See [platform administration](docs/platform-administration.md).
 
 Run integration and browser tests sequentially: they intentionally edit and restore synthetic data. Integration tests refuse a non-local database. Browser tests use port 3000, the local demo accounts and the calendar/history/segment fixtures above.
 
