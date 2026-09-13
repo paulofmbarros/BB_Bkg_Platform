@@ -165,6 +165,60 @@ test("verified clients link to their customer booking page", async ({
   );
   await expect(link).toHaveAttribute("target", "_blank");
 });
+test("operator can troubleshoot a client in support mode", async ({ page }) => {
+  await login(page);
+  await page.goto("/admin/clients/11111111-1111-4111-8111-111111111111");
+  await page.getByRole("link", { name: "Open support workspace" }).click();
+  await expect(page).toHaveURL("/workspace/porto-gentlemen");
+  await expect(
+    page.getByText("Platform support mode", { exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Find setup problems quickly" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: "Customers", exact: true }),
+  ).toHaveCount(0);
+  const supportService = `Support check ${Date.now()}`;
+  const serviceDb = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    { auth: { persistSession: false, autoRefreshToken: false } },
+  );
+  try {
+    await page.getByRole("link", { name: "Services", exact: true }).click();
+    await page
+      .getByRole("button", { name: "Add service", exact: true })
+      .click();
+    const dialog = page.getByRole("dialog", { name: "Add a service" });
+    await dialog.getByLabel("Service name").fill(supportService);
+    await dialog.getByLabel("Price (€)").fill("15");
+    await dialog
+      .getByRole("button", { name: "Add service", exact: true })
+      .click();
+    await expect(dialog.getByRole("status")).toContainText("Service added");
+    await page.reload();
+    await expect(
+      page.getByRole("heading", { name: supportService }),
+    ).toBeVisible();
+  } finally {
+    await serviceDb
+      .from("services")
+      .delete()
+      .eq("tenant_id", "11111111-1111-4111-8111-111111111111")
+      .eq("name", supportService);
+  }
+  await expect(
+    page.getByRole("link", { name: "Calendar", exact: true }),
+  ).toBeVisible();
+  await page.goto("/workspace/porto-gentlemen/calendar?day=2026-04-15");
+  await expect(page.getByText("Customer details hidden").first()).toBeVisible();
+  await expect(page.locator(".appointment-controls")).toHaveCount(0);
+  await page.goto("/workspace/porto-gentlemen/customers");
+  await expect(
+    page.getByRole("heading", { name: "This page isn’t available." }),
+  ).toBeVisible();
+});
 for (const existingAccount of [false, true]) {
   test(`emailed invitation finishes setup for ${existingAccount ? "an existing" : "a new"} account`, async ({
     page,

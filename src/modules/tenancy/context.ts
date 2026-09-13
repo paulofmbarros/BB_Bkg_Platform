@@ -1,7 +1,10 @@
 import "server-only";
 import { cache } from "react";
 import { notFound, redirect } from "next/navigation";
-import { createSessionClient } from "@/lib/supabase/server";
+import {
+  createSessionClient,
+  createSupportClient,
+} from "@/lib/supabase/server";
 
 export const requireTenant = cache(async (slug: string) => {
   const db = await createSessionClient();
@@ -9,13 +12,20 @@ export const requireTenant = cache(async (slug: string) => {
     data: { user },
   } = await db.auth.getUser();
   if (!user) redirect("/login");
-  const { data: tenant, error } = await db
-    .from("tenants")
-    .select("*")
-    .eq("slug", slug)
-    .eq("active", true)
-    .single();
+  const { data: platformAdmin } = await db.rpc("is_platform_admin");
+  const tenantDb = platformAdmin ? createSupportClient() : db;
+  let tenantQuery = tenantDb.from("tenants").select("*").eq("slug", slug);
+  if (!platformAdmin) tenantQuery = tenantQuery.eq("active", true);
+  const { data: tenant, error } = await tenantQuery.single();
   if (error || !tenant) notFound();
+  if (platformAdmin)
+    return {
+      db: tenantDb,
+      tenant,
+      user,
+      role: "owner" as const,
+      supportMode: true as const,
+    };
   const { data: membership } = await db
     .from("tenant_memberships")
     .select("role")
@@ -24,7 +34,13 @@ export const requireTenant = cache(async (slug: string) => {
     .eq("active", true)
     .single();
   if (!membership) notFound();
-  return { db, tenant, user, role: membership.role };
+  return {
+    db,
+    tenant,
+    user,
+    role: membership.role,
+    supportMode: false as const,
+  };
 });
 
 export async function requireManager(slug: string) {
@@ -39,5 +55,12 @@ export async function requireManager(slug: string) {
     .single();
   if (!data?.enabled)
     throw new Error("Business management is not enabled for this account.");
+  return context;
+}
+
+export async function requireMemberManager(slug: string) {
+  const context = await requireManager(slug);
+  if (context.supportMode)
+    throw new Error("Customer operations are unavailable in support mode.");
   return context;
 }

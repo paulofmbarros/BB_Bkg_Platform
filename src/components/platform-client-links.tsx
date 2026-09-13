@@ -35,6 +35,9 @@ export function PlatformClientLinks({
 
   return (
     <div className="platform-client-links">
+      <Link className="button primary" href={workspaceUrl}>
+        Open support workspace <ExternalLink size={16} />
+      </Link>
       <button
         className="button secondary"
         type="button"

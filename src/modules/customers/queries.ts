@@ -14,6 +14,7 @@ import { segments, segmentFields } from "./segments";
 export const PAGE_SIZE = 20;
 export async function getCustomers(slug: string, search: QueryValues) {
   const context = await requireTenant(slug);
+  if (context.supportMode) notFound();
   const q = scalar(search.q).trim().slice(0, 100),
     page = pageNumber(search.page);
   const segment =
@@ -71,6 +72,7 @@ export async function getCustomer(
   search: QueryValues,
 ) {
   const context = await requireTenant(slug);
+  if (context.supportMode) notFound();
   if (!z.uuid().safeParse(id).success) notFound();
   const { data, error } = await context.db
     .from("customer_summaries")

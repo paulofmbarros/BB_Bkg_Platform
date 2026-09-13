@@ -3431,6 +3431,85 @@ textarea {
   align-items: flex-end;
   gap: 14px;
 }
+.support-mode-banner {
+  min-height: 66px;
+  padding: 13px 28px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #f8f4e9;
+  background: #173b32;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+}
+.support-mode-banner > div {
+  display: grid;
+  gap: 2px;
+}
+.support-mode-banner span {
+  color: rgba(248, 244, 233, 0.75);
+  font-size: 12px;
+}
+.support-mode-banner a {
+  margin-left: auto;
+  color: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.support-diagnostics {
+  margin-bottom: 24px;
+  border-color: rgba(37, 75, 63, 0.35);
+}
+.support-diagnostics .panel-heading > svg {
+  color: var(--green);
+}
+.support-check-list {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  border-top: 1px solid var(--line);
+  border-left: 1px solid var(--line);
+}
+.support-check-list > a,
+.support-check-list > div {
+  min-width: 0;
+  padding: 16px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-content: start;
+  gap: 10px;
+  color: inherit;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+.support-check-list svg {
+  color: var(--green);
+}
+.support-check-list span {
+  display: grid;
+  gap: 3px;
+}
+.support-check-list small {
+  color: var(--muted);
+  line-height: 1.35;
+}
+.support-check-state {
+  grid-column: 2;
+  width: fit-content;
+  padding: 3px 7px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.support-check-state.ready {
+  color: var(--green);
+  background: var(--cream);
+}
+.support-check-state.attention {
+  color: #8a3e24;
+  background: #f8e8df;
+}
 .platform-client-links {
   display: flex;
   justify-content: flex-end;
@@ -3525,6 +3604,9 @@ textarea {
   overflow-wrap: anywhere;
 }
 @media (max-width: 1000px) {
+  .support-check-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
   .platform-body {
     grid-template-columns: 1fr;
   }
@@ -3537,6 +3619,19 @@ textarea {
   }
 }
 @media (max-width: 650px) {
+  .support-mode-banner {
+    padding: 12px 18px;
+    align-items: flex-start;
+  }
+  .support-mode-banner a {
+    align-self: center;
+  }
+  .support-mode-banner span {
+    display: none;
+  }
+  .support-check-list {
+    grid-template-columns: 1fr;
+  }
   .platform-header,
   .platform-main {
     padding: 18px;

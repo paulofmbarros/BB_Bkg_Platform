@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowUpRight, ShieldCheck } from "lucide-react";
+import { ArrowUpRight, LifeBuoy, ShieldCheck } from "lucide-react";
 import { Navigation } from "@/components/navigation";
 import { requireTenant } from "@/modules/tenancy/context";
 export default async function WorkspaceLayout({
@@ -10,7 +10,7 @@ export default async function WorkspaceLayout({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const { tenant, user, role } = await requireTenant(slug);
+  const { tenant, user, role, supportMode } = await requireTenant(slug);
   return (
     <div className="workspace">
       <Navigation
@@ -18,8 +18,22 @@ export default async function WorkspaceLayout({
         name={tenant.name}
         role={role}
         email={user.email ?? ""}
+        supportMode={supportMode}
       />
       <div className="workspace-content">
+        {supportMode && (
+          <div className="support-mode-banner" role="status">
+            <LifeBuoy size={18} />
+            <div>
+              <strong>Platform support mode</strong>
+              <span>
+                You are troubleshooting {tenant.name}. Customer details are
+                hidden and appointment changes are disabled.
+              </span>
+            </div>
+            <Link href={`/admin/clients/${tenant.id}`}>Back to client</Link>
+          </div>
+        )}
         <header className="topbar">
           <div className="breadcrumb">
             Your business <span>/</span> <strong>{tenant.name}</strong>

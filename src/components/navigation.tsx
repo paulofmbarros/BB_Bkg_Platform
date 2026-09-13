@@ -23,11 +23,13 @@ export function Navigation({
   name,
   role,
   email,
+  supportMode = false,
 }: {
   slug: string;
   name: string;
   role: string;
   email: string;
+  supportMode?: boolean;
 }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
@@ -40,7 +42,7 @@ export function Navigation({
     { path: "/team", label: "Team", icon: UsersRound },
     { path: "/hours", label: "Opening hours", icon: Clock3 },
     { path: "/settings", label: "Brand & business", icon: Palette },
-  ];
+  ].filter(({ path }) => !supportMode || path !== "/customers");
   return (
     <>
       <div className="mobile-top">
@@ -75,7 +77,11 @@ export function Navigation({
           <div>
             <strong>{name}</strong>
             <span>
-              {role === "staff" ? "Team workspace" : "Business workspace"}
+              {supportMode
+                ? "Platform support"
+                : role === "staff"
+                  ? "Team workspace"
+                  : "Business workspace"}
             </span>
           </div>
           <PanelLeftClose size={15} />
@@ -115,11 +121,13 @@ export function Navigation({
             <span className="user-avatar">{email[0]?.toUpperCase()}</span>
             <div>
               <strong>
-                {role === "owner"
-                  ? "Business owner"
-                  : role === "manager"
-                    ? "Manager"
-                    : "Staff member"}
+                {supportMode
+                  ? "Platform administrator"
+                  : role === "owner"
+                    ? "Business owner"
+                    : role === "manager"
+                      ? "Manager"
+                      : "Staff member"}
               </strong>
               <span title={email}>{email}</span>
             </div>

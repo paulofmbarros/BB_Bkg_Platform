@@ -1,12 +1,12 @@
 "use server";
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
-import { requireManager } from "@/modules/tenancy/context";
+import { requireMemberManager } from "@/modules/tenancy/context";
 export async function rebookCustomer(
   slug: string,
   input: unknown,
 ): Promise<{ ok: boolean; message: string; id?: string }> {
-  const { db, tenant } = await requireManager(slug);
+  const { db, tenant } = await requireMemberManager(slug);
   const parsed = z
     .object({
       customer: z.uuid(),
