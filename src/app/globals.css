@@ -444,6 +444,129 @@ textarea {
   padding: 31px 39px;
   position: relative;
 }
+.daily-brief {
+  padding: 27px 29px;
+}
+.daily-brief .panel-heading {
+  align-items: flex-start;
+}
+.daily-brief .panel-heading .text-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.brief-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: var(--line);
+}
+.brief-metrics > div {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 6px 12px;
+  min-width: 0;
+  padding: 19px;
+  background: #f9faf6;
+}
+.brief-metrics svg {
+  grid-column: 2;
+  grid-row: 1;
+  color: #718268;
+}
+.brief-metrics span {
+  grid-column: 1;
+  grid-row: 1;
+  font-size: 12px;
+  color: #5e6957;
+}
+.brief-metrics strong {
+  grid-column: 1 / -1;
+  font-family: "Manrope", sans-serif;
+  font-size: 26px;
+  font-weight: 550;
+  letter-spacing: -0.8px;
+}
+.brief-metrics small {
+  grid-column: 1 / -1;
+  color: #687166;
+  font-size: 11px;
+  line-height: 1.45;
+}
+.brief-metrics .needs-attention {
+  background: #fff8ed;
+}
+.brief-metrics .needs-attention svg,
+.brief-metrics .needs-attention strong {
+  color: #8a4e28;
+}
+.brief-agenda {
+  margin-top: 20px;
+}
+.brief-agenda-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 7px;
+  color: #5e6957;
+  font-size: 11px;
+}
+.brief-agenda-heading > strong {
+  color: #26362d;
+  font-size: 12px;
+}
+.brief-appointment {
+  display: grid;
+  grid-template-columns: 110px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 4px;
+  border-top: 1px solid #edf0e8;
+}
+.brief-appointment time {
+  font-family: "Manrope", sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+}
+.brief-appointment > span {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 3px;
+}
+.brief-appointment strong,
+.brief-appointment small {
+  overflow-wrap: anywhere;
+}
+.brief-appointment strong {
+  font-size: 12px;
+}
+.brief-appointment small {
+  color: #5e6957;
+  font-size: 11px;
+}
+.brief-appointment > svg {
+  color: #70806a;
+}
+.brief-empty {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-top: 1px solid #edf0e8;
+  padding: 17px 4px 3px;
+  color: #5e6957;
+  font-size: 12px;
+}
+.brief-more {
+  display: inline-block;
+  margin-top: 12px;
+  color: #516849;
+  font-size: 12px;
+  font-weight: 600;
+}
 .pill-light {
   display: inline-flex;
   align-items: center;
@@ -2140,6 +2263,19 @@ textarea {
   .welcome-card {
     padding: 26px 23px;
     min-height: 285px;
+  }
+  .daily-brief {
+    padding: 21px 18px;
+  }
+  .brief-metrics {
+    grid-template-columns: 1fr;
+  }
+  .brief-metrics > div {
+    padding: 16px;
+  }
+  .brief-appointment {
+    grid-template-columns: 82px minmax(0, 1fr) auto;
+    gap: 10px;
   }
   .welcome-card h2 {
     font-size: 33px;

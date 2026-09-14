@@ -26,14 +26,13 @@ Apply pending migrations with `npx supabase migration up --local`, then run `npm
 
 Never provision this synthetic account into a hosted environment. The seed script refuses non-local databases.
 
-Start invitation delivery in another terminal:
+The standard local command starts the app and invitation delivery together:
 
 ```sh
-cp supabase/functions/.env.example supabase/functions/.env
-npx supabase functions serve
+npm run dev:all
 ```
 
-Keep the local database and `npm run dev` running. Emails are captured at `http://127.0.0.1:54324`; nothing is sent to real inboxes. Local Auth allows the `/accept-invite/*` redirect. If the database was already running before this configuration change, restart it without resetting its data.
+Run `npm run setup:local` first on a new checkout. Emails are captured at `http://127.0.0.1:54324`; nothing is sent to real inboxes. Local Auth allows the `/accept-invite/*` redirect. If the database was already running before this configuration change, restart it without resetting its data.
 
 ## Hosted setup
 

@@ -4,6 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev --hostname 127.0.0.1",
+    "dev:all": "node scripts/dev-all.mjs",
+    "dev:debug": "node scripts/dev-all.mjs --debug",
+    "setup:local": "node scripts/setup-local.mjs",
     "build": "next build",
     "start": "next start --hostname 127.0.0.1",
     "lint": "eslint .",

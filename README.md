@@ -22,6 +22,7 @@ The approved V0 foundation, booking engine and first CRM increment: guest bookin
 - Reviewed duplicate-customer linking and undo, with audit history and unchanged consent.
 - Owner/manager rebooking directly into an existing customer profile.
 - Explainable customer segments with directory filters and profile-level reasons.
+- A daily business brief with upcoming visits, outstanding outcomes and completed-service value clearly separated from collected revenue.
 
 The overview reports actual configuration counts. It does not invent bookings, revenue or customer metrics.
 
@@ -31,16 +32,27 @@ Prerequisites: Node.js 22 and Docker Desktop running. Use the committed dependen
 
 ```sh
 npm ci
-npm run db:start
-node scripts/configure-local.mjs
-npm run demo:users
-npm run demo:bookings
-npm run demo:history
-npm run demo:segments
-npm run dev -- --port 3000
+npm run setup:local
+npm run dev:all
 ```
 
-`configure-local.mjs` reads local Supabase credentials into ignored `.env.local` and refuses to overwrite an existing file. The privileged key is used only by local provisioning and tests; the Next.js application uses the publishable key and caller sessions.
+`setup:local` starts Supabase, creates the ignored local environment files when missing, and provisions the demo accounts and data. It is safe to rerun and refuses to seed a non-local database. `dev:all` starts Supabase, the local invitation function and Next.js together; press Ctrl+C once to stop the foreground services.
+
+After the first setup, normal development only needs:
+
+```sh
+npm run dev:all
+```
+
+To debug server-side Next.js code, start the same stack with the Node inspector:
+
+```sh
+npm run dev:debug
+```
+
+In VS Code, open **Run and Debug**, select **Attach to Next.js server**, and press F5. Server actions, route handlers and Server Components can then stop on breakpoints. Use the browser's developer tools for client components.
+
+`configure-local.mjs` reads local Supabase credentials into ignored `.env.local` and refuses to overwrite an existing file. The service-role key stays server-side and supports local provisioning, tests and authenticated platform support mode.
 
 Open http://127.0.0.1:3000. In local development, **Open Porto Gentlemen demo** signs into a real local Supabase account. That shortcut is disabled outside development and on non-loopback hosts.
 
@@ -62,7 +74,7 @@ Local-only accounts:
 
 Never provision these accounts into a hosted environment. The user seed refuses non-local Supabase URLs. All names, businesses, numbers and addresses are synthetic demo content; do not contact them.
 
-Supabase Studio: http://127.0.0.1:54323. Local recovery emails are captured by Mailpit: http://127.0.0.1:54324. No real email provider is connected.
+Supabase Studio: http://127.0.0.1:54323. Choose **Table Editor** to browse rows or **SQL Editor** to query the local database. Local recovery emails are captured by Mailpit: http://127.0.0.1:54324. No real email provider is connected.
 
 ## Validation
 
@@ -77,7 +89,7 @@ npm run build
 npx supabase db advisors --local --type security --level warn
 ```
 
-Browser tests now also need the local invitation function running. In another terminal, copy `supabase/functions/.env.example` to `supabase/functions/.env` and run `npx supabase functions serve`. See [platform administration](docs/platform-administration.md).
+`dev:all` includes the local invitation function. If Next.js is already running separately, you can instead run `npx supabase functions serve` in another terminal. See [platform administration](docs/platform-administration.md).
 
 Run integration and browser tests sequentially: they intentionally edit and restore synthetic data. Integration tests refuse a non-local database. Browser tests use port 3000, the local demo accounts and the calendar/history/segment fixtures above.
 

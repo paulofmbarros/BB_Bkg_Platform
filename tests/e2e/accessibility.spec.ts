@@ -31,5 +31,14 @@ test("owner screens and customer page meet automated WCAG AA checks", async ({
       })),
       path,
     ).toEqual([]);
+    if (path === "/workspace/porto-gentlemen") {
+      await expect(
+        page.getByRole("heading", {
+          name: /Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday/,
+        }),
+      ).toBeVisible();
+      await expect(page.getByText("Completed-service value")).toBeVisible();
+      await expect(page.getByText("not collected revenue")).toBeVisible();
+    }
   }
 });
