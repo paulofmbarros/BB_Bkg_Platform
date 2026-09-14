@@ -51,6 +51,25 @@ test("service edits survive reload and can be restored", async ({ page }) => {
     .click();
   await expect(dialog.getByRole("status")).toContainText("Service updated");
   await dialog.getByRole("button", { name: "Close dialog" }).click();
+  page.once("dialog", (confirmation) => confirmation.accept());
+  await card.getByRole("button", { name: "Archive service" }).click();
+  await expect(page.getByRole("status")).toContainText("Service archived");
+  await expect(card).toHaveCount(0);
+  await page.goto("http://porto-gentlemen.localhost:3000");
+  await expect(
+    page.getByRole("heading", { name: "Signature cut", exact: true }),
+  ).toHaveCount(0);
+  await page.goto("http://127.0.0.1:3000/workspace/porto-gentlemen/services");
+  await page.getByRole("button", { name: /^Archived ·/ }).click();
+  const archivedCard = page.locator("article").filter({
+    has: page.getByRole("heading", { name: "Signature cut", exact: true }),
+  });
+  await expect(archivedCard).toContainText("Archived");
+  await archivedCard.getByRole("button", { name: "Restore service" }).click();
+  await expect(page.getByRole("status")).toContainText("Service restored");
+  await expect(archivedCard).toHaveCount(0);
+  await page.getByRole("button", { name: /^Current ·/ }).click();
+  await expect(card).toBeVisible();
   await page.getByLabel("Search services").fill("beard");
   await expect(page.locator(".service-card")).toHaveCount(3);
 });

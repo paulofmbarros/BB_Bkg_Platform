@@ -76,6 +76,32 @@ export async function saveService(
   }
 }
 
+export async function setServiceArchived(
+  slug: string,
+  id: string,
+  archived: boolean,
+): Promise<ActionResult> {
+  const { db, tenant } = await requireManager(slug);
+  try {
+    const { error } = await db
+      .from("services")
+      .update({ active: !archived })
+      .eq("id", uuid.parse(id))
+      .eq("tenant_id", tenant.id)
+      .select("id")
+      .single();
+    if (error) throw error;
+    return refreshed(
+      slug,
+      archived
+        ? "Service archived. Existing appointments and reporting were preserved."
+        : "Service restored to the customer menu.",
+    );
+  } catch (error) {
+    return failure(error);
+  }
+}
+
 export async function saveStaff(
   slug: string,
   id: string | null,

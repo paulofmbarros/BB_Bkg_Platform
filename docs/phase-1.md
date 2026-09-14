@@ -1,6 +1,6 @@
 # Phase 1 handoff
 
-Scope: tenant isolation, white-label foundation, owner authentication, service/staff management and weekly availability configuration.
+Scope: tenant isolation, white-label foundation, owner authentication, service/staff management and weekly availability configuration. Services are archived rather than permanently deleted from the owner UI so historical appointment references remain intact.
 
 ## Verification completed — 12 September 2026
 

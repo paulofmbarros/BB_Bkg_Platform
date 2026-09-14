@@ -107,8 +107,14 @@ export function ServiceForm({
           name="active"
           defaultChecked={service?.active ?? true}
         />
-        Available on your customer page
+        Active and available for new bookings
       </label>
+      {service && (
+        <p className="field-help">
+          Turn this off to archive the service. Existing appointments and
+          reporting history will be preserved.
+        </p>
+      )}
       <FormNotice state={state} />
       <div className="form-footer">
         <SubmitButton>{service ? "Save service" : "Add service"}</SubmitButton>

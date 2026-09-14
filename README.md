@@ -11,7 +11,7 @@ Product direction, validation gates and current phase status are tracked in the 
 - Supabase owner sign-in, sign-out and password recovery.
 - Two isolated synthetic businesses: Porto Gentlemen and Atelier Lisboa.
 - Owner / manager / staff permissions checked server-side and through PostgreSQL RLS.
-- Service creation and editing, integer-cent prices, duration, buffers and visibility.
+- Service creation, editing and archiving, with integer-cent prices, duration, buffers and preserved appointment history.
 - Staff profiles, service assignments and individual weekly working hours.
 - Business hours, lunch breaks, full-day closures and staff time off.
 - Business branding, contact details, validated logo uploads and customer previews.
