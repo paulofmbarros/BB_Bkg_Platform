@@ -71,3 +71,7 @@ A manager-only transaction adds a new appointment to the existing customer ID, u
 ## Customer segments
 
 `customer_segments` is a security-invoker view over customer summaries and RLS-protected duplicate checks. It additionally requires an owner or manager role: staff histories are partial and cannot support shop-wide labels. A pure private classifier applies fixed, ordered rules using completed visits, Lisbon calendar-day recency, future bookings, unresolved outcomes and possible duplicate identities. The invoker counts function applies the same search across all authorized profiles before pagination. No labels are persisted; fresh reads reflect booking, outcome and linking changes. See `customer-segments.md`.
+
+## Daily business brief
+
+The workspace overview derives a request-time operating snapshot from RLS-protected appointments. Europe/Lisbon calendar-day filtering determines today's remaining visits and completed-service value; a separate scoped count identifies all confirmed visits whose start time has passed and still need an outcome. Staff therefore see only their assignments, while managers see the tenant. Support-mode schedule reads deliberately omit customer identity. Completed-service value uses quoted appointment snapshots and is never presented as payment or revenue. See `daily-business-brief.md`.

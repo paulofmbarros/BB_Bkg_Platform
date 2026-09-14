@@ -26,7 +26,7 @@ The view and count function execute with caller privileges and enforce tenant is
 
 After the existing demo setup, run `npm run demo:segments` to add two synthetic historical profiles without resetting existing data. Sign in as Porto owner, open Customers, and choose At risk for Filipe Monteiro or Inactive for Eduardo Correia. Open either profile to inspect the reason and expand How customer segments work. These time-relative fixtures are local demonstration data.
 
-Next smallest increment: a daily business brief showing upcoming appointments, outstanding outcomes and completed-service value, clearly distinguished from collected revenue.
+The follow-up daily business brief is now implemented; see [daily-business-brief.md](daily-business-brief.md).
 
 ## Verification · 12 September 2026
 

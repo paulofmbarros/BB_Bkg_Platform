@@ -22,6 +22,7 @@ The approved V0 foundation, booking engine and first CRM increment: guest bookin
 - Reviewed duplicate-customer linking and undo, with audit history and unchanged consent.
 - Owner/manager rebooking directly into an existing customer profile.
 - Explainable customer segments with directory filters and profile-level reasons.
+- A daily business brief with upcoming visits, outstanding outcomes and completed-service value clearly separated from collected revenue.
 
 The overview reports actual configuration counts. It does not invent bookings, revenue or customer metrics.
 

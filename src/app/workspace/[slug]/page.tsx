@@ -12,8 +12,12 @@ import {
   CircleCheck,
   LifeBuoy,
   TriangleAlert,
+  ClipboardCheck,
+  BadgeEuro,
 } from "lucide-react";
 import { getBusiness } from "@/modules/businesses/queries";
+import { getBusinessBrief } from "@/modules/businesses/brief";
+import { appointmentDate, slotLabel } from "@/modules/bookings/types";
 import { weeklyHours, trimHours, weekdays } from "@/modules/scheduling/hours";
 import { money, initials } from "@/lib/format";
 
@@ -24,6 +28,7 @@ export default async function Overview({
 }) {
   const { slug } = await params;
   const b = await getBusiness(slug);
+  const brief = await getBusinessBrief(b);
   const activeServices = b.services.filter((s) => s.active);
   const activeStaff = b.staff.filter((s) => s.active);
   const hours = weeklyHours(b.hours);
@@ -172,6 +177,93 @@ export default async function Overview({
           </p>
         </section>
       )}
+      <section
+        className="panel daily-brief"
+        aria-labelledby="daily-brief-title"
+      >
+        <div className="panel-heading">
+          <div>
+            <span className="eyebrow">TODAY AT A GLANCE</span>
+            <h2 id="daily-brief-title">
+              {appointmentDate(`${brief.day}T12:00:00Z`)}
+            </h2>
+            <p>
+              {b.role === "staff" && !b.supportMode
+                ? "A live snapshot of your own schedule."
+                : "A live operational snapshot for the whole shop."}
+            </p>
+          </div>
+          <Link href={`/workspace/${slug}/calendar`} className="text-link">
+            Open calendar <ArrowRight size={15} />
+          </Link>
+        </div>
+        <div className="brief-metrics">
+          <div>
+            <CalendarDays size={19} />
+            <span>Still ahead today</span>
+            <strong>{brief.upcoming.length}</strong>
+            <small>confirmed visits</small>
+          </div>
+          <div className={brief.outstandingOutcomes ? "needs-attention" : ""}>
+            <ClipboardCheck size={19} />
+            <span>Needs an outcome</span>
+            <strong>{brief.outstandingOutcomes}</strong>
+            <small>past or ongoing confirmed visits</small>
+          </div>
+          <div>
+            <BadgeEuro size={19} />
+            <span>Completed-service value</span>
+            <strong>{money(brief.completedValueMinor)}</strong>
+            <small>
+              {brief.completedVisits} completed today · not collected revenue
+            </small>
+          </div>
+        </div>
+        <div className="brief-agenda">
+          <div className="brief-agenda-heading">
+            <strong>Coming up</strong>
+            <span>Portugal local time</span>
+          </div>
+          {brief.upcoming.length ? (
+            brief.upcoming.slice(0, 4).map((appointment) => (
+              <Link
+                href={`/workspace/${slug}/calendar?day=${brief.day}`}
+                className="brief-appointment"
+                key={appointment.id}
+              >
+                <time dateTime={appointment.starts_at}>
+                  {slotLabel(appointment.starts_at)}
+                </time>
+                <span>
+                  <strong>
+                    {b.supportMode
+                      ? "Customer details hidden"
+                      : appointment.customers?.display_name}
+                  </strong>
+                  <small>
+                    {appointment.service_name} ·{" "}
+                    {appointment.staff_members?.display_name}
+                  </small>
+                </span>
+                <ArrowRight size={15} />
+              </Link>
+            ))
+          ) : (
+            <div className="brief-empty">
+              <CalendarDays size={21} />
+              <span>No more confirmed visits today.</span>
+            </div>
+          )}
+          {brief.upcoming.length > 4 && (
+            <Link
+              href={`/workspace/${slug}/calendar?day=${brief.day}`}
+              className="brief-more"
+            >
+              View {brief.upcoming.length - 4} more in the calendar
+            </Link>
+          )}
+        </div>
+      </section>
       <section className="welcome-card">
         <div className="welcome-copy">
           <span className="pill-light">
