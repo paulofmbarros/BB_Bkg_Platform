@@ -16,6 +16,8 @@ The public catalogue uses an explicit projection through an invoker RPC and a pr
 
 Brand logos are public assets. Upload and delete policies constrain paths to the owner's tenant; MIME types, file signatures and size are checked. No SVG or executable upload is supported. Other future storage buckets must be private by default.
 
+The customer-facing shop, booking and appointment-management pages derive their primary colour, tinted surfaces, borders and accessible foreground colours from the owner's validated brand colour. The workspace retains Noma's own interface palette. Generated foreground colours maintain WCAG AA normal-text contrast against the branded surfaces; branding cannot bypass content or accessibility boundaries.
+
 ## Data integrity
 
 Money is integer EUR cents. A service defines its duration and post-service buffer. Weekly hours store local wall times. Phase 1 is deliberately restricted to one location per tenant, EUR and Europe/Lisbon. The next scheduling increment must convert these rules into UTC intervals with explicit DST handling.

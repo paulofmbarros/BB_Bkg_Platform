@@ -1,9 +1,8 @@
 import Image from "next/image";
 import { Scissors, MapPin, Clock3, Phone, ArrowDown } from "lucide-react";
 import type { PublicShop } from "@/modules/businesses/public-shop";
-import { initials, money, contrastText } from "@/lib/format";
+import { initials, money, shopTheme } from "@/lib/format";
 import { trimHours, weekdays } from "@/modules/scheduling/hours";
-import type { CSSProperties } from "react";
 export function ShopPage({
   shop,
   preview = false,
@@ -12,15 +11,7 @@ export function ShopPage({
   preview?: boolean;
 }) {
   return (
-    <main
-      className="shop-page"
-      style={
-        {
-          "--shop-accent": shop.accent_color,
-          "--shop-on-accent": contrastText(shop.accent_color),
-        } as CSSProperties
-      }
-    >
+    <main className="shop-page" style={shopTheme(shop.accent_color)}>
       {(preview || shop.is_demo) && (
         <div className="shop-preview-bar">
           {preview ? "Customer page preview" : "Fictional demo shop"}{" "}

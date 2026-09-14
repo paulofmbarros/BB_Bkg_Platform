@@ -1,4 +1,5 @@
 import { test, expect, type Page } from "@playwright/test";
+import AxeBuilder from "@axe-core/playwright";
 
 async function login(page: Page, role = "owner", shop = "porto-gentlemen") {
   await page.goto("/login");
@@ -138,18 +139,45 @@ test("branding reaches the verified public domain without leaking another shop",
 }) => {
   await login(page);
   await page.getByRole("link", { name: "Brand & business" }).click();
+  const brandColour = page.getByLabel("Brand colour");
+  const originalColour = await brandColour.inputValue();
   await page
     .getByLabel("Tagline", { exact: true })
     .fill("A cut above, together.");
+  await brandColour.fill("#c62828");
   await page.getByRole("button", { name: "Save business details" }).click();
   await expect(page.getByRole("status")).toContainText(
     "business details are saved",
   );
-  const guest = await browser.newPage();
+  const guestContext = await browser.newContext();
+  const guest = await guestContext.newPage();
   await guest.goto("http://porto-gentlemen.localhost:3000");
   await expect(guest.getByRole("heading", { level: 1 })).toHaveText(
     "A cut above, together.",
   );
+  await expect(guest.locator(".shop-page")).toHaveCSS(
+    "--shop-accent",
+    "#c62828",
+  );
+  await expect(guest.locator(".shop-visit")).toHaveCSS(
+    "background-color",
+    "rgb(246, 221, 221)",
+  );
+  await expect(guest.locator(".shop-hero-mark")).toHaveCSS(
+    "background-color",
+    "rgb(198, 40, 40)",
+  );
+  await guest.screenshot({
+    path: "test-results/branded-customer-page.png",
+    fullPage: true,
+  });
+  expect(
+    (
+      await new AxeBuilder({ page: guest })
+        .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"])
+        .analyze()
+    ).violations,
+  ).toEqual([]);
   await expect(guest.locator("body")).not.toContainText("Atelier Lisboa");
   await expect(guest.locator("body")).not.toContainText("owner@");
   await expect(
@@ -160,9 +188,27 @@ test("branding reaches the verified public domain without leaking another shop",
       },
     ),
   ).toBeVisible();
+  await guest.getByRole("link", { name: "Book a visit", exact: true }).click();
+  await expect(guest).toHaveURL("http://porto-gentlemen.localhost:3000/book");
+  await expect(guest.locator(".booking-page")).toHaveCSS(
+    "--shop-accent",
+    "#c62828",
+  );
+  await expect(guest.locator(".booking-step").first()).toHaveCSS(
+    "background-color",
+    "rgb(251, 240, 240)",
+  );
+  expect(
+    (
+      await new AxeBuilder({ page: guest })
+        .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"])
+        .analyze()
+    ).violations,
+  ).toEqual([]);
   await page
     .getByLabel("Tagline", { exact: true })
     .fill("Good hair. Good company.");
+  await brandColour.fill(originalColour);
   await page.getByRole("button", { name: "Save business details" }).click();
   await expect(page.getByRole("status")).toContainText(
     "business details are saved",
@@ -172,7 +218,7 @@ test("branding reaches the verified public domain without leaking another shop",
     "Made for your everyday.",
   );
   await expect(guest.locator("body")).not.toContainText("Porto Gentlemen");
-  await guest.close();
+  await guestContext.close();
 });
 test("other tenants and staff cannot enter management actions", async ({
   page,

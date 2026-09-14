@@ -528,7 +528,9 @@ export function BrandingForm({
             name="accent_color"
             defaultValue={values.accent_color}
           />
-          <span>Your customer page’s primary colour.</span>
+          <span>
+            Sets the colour system across your customer page and booking flow.
+          </span>
         </div>
       </label>
       <FormNotice state={state} />
