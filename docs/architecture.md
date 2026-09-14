@@ -75,3 +75,7 @@ A manager-only transaction adds a new appointment to the existing customer ID, u
 ## Daily business brief
 
 The workspace overview derives a request-time operating snapshot from RLS-protected appointments. Europe/Lisbon calendar-day filtering determines today's remaining visits and completed-service value; a separate scoped count identifies all confirmed visits whose start time has passed and still need an outcome. Staff therefore see only their assignments, while managers see the tenant. Support-mode schedule reads deliberately omit customer identity. Completed-service value uses quoted appointment snapshots and is never presented as payment or revenue. See `daily-business-brief.md`.
+
+## Rebooking opportunities
+
+The manager-only opportunity view derives a customer's typical return interval from the median gap between at least three distinct completed visit days. It excludes profiles with future bookings, unresolved outcomes or possible duplicate identities. A bounded, cadence-relative lead window surfaces customers who are due soon or overdue. Potential value uses the most recent completed service snapshot and is explicitly not forecast, booked, collected or recovered revenue. The view and summary function execute with caller privileges over RLS-protected data; staff, other tenants, anonymous callers and platform support cannot access the customer signals. See `rebooking-opportunities.md`.

@@ -14,9 +14,11 @@ import {
   TriangleAlert,
   ClipboardCheck,
   BadgeEuro,
+  RefreshCcw,
 } from "lucide-react";
 import { getBusiness } from "@/modules/businesses/queries";
 import { getBusinessBrief } from "@/modules/businesses/brief";
+import { getRebookingOpportunitySummary } from "@/modules/customers/opportunities";
 import { appointmentDate, slotLabel } from "@/modules/bookings/types";
 import { weeklyHours, trimHours, weekdays } from "@/modules/scheduling/hours";
 import { money, initials } from "@/lib/format";
@@ -28,7 +30,10 @@ export default async function Overview({
 }) {
   const { slug } = await params;
   const b = await getBusiness(slug);
-  const brief = await getBusinessBrief(b);
+  const [brief, rebooking] = await Promise.all([
+    getBusinessBrief(b),
+    getRebookingOpportunitySummary(b),
+  ]);
   const activeServices = b.services.filter((s) => s.active);
   const activeStaff = b.staff.filter((s) => s.active);
   const hours = weeklyHours(b.hours);
@@ -218,6 +223,19 @@ export default async function Overview({
               {brief.completedVisits} completed today · not collected revenue
             </small>
           </div>
+          {!b.supportMode && b.role !== "staff" && (
+            <Link
+              href={`/workspace/${slug}/opportunities/rebooking`}
+              className={rebooking.count ? "has-opportunity" : ""}
+            >
+              <RefreshCcw size={19} />
+              <span>Customers due</span>
+              <strong>{rebooking.count}</strong>
+              <small>
+                {money(rebooking.potential_value_minor)} potential service value
+              </small>
+            </Link>
+          )}
         </div>
         <div className="brief-agenda">
           <div className="brief-agenda-heading">

@@ -2,6 +2,8 @@
 
 The approved V0 foundation, booking engine and first CRM increment: guest booking, a daily calendar, customer profiles and visit history. The app runs locally and in a private hosted staging environment with synthetic data. Payments are not connected.
 
+Product direction, validation gates and current phase status are tracked in the [Noma product roadmap](docs/product-roadmap.md). The numbered phase documents in `docs/` are technical delivery handoffs and do not use the same phase numbering as the product roadmap.
+
 ## What works
 
 - Platform client administration: barbershop creation, owner invitations, account suspension, access management and domain ownership verification. See [platform administration](docs/platform-administration.md) for local access and hosted setup.
@@ -23,6 +25,7 @@ The approved V0 foundation, booking engine and first CRM increment: guest bookin
 - Owner/manager rebooking directly into an existing customer profile.
 - Explainable customer segments with directory filters and profile-level reasons.
 - A daily business brief with upcoming visits, outstanding outcomes and completed-service value clearly separated from collected revenue.
+- Explainable rebooking opportunities based on each repeat customer's median visit interval, with potential value kept distinct from recovered revenue.
 
 The overview reports actual configuration counts. It does not invent bookings, revenue or customer metrics.
 

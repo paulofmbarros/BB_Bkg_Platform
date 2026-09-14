@@ -91,6 +91,13 @@ export type Database = {
             foreignKeyName: "appointments_tenant_id_customer_id_fkey"
             columns: ["tenant_id", "customer_id"]
             isOneToOne: false
+            referencedRelation: "customer_rebooking_opportunities"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "appointments_tenant_id_customer_id_fkey"
+            columns: ["tenant_id", "customer_id"]
+            isOneToOne: false
             referencedRelation: "customer_segments"
             referencedColumns: ["tenant_id", "id"]
           },
@@ -311,6 +318,13 @@ export type Database = {
             foreignKeyName: "customer_links_tenant_id_source_id_fkey"
             columns: ["tenant_id", "source_id"]
             isOneToOne: false
+            referencedRelation: "customer_rebooking_opportunities"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "customer_links_tenant_id_source_id_fkey"
+            columns: ["tenant_id", "source_id"]
+            isOneToOne: false
             referencedRelation: "customer_segments"
             referencedColumns: ["tenant_id", "id"]
           },
@@ -326,6 +340,13 @@ export type Database = {
             columns: ["tenant_id", "source_id"]
             isOneToOne: false
             referencedRelation: "customers"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "customer_links_tenant_id_target_id_fkey"
+            columns: ["tenant_id", "target_id"]
+            isOneToOne: false
+            referencedRelation: "customer_rebooking_opportunities"
             referencedColumns: ["tenant_id", "id"]
           },
           {
@@ -389,6 +410,13 @@ export type Database = {
           version?: number
         }
         Relationships: [
+          {
+            foreignKeyName: "customer_link_tenant_fk"
+            columns: ["tenant_id", "linked_customer_id"]
+            isOneToOne: false
+            referencedRelation: "customer_rebooking_opportunities"
+            referencedColumns: ["tenant_id", "id"]
+          },
           {
             foreignKeyName: "customer_link_tenant_fk"
             columns: ["tenant_id", "linked_customer_id"]
@@ -823,6 +851,34 @@ export type Database = {
       }
     }
     Views: {
+      customer_rebooking_opportunities: {
+        Row: {
+          completed_visit_days: number | null
+          days_since_visit: number | null
+          display_name: string | null
+          due_in_days: number | null
+          email: string | null
+          id: string | null
+          last_visit_at: string | null
+          marketing_consent: boolean | null
+          potential_value_minor: number | null
+          service_id: string | null
+          service_name: string | null
+          staff_id: string | null
+          staff_name: string | null
+          tenant_id: string | null
+          typical_interval_days: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customers_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       customer_segments: {
         Row: {
           appointment_count: number | null
@@ -922,6 +978,10 @@ export type Database = {
           p_token: string
         }
         Returns: string
+      }
+      customer_rebooking_opportunity_summary: {
+        Args: { p_tenant: string }
+        Returns: Json
       }
       customer_segment_counts: {
         Args: { p_query?: string; p_tenant: string }
