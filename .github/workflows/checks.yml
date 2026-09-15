@@ -53,10 +53,10 @@ jobs:
             sleep 1
           done
           exit 1
-      - name: Browser checks
-        run: npm run test:e2e
       - name: Production build and types
         run: npm run build && npm run typecheck
+      - name: Browser checks
+        run: npm run test:e2e
       - name: Browser failure artifacts
         if: failure()
         uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
