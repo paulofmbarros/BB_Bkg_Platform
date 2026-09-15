@@ -1,8 +1,7 @@
 import Link from "next/link";
 import { ManageBooking } from "@/components/manage-booking";
 import { bookingShop } from "@/modules/bookings/public-context";
-import { contrastText } from "@/lib/format";
-import type { CSSProperties } from "react";
+import { shopTheme } from "@/lib/format";
 export async function generateMetadata() {
   const shop = await bookingShop();
   return {
@@ -14,15 +13,7 @@ export async function generateMetadata() {
 export default async function Manage() {
   const shop = await bookingShop();
   return (
-    <main
-      className="booking-page"
-      style={
-        {
-          "--shop-accent": shop.accent_color,
-          "--shop-on-accent": contrastText(shop.accent_color),
-        } as CSSProperties
-      }
-    >
+    <main className="booking-page" style={shopTheme(shop.accent_color)}>
       <Link className="booking-brand" href="/">
         {shop.name}
       </Link>

@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(12);
+select plan(16);
 select is(private.classify_customer(0,null,0,0,0),'new','No completed visits is new');
 select is(private.classify_customer(1,59,0,0,0),'new','One visit before risk threshold is new');
 select is(private.classify_customer(2,59,0,0,0),'returning','Two recent visits is returning');
@@ -13,5 +13,9 @@ select is(private.classify_customer(3,180,0,1,0),'needs_review','Unresolved outc
 select is(private.classify_customer(3,180,0,0,1),'needs_review','Potential duplicate takes priority');
 select is(private.classify_customer(1,-1,0,0,0),'needs_review','Future-dated completed visit needs review');
 select ok((select reloptions @> array['security_invoker=true'] from pg_class where oid='public.customer_segments'::regclass),'Segmentation view preserves caller RLS');
+select is(private.rebooking_lead_days(14),3,'Short cadences open a narrow opportunity window');
+select is(private.rebooking_lead_days(28),6,'Lead time scales with the typical interval');
+select is(private.rebooking_lead_days(90),7,'Lead time is capped at seven days');
+select ok((select reloptions @> array['security_invoker=true'] from pg_class where oid='public.customer_rebooking_opportunities'::regclass),'Rebooking opportunities preserve caller RLS');
 select * from finish();
 rollback;

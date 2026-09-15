@@ -7,7 +7,7 @@ import {
 } from "../../src/modules/businesses/validation";
 import { weeklyHours, defaultHours } from "../../src/modules/scheduling/hours";
 import { normalizeHost, isWorkspaceHost } from "../../src/modules/tenancy/host";
-import { contrastText } from "../../src/lib/format";
+import { contrastRatio, contrastText, shopTheme } from "../../src/lib/format";
 describe("Business validation", () => {
   it("converts prices exactly, without binary rounding", () => {
     expect(priceToMinorUnits("19.99")).toBe(1999);
@@ -83,5 +83,21 @@ describe("Business validation", () => {
   it("chooses legible text for tenant colours", () => {
     expect(contrastText("#ffffff")).toBe("#151b18");
     expect(contrastText("#000000")).toBe("#ffffff");
+  });
+  it("derives branded surfaces and accessible text from the tenant colour", () => {
+    for (const accent of ["#c62828", "#f4c430", "#ffffff", "#111111"]) {
+      const theme = shopTheme(accent);
+      expect(theme["--shop-accent"]).toBe(accent);
+      expect(theme["--shop-surface"]).not.toBe("#edeedf");
+      expect(
+        contrastRatio(theme["--shop-on-accent"], theme["--shop-accent"]),
+      ).toBeGreaterThanOrEqual(4.5);
+      expect(
+        contrastRatio(
+          theme["--shop-accent-text"],
+          theme["--shop-surface-strong"],
+        ),
+      ).toBeGreaterThanOrEqual(4.5);
+    }
   });
 });

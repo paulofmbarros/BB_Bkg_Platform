@@ -107,8 +107,14 @@ export function ServiceForm({
           name="active"
           defaultChecked={service?.active ?? true}
         />
-        Available on your customer page
+        Active and available for new bookings
       </label>
+      {service && (
+        <p className="field-help">
+          Turn this off to archive the service. Existing appointments and
+          reporting history will be preserved.
+        </p>
+      )}
       <FormNotice state={state} />
       <div className="form-footer">
         <SubmitButton>{service ? "Save service" : "Add service"}</SubmitButton>
@@ -522,7 +528,9 @@ export function BrandingForm({
             name="accent_color"
             defaultValue={values.accent_color}
           />
-          <span>Your customer page’s primary colour.</span>
+          <span>
+            Sets the colour system across your customer page and booking flow.
+          </span>
         </div>
       </label>
       <FormNotice state={state} />

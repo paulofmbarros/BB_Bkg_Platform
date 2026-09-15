@@ -16,6 +16,8 @@ The public catalogue uses an explicit projection through an invoker RPC and a pr
 
 Brand logos are public assets. Upload and delete policies constrain paths to the owner's tenant; MIME types, file signatures and size are checked. No SVG or executable upload is supported. Other future storage buckets must be private by default.
 
+The customer-facing shop, booking and appointment-management pages derive their primary colour, tinted surfaces, borders and accessible foreground colours from the owner's validated brand colour. The workspace retains Noma's own interface palette. Generated foreground colours maintain WCAG AA normal-text contrast against the branded surfaces; branding cannot bypass content or accessibility boundaries.
+
 ## Data integrity
 
 Money is integer EUR cents. A service defines its duration and post-service buffer. Weekly hours store local wall times. Phase 1 is deliberately restricted to one location per tenant, EUR and Europe/Lisbon. The next scheduling increment must convert these rules into UTC intervals with explicit DST handling.
@@ -75,3 +77,7 @@ A manager-only transaction adds a new appointment to the existing customer ID, u
 ## Daily business brief
 
 The workspace overview derives a request-time operating snapshot from RLS-protected appointments. Europe/Lisbon calendar-day filtering determines today's remaining visits and completed-service value; a separate scoped count identifies all confirmed visits whose start time has passed and still need an outcome. Staff therefore see only their assignments, while managers see the tenant. Support-mode schedule reads deliberately omit customer identity. Completed-service value uses quoted appointment snapshots and is never presented as payment or revenue. See `daily-business-brief.md`.
+
+## Rebooking opportunities
+
+The manager-only opportunity view derives a customer's typical return interval from the median gap between at least three distinct completed visit days. It excludes profiles with future bookings, unresolved outcomes or possible duplicate identities. A bounded, cadence-relative lead window surfaces customers who are due soon or overdue. Potential value uses the most recent completed service snapshot and is explicitly not forecast, booked, collected or recovered revenue. The view and summary function execute with caller privileges over RLS-protected data; staff, other tenants, anonymous callers and platform support cannot access the customer signals. See `rebooking-opportunities.md`.

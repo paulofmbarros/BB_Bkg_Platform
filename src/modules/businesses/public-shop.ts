@@ -15,7 +15,7 @@ export const publicShopSchema = z.object({
   currency: z.string(),
   tagline: z.string(),
   description: z.string(),
-  accent_color: z.string(),
+  accent_color: z.string().regex(/^#[0-9a-fA-F]{6}$/),
   logo_path: z.string().nullable(),
   address: z.string(),
   phone: z.string(),

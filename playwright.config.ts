@@ -12,6 +12,7 @@ export default defineConfig({
   fullyParallel: false,
   workers: 1,
   timeout: 45000,
+  expect: { timeout: process.env.CI ? 15000 : 5000 },
   use: {
     baseURL: "http://127.0.0.1:3000",
     browserName: "chromium",
@@ -20,9 +21,9 @@ export default defineConfig({
     screenshot: "only-on-failure",
   },
   webServer: {
-    command: "npm run dev",
+    command: process.env.CI ? "npm run start" : "npm run dev",
     url: "http://127.0.0.1:3000/api/health",
-    reuseExistingServer: true,
+    reuseExistingServer: !process.env.CI,
     timeout: 60000,
   },
 });

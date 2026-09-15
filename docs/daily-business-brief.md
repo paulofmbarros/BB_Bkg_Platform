@@ -6,6 +6,8 @@ The completed-service figure is an operational total from appointment price snap
 
 The upcoming list shows the next four confirmed visits and links to the current day's calendar. Owners and managers see the whole tenant. Staff inherit appointment row-level security and see only visits assigned to their linked staff profile. Platform support can see operating counts and schedule details but customer identity remains hidden, matching the support calendar boundary.
 
+Owners and managers also see the current count and potential service value of customers with an explainable rebooking opportunity. That separate manager-only signal links to the opportunity review screen; it is hidden from staff and platform support. See [Rebooking opportunities](rebooking-opportunities.md).
+
 Dates and ordering use Europe/Lisbon local time, including daylight-saving transitions. The brief is computed on every request and is not persisted, so appointment status and scheduling changes appear on the next load.
 
 ## Verification

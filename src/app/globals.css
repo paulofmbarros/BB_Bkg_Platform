@@ -457,20 +457,27 @@ textarea {
 }
 .brief-metrics {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
   gap: 1px;
   overflow: hidden;
   border: 1px solid var(--line);
   border-radius: 9px;
   background: var(--line);
 }
-.brief-metrics > div {
+.brief-metrics > div,
+.brief-metrics > a {
   display: grid;
   grid-template-columns: 1fr auto;
   gap: 6px 12px;
   min-width: 0;
   padding: 19px;
   background: #f9faf6;
+}
+.brief-metrics > a {
+  color: inherit;
+}
+.brief-metrics > a:hover {
+  background: #f2f6ed;
 }
 .brief-metrics svg {
   grid-column: 2;
@@ -496,11 +503,14 @@ textarea {
   font-size: 11px;
   line-height: 1.45;
 }
-.brief-metrics .needs-attention {
+.brief-metrics .needs-attention,
+.brief-metrics .has-opportunity {
   background: #fff8ed;
 }
 .brief-metrics .needs-attention svg,
-.brief-metrics .needs-attention strong {
+.brief-metrics .needs-attention strong,
+.brief-metrics .has-opportunity svg,
+.brief-metrics .has-opportunity strong {
   color: #8a4e28;
 }
 .brief-agenda {
@@ -959,8 +969,14 @@ textarea {
 .list-toolbar {
   display: flex;
   justify-content: space-between;
+  align-items: flex-start;
   gap: 20px;
   margin: 34px 0 23px;
+}
+.service-filters {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 .filter-tabs {
   display: flex;
@@ -1088,6 +1104,9 @@ textarea {
   color: #405938;
 }
 .service-action {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
   border-top: 1px solid #edf0e7;
   margin-top: 19px;
   padding-top: 15px;
@@ -1097,6 +1116,12 @@ textarea {
   justify-content: space-between;
   width: 100%;
   font-size: 12px;
+}
+.service-archive-action {
+  color: #75533d;
+}
+.service-notice {
+  margin: -8px 0 20px;
 }
 .inline-add {
   display: flex;
@@ -1638,13 +1663,19 @@ textarea {
   margin-top: 25px;
 }
 .shop-page {
-  background: #f8f7f2;
-  color: #243328;
+  background: var(--shop-surface);
+  color: var(--shop-ink);
+}
+.shop-page p {
+  color: var(--shop-muted);
+}
+.shop-page .eyebrow {
+  color: var(--shop-accent-text);
 }
 .shop-preview-bar {
   text-align: center;
-  background: #eeeede;
-  color: #5e6957;
+  background: var(--shop-surface-strong);
+  color: var(--shop-muted);
   font-size: 12px;
   padding: 10px;
 }
@@ -1656,7 +1687,7 @@ textarea {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 1px solid #e4e5d8;
+  border-bottom: 1px solid var(--shop-border);
   max-width: 1600px;
   margin: auto;
 }
@@ -1685,7 +1716,7 @@ textarea {
   align-items: center;
   gap: 8px;
   font-size: 12px;
-  color: #5e6957;
+  color: var(--shop-muted);
 }
 .shop-hero {
   display: grid;
@@ -1708,7 +1739,7 @@ textarea {
   font-size: 16px;
   line-height: 1.8;
   max-width: 440px;
-  color: #5e6957;
+  color: var(--shop-muted);
 }
 .shop-button {
   background: var(--shop-accent);
@@ -1720,7 +1751,7 @@ textarea {
   display: flex;
   align-items: center;
   gap: 6px;
-  color: #5e6957;
+  color: var(--shop-muted);
   margin-top: 24px;
 }
 .shop-hero-mark {
@@ -1733,8 +1764,7 @@ textarea {
   max-width: 400px;
 }
 .shop-hero-mark > div {
-  border: 1px solid currentColor;
-  opacity: 0.8;
+  border: 1px solid color-mix(in srgb, currentColor 80%, transparent);
   border-radius: 140px 140px 4px 4px;
   display: flex;
   flex-direction: column;
@@ -1760,6 +1790,14 @@ textarea {
   background: #fff;
   max-width: 1600px;
   margin: auto;
+}
+.shop-menu .shop-section-heading h2,
+.public-services h3,
+.shop-team h2,
+.shop-team h3,
+.shop-visit h2,
+.shop-visit h3 {
+  color: var(--shop-ink);
 }
 .shop-section-heading {
   text-align: center;
@@ -1788,7 +1826,7 @@ textarea {
   justify-content: space-between;
   gap: 20px;
   padding: 25px 0;
-  border-bottom: 1px solid #e9ecdf;
+  border-bottom: 1px solid var(--shop-border);
 }
 .public-services h3 {
   font-family: Georgia, serif;
@@ -1808,30 +1846,31 @@ textarea {
   font-family: Georgia, serif;
   font-size: 25px;
   font-weight: 400;
+  color: var(--shop-accent-text);
 }
 .duration {
   display: flex;
   align-items: center;
   gap: 6px;
-  color: #5e6957;
+  color: var(--shop-muted);
   font-size: 12px;
   margin-top: 11px;
 }
 .booking-notice {
   margin: 40px 0 0;
   padding: 23px;
-  border: 1px dashed #d9e0ca;
-  background: #f8faf4;
+  border: 1px dashed var(--shop-border);
+  background: var(--shop-surface);
   border-radius: 8px;
   display: flex;
   gap: 14px;
   align-items: center;
-  color: #5e6957;
+  color: var(--shop-muted);
 }
 .booking-notice strong {
   font-size: 13px;
   font-weight: 500;
-  color: #526641;
+  color: var(--shop-accent-text);
 }
 .booking-notice p {
   font-size: 12px;
@@ -1851,6 +1890,8 @@ textarea {
 }
 .shop-team article .avatar {
   margin: 0 auto 17px;
+  background: var(--shop-surface-strong);
+  color: var(--shop-accent-text);
 }
 .shop-team h3 {
   font-family: Georgia, serif;
@@ -1859,7 +1900,7 @@ textarea {
 }
 .shop-team article > span:not(.avatar) {
   font-size: 12px;
-  color: #5e6957;
+  color: var(--shop-muted);
 }
 .shop-team article p {
   font-size: 12px;
@@ -1871,7 +1912,7 @@ textarea {
   grid-template-columns: 1fr 1fr;
   gap: 100px;
   padding: 65px 12%;
-  background: #edeedf;
+  background: var(--shop-surface-strong);
 }
 .shop-visit p {
   font-size: 13px;
@@ -1879,26 +1920,39 @@ textarea {
   display: flex;
   align-items: center;
   gap: 9px;
+  color: var(--shop-muted);
 }
 .shop-visit h3 {
   font-size: 15px;
   margin-bottom: 16px;
 }
 .shop-visit .week-row {
-  border-color: #dce1cf;
+  border-color: var(--shop-border);
   font-size: 12px;
+}
+.shop-visit .week-row > span,
+.shop-visit .field-help {
+  color: var(--shop-muted);
 }
 .shop-footer {
   display: flex;
   justify-content: space-between;
   padding: 27px 9%;
   font-size: 12px;
-  color: #5e6957;
+  color: var(--shop-muted);
 }
 .shop-footer strong {
   font-family: Georgia, serif;
   font-size: 20px;
   font-weight: 400;
+  color: var(--shop-accent-text);
+}
+.shop-page .public-service-action .secondary {
+  border-color: var(--shop-border);
+  color: var(--shop-accent-text);
+}
+.shop-page .public-service-action .secondary:hover {
+  background: var(--shop-surface);
 }
 .spin {
   animation: spin 1s linear infinite;
@@ -2417,6 +2471,7 @@ textarea {
   }
   .filter-tabs {
     gap: 2px;
+    flex-wrap: wrap;
   }
   .filter-tabs button {
     padding: 8px 11px;
@@ -2828,10 +2883,22 @@ textarea {
   max-width: 760px;
   margin: 0 auto;
   padding: 40px 28px 80px;
+  color: var(--shop-ink);
+}
+.booking-page p {
+  color: var(--shop-muted);
+}
+.shop-page a:focus-visible,
+.shop-page button:focus-visible,
+.booking-page a:focus-visible,
+.booking-page button:focus-visible,
+.booking-page input:focus-visible,
+.booking-page select:focus-visible {
+  outline-color: var(--shop-accent-text);
 }
 .booking-brand {
   display: block;
-  color: var(--shop-accent);
+  color: var(--shop-accent-text);
   font-weight: 800;
   font-size: 20px;
   margin-bottom: 42px;
@@ -2845,7 +2912,7 @@ textarea {
 }
 .booking-page > p,
 .manage-booking > p {
-  color: #52615a;
+  color: var(--shop-muted);
   line-height: 1.7;
 }
 .booking-form,
@@ -2857,15 +2924,15 @@ textarea {
 }
 .booking-step {
   padding: 24px;
-  background: #fffefb;
-  border: 1px solid #dedfd7;
+  background: var(--shop-surface);
+  border: 1px solid var(--shop-border);
   border-radius: 14px;
   display: flex;
   flex-direction: column;
   gap: 20px;
 }
 .booking-step .eyebrow {
-  color: #516057;
+  color: var(--shop-accent-text);
 }
 .booking-form .field,
 .slot-picker .field {
@@ -2890,6 +2957,11 @@ textarea {
   color: #26362d;
   font: inherit;
 }
+.booking-page input:focus,
+.booking-page select:focus {
+  border-color: var(--shop-accent-text);
+  box-shadow: 0 0 0 3px var(--shop-surface-strong);
+}
 .slot-fieldset {
   border: 0;
   padding: 0;
@@ -2910,13 +2982,13 @@ textarea {
   border: 1px solid #b8c1b8;
   border-radius: 7px;
   background: #fff;
-  color: #2b4335;
+  color: var(--shop-accent-text);
   cursor: pointer;
   font: inherit;
   font-size: 14px;
 }
 .time-slot:hover {
-  background: #edf1e9;
+  background: var(--shop-surface-strong);
 }
 .time-slot.selected {
   background: var(--shop-accent, #254b3f);
@@ -2925,9 +2997,9 @@ textarea {
 }
 .booking-summary {
   padding: 24px;
-  background: #edf0e7;
+  background: var(--shop-surface-strong);
   border-radius: 12px;
-  color: #314334;
+  color: var(--shop-ink);
   line-height: 1.7;
 }
 .booking-summary p {
@@ -2955,7 +3027,7 @@ textarea {
 }
 .empty-times {
   padding: 22px 0;
-  color: #52615a;
+  color: var(--shop-muted);
   line-height: 1.7;
 }
 .status-badge {
@@ -2963,8 +3035,8 @@ textarea {
   width: fit-content;
   padding: 5px 9px;
   border-radius: 5px;
-  background: #e5ede4;
-  color: #335039;
+  background: var(--shop-surface-strong, #e5ede4);
+  color: var(--shop-accent-text, #335039);
   text-transform: uppercase;
   font-size: 12px;
   font-weight: 700;
@@ -3422,6 +3494,118 @@ textarea {
 }
 .customer-identity .status-badge {
   margin: 3px 0 9px;
+}
+
+.opportunity-summary {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  overflow: hidden;
+  padding: 0;
+  background: var(--line);
+}
+.opportunity-summary > div {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px 14px;
+  padding: 22px;
+  background: white;
+}
+.opportunity-summary svg {
+  grid-column: 2;
+  color: #718268;
+}
+.opportunity-summary span {
+  font-size: 12px;
+  color: var(--muted);
+}
+.opportunity-summary strong {
+  grid-column: 1 / -1;
+  font:
+    600 28px "Manrope",
+    sans-serif;
+}
+.opportunity-summary > p {
+  grid-column: 1 / -1;
+  padding: 13px 22px;
+  background: #f9faf6;
+  font-size: 11px;
+}
+.opportunity-guidance {
+  margin: 18px 0 22px;
+  max-width: 850px;
+  line-height: 1.7;
+}
+.opportunity-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.opportunity-card {
+  display: grid;
+  grid-template-columns: minmax(220px, 1.4fr) minmax(160px, 1fr) 130px auto;
+  align-items: center;
+  gap: 24px;
+}
+.opportunity-customer h2 {
+  margin: 5px 0 8px;
+}
+.opportunity-customer p {
+  font-size: 13px;
+}
+.opportunity-customer small,
+.opportunity-service small,
+.opportunity-value small {
+  display: block;
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 11px;
+}
+.opportunity-service,
+.opportunity-value {
+  display: flex;
+  flex-direction: column;
+}
+.opportunity-service > span,
+.opportunity-value > span {
+  margin-bottom: 6px;
+  color: var(--muted);
+  font-size: 11px;
+}
+.opportunity-value strong {
+  font:
+    600 20px "Manrope",
+    sans-serif;
+}
+.opportunity-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.opportunity-limit {
+  margin-top: 18px;
+}
+@media (max-width: 1000px) {
+  .opportunity-card {
+    grid-template-columns: minmax(220px, 1fr) minmax(140px, 0.7fr);
+  }
+  .opportunity-actions {
+    grid-column: 1 / -1;
+    flex-direction: row;
+  }
+}
+@media (max-width: 600px) {
+  .opportunity-summary,
+  .opportunity-card {
+    grid-template-columns: 1fr;
+  }
+  .opportunity-summary > p,
+  .opportunity-actions {
+    grid-column: 1;
+  }
+  .opportunity-actions {
+    flex-direction: column;
+  }
 }
 
 /* Platform administration shares the shop workspace's visual language. */

@@ -1,6 +1,6 @@
 # GitHub delivery workflow
 
-Feature branches open pull requests into `main`. The required **Quality checks** job runs lint, formatting, unit/integration tests, database assertions, browser tests and a production build against a disposable local Supabase stack. Pull requests do not receive hosted credentials or deploy anything.
+Feature branches open pull requests into `main`. The required **Quality checks** job runs lint, formatting, unit/integration tests, database assertions, a production build and browser tests against a disposable local Supabase stack. Browser tests in CI start the production server after the build, refuse to reuse an existing server, and allow 15 seconds for assertions. This avoids compiling routes during browser assertions. Local browser tests continue to use the development server. Pull requests do not receive hosted credentials or deploy anything.
 
 A merged PR into `main` triggers the Deploy workflow. It verifies that the triggering commit belongs to a merged PR, repeats validation for the merged code, builds using the staging Vercel settings, applies pending migrations to the staging database, and deploys the built application. A health request verifies database connectivity. Deployments are serialized per environment; active deployment jobs are not cancelled midway through migrations.
 

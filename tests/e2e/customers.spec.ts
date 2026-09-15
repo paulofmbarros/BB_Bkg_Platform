@@ -88,7 +88,17 @@ test("customer directory, visit filters and contact edits work on mobile", async
     );
     await dialog.getByRole("button", { name: "Close dialog" }).click();
   }
-  await page.getByRole("link", { name: "View in calendar" }).first().click();
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(original);
+  const calendarLink = page
+    .getByRole("link", { name: "View in calendar" })
+    .first();
+  const calendarUrl = await calendarLink.getAttribute("href");
+  expect(calendarUrl).toMatch(/\/calendar\?day=\d{4}-\d{2}-\d{2}$/);
+  await calendarLink.click();
+  await expect(page).toHaveURL(calendarUrl!);
+  await expect(
+    page.getByRole("heading", { name: "Your day, in good hands." }),
+  ).toBeVisible();
   await expect(
     page.locator(".appointment-card").filter({ hasText: original }),
   ).toBeVisible();

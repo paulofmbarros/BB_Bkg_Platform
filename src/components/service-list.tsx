@@ -1,11 +1,25 @@
 "use client";
-import { useState } from "react";
-import { Search, Plus, Scissors, Clock3, ArrowUpRight } from "lucide-react";
+import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
+import {
+  Archive,
+  ArrowUpRight,
+  Clock3,
+  Plus,
+  RotateCcw,
+  Scissors,
+  Search,
+} from "lucide-react";
 import { Modal } from "./ui";
 import { ServiceForm } from "./forms";
 import { money } from "@/lib/format";
+import {
+  setServiceArchived,
+  type ActionResult,
+} from "@/modules/businesses/actions";
 import type { Database } from "@/lib/supabase/database.types";
 type Service = Database["public"]["Tables"]["services"]["Row"];
+type ServiceStatus = "current" | "archived" | "all";
 export function ServiceList({
   slug,
   services,
@@ -17,25 +31,57 @@ export function ServiceList({
 }) {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All services");
+  const [status, setStatus] = useState<ServiceStatus>("current");
+  const [notice, setNotice] = useState<ActionResult | null>(null);
+  const [pending, startTransition] = useTransition();
+  const router = useRouter();
   const filtered = services.filter(
     (s) =>
+      (status === "all" || (status === "current" ? s.active : !s.active)) &&
       (category === "All services" || s.category === category) &&
       `${s.name} ${s.description}`.toLowerCase().includes(search.toLowerCase()),
   );
+  const statuses: { value: ServiceStatus; label: string; count: number }[] = [
+    {
+      value: "current",
+      label: "Current",
+      count: services.filter((service) => service.active).length,
+    },
+    {
+      value: "archived",
+      label: "Archived",
+      count: services.filter((service) => !service.active).length,
+    },
+    { value: "all", label: "All", count: services.length },
+  ];
   return (
     <>
       <div className="list-toolbar">
-        <div className="filter-tabs" aria-label="Service category">
-          {["All services", "Hair", "Beard", "Rituals"].map((c) => (
-            <button
-              key={c}
-              aria-pressed={category === c}
-              className={category === c ? "selected" : ""}
-              onClick={() => setCategory(c)}
-            >
-              {c}
-            </button>
-          ))}
+        <div className="service-filters">
+          <div className="filter-tabs" aria-label="Service status">
+            {statuses.map((option) => (
+              <button
+                key={option.value}
+                aria-pressed={status === option.value}
+                className={status === option.value ? "selected" : ""}
+                onClick={() => setStatus(option.value)}
+              >
+                {option.label} · {option.count}
+              </button>
+            ))}
+          </div>
+          <div className="filter-tabs" aria-label="Service category">
+            {["All services", "Hair", "Beard", "Rituals"].map((c) => (
+              <button
+                key={c}
+                aria-pressed={category === c}
+                className={category === c ? "selected" : ""}
+                onClick={() => setCategory(c)}
+              >
+                {c}
+              </button>
+            ))}
+          </div>
         </div>
         <label className="search-field">
           <Search size={17} />
@@ -47,6 +93,14 @@ export function ServiceList({
           />
         </label>
       </div>
+      {notice && (
+        <p
+          role={notice.ok ? "status" : "alert"}
+          className={`notice service-notice ${notice.ok ? "success" : "failure"}`}
+        >
+          {notice.message}
+        </p>
+      )}
       <div className="service-grid">
         {filtered.map((s) => (
           <article className="service-card" key={s.id}>
@@ -55,7 +109,7 @@ export function ServiceList({
                 <Scissors size={23} strokeWidth={1.4} />
               </span>
               <span className={`status-pill ${s.active ? "" : "inactive"}`}>
-                {s.active ? "On the menu" : "Hidden"}
+                {s.active ? "On the menu" : "Archived"}
               </span>
             </div>
             <span className="eyebrow">{s.category.toUpperCase()}</span>
@@ -79,6 +133,37 @@ export function ServiceList({
                 >
                   <ServiceForm slug={slug} service={s} />
                 </Modal>
+                <button
+                  type="button"
+                  className="text-link service-archive-action"
+                  disabled={pending}
+                  onClick={() => {
+                    if (
+                      s.active &&
+                      !window.confirm(
+                        `Archive ${s.name}? It will disappear from new bookings, but existing appointments and reporting will be preserved.`,
+                      )
+                    )
+                      return;
+                    setNotice(null);
+                    startTransition(async () => {
+                      const result = await setServiceArchived(
+                        slug,
+                        s.id,
+                        s.active,
+                      );
+                      setNotice(result);
+                      if (result.ok) router.refresh();
+                    });
+                  }}
+                >
+                  {s.active ? <Archive size={15} /> : <RotateCcw size={15} />}
+                  {pending
+                    ? "Updating…"
+                    : s.active
+                      ? "Archive service"
+                      : "Restore service"}
+                </button>
               </div>
             )}
           </article>
@@ -87,11 +172,17 @@ export function ServiceList({
       {!filtered.length && (
         <div className="panel empty-state">
           <Scissors />
-          <h2>No services found</h2>
+          <h2>
+            {status === "archived" && category === "All services" && !search
+              ? "No archived services"
+              : "No services found"}
+          </h2>
           <p>
-            {search
+            {search || category !== "All services"
               ? "Try another name or category."
-              : "Add the first service to your menu."}
+              : status === "archived"
+                ? "Services you archive will appear here with their history preserved."
+                : "Add the first service to your menu."}
           </p>
         </div>
       )}
