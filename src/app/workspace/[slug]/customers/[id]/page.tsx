@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { WorkspaceLink as Link } from "@/components/workspace-link";
 import { CustomerSegment, SegmentRules } from "@/components/customer-segment";
 import { ArrowLeft } from "lucide-react";
 import { getCustomer } from "@/modules/customers/queries";

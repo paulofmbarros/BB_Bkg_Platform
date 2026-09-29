@@ -31,7 +31,9 @@ export default async function WorkspaceLayout({
                 hidden and appointment changes are disabled.
               </span>
             </div>
-            <Link href={`/admin/clients/${tenant.id}`}>Back to client</Link>
+            <Link href={`/admin/clients/${tenant.id}`} prefetch={false}>
+              Back to client
+            </Link>
           </div>
         )}
         <header className="topbar">
@@ -46,6 +48,7 @@ export default async function WorkspaceLayout({
               className="preview-link"
               href={`/preview/${slug}`}
               target="_blank"
+              prefetch={false}
             >
               View customer page <ArrowUpRight size={16} />
             </Link>

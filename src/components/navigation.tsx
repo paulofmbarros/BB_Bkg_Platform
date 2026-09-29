@@ -33,6 +33,7 @@ export function Navigation({
 }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const [pendingPath, setPendingPath] = useState("");
   const base = `/workspace/${slug}`;
   const links = [
     { path: "", label: "Overview", icon: LayoutDashboard },
@@ -46,7 +47,7 @@ export function Navigation({
   return (
     <>
       <div className="mobile-top">
-        <Link href={base} className="wordmark">
+        <Link href={base} className="wordmark" prefetch={false}>
           barbershop<span>os</span>
         </Link>
         <button
@@ -66,7 +67,7 @@ export function Navigation({
         />
       )}
       <aside className={`sidebar ${open ? "is-open" : ""}`}>
-        <Link className="wordmark" href={base}>
+        <Link className="wordmark" href={base} prefetch={false}>
           barbershop<span>os</span>
           <span className="wordmark-symbol">
             <Scissors size={19} />
@@ -92,7 +93,13 @@ export function Navigation({
             <Link
               key={path}
               onClick={() => setOpen(false)}
+              onNavigate={() => setPendingPath(`${base}${path}`)}
               href={`${base}${path}`}
+              prefetch={false}
+              aria-busy={
+                pendingPath === `${base}${path}` &&
+                pathname !== `${base}${path}`
+              }
               aria-current={
                 (path ? pathname.startsWith(base + path) : pathname === base)
                   ? "page"
@@ -102,6 +109,10 @@ export function Navigation({
             >
               <Icon size={18} />
               {label}
+              {pendingPath === `${base}${path}` &&
+                pathname !== `${base}${path}` && (
+                  <span className="nav-progress" aria-hidden="true" />
+                )}
             </Link>
           ))}
         </nav>
@@ -113,7 +124,7 @@ export function Navigation({
               <br />
               Your own experience.
             </p>
-            <Link href={`/preview/${slug}`} target="_blank">
+            <Link href={`/preview/${slug}`} target="_blank" prefetch={false}>
               Preview your page <ArrowUpRight size={16} />
             </Link>
           </div>
