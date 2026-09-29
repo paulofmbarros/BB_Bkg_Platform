@@ -50,7 +50,7 @@ References: [Vercel configuration](https://vercel.com/docs/project-configuration
 - Workspace: https://barbershop-os-staging.vercel.app
 - Shop booking: https://porto-gentlemen-staging.vercel.app/book
 - All 13 migrations applied through the CLI, with migration history preserved. Two synthetic shops were provisioned; only Porto has a hosted shop domain. Calendar, history and segment fixtures were added separately.
-- Three unique staging reviewer accounts were created without sending email. Owner access details are in the ignored local `.vercel/staging-access.md`; no credentials are committed.
+- Three tenant reviewer accounts and a separate platform operator were created without sending email. The platform operator has no shop membership, and shop owners have no platform-administration grant. Access details are in the ignored local `.vercel/staging-access.md`; no credentials are committed.
 - Vercel authentication protects all deployments and aliases. Both stable domains redirect unauthenticated requests to Vercel SSO. Public account registration is disabled; the recovery callback is restricted to the workspace HTTPS address.
 - The Supabase integration initially injected several privileged credentials into Vercel. Its secret, JWT and database-password/connection variables were removed before the successful build. Platform support mode now requires only the service-role key to be restored as an explicit server-only variable; the build guard continues to reject the other credentials.
 - Hosted clean install and production build pass. The lockfile was repaired under Linux/Node.js 22 to include two missing optional dependencies. Five configuration tests, TypeScript, lint and formatting checks pass.
