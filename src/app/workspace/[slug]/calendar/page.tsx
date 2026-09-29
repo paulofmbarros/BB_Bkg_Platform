@@ -1,7 +1,7 @@
-import Link from "next/link";
+import { WorkspaceLink as Link } from "@/components/workspace-link";
 import { z } from "zod";
 import { CalendarDays, ArrowLeft, ArrowRight, Plus } from "lucide-react";
-import { getBusiness } from "@/modules/businesses/queries";
+import { getCalendarBusiness } from "@/modules/businesses/queries";
 import {
   addDays,
   appointmentDate,
@@ -22,7 +22,7 @@ export default async function Calendar({
 }) {
   const { slug } = await params,
     search = await searchParams,
-    b = await getBusiness(slug);
+    b = await getCalendarBusiness(slug);
   const day = z.iso.date().safeParse(search.day).success
     ? search.day!
     : shopDate();
@@ -161,6 +161,7 @@ export default async function Calendar({
                   ) : (
                     <Link
                       href={`/workspace/${slug}/customers/${a.customer_id}`}
+                      prefetch={false}
                     >
                       {"customers" in a
                         ? (a.customers as CustomerBrief | null)?.display_name

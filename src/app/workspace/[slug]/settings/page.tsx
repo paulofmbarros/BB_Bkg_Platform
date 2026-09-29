@@ -1,7 +1,7 @@
-import Link from "next/link";
+import { WorkspaceLink as Link } from "@/components/workspace-link";
 import Image from "next/image";
 import { ArrowUpRight, Globe, LockKeyhole } from "lucide-react";
-import { getBusiness } from "@/modules/businesses/queries";
+import { getSettingsBusiness } from "@/modules/businesses/queries";
 import { BrandingForm, LogoForm } from "@/components/forms";
 import { initials, contrastText } from "@/lib/format";
 export default async function Settings({
@@ -10,7 +10,7 @@ export default async function Settings({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const b = await getBusiness(slug);
+  const b = await getSettingsBusiness(slug);
   return (
     <>
       <div className="page-heading">

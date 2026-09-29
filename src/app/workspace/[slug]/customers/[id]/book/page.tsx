@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { WorkspaceLink as Link } from "@/components/workspace-link";
 import { notFound } from "next/navigation";
 import { getCustomer } from "@/modules/customers/queries";
 import { getBusiness } from "@/modules/businesses/queries";

@@ -1,6 +1,6 @@
-import Link from "next/link";
+import { WorkspaceLink as Link } from "@/components/workspace-link";
 import { Plus, ArrowUpRight, Clock3, Scissors } from "lucide-react";
-import { getBusiness } from "@/modules/businesses/queries";
+import { getTeamBusiness } from "@/modules/businesses/queries";
 import { StaffForm } from "@/components/forms";
 import { Modal } from "@/components/ui";
 import { initials } from "@/lib/format";
@@ -11,7 +11,7 @@ export default async function Team({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const b = await getBusiness(slug);
+  const b = await getTeamBusiness(slug);
   const canEdit = b.role === "owner" || b.role === "manager";
   return (
     <>
@@ -69,6 +69,7 @@ export default async function Team({
               <Link
                 href={`/workspace/${slug}/team/${s.id}`}
                 className="team-detail-link"
+                prefetch={false}
               >
                 Profile & working hours <ArrowUpRight size={17} />
               </Link>

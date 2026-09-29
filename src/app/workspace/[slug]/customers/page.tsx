@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { WorkspaceLink as Link } from "@/components/workspace-link";
 import { segments, segmentLabels } from "@/modules/customers/segments";
 import { SegmentRules } from "@/components/customer-segment";
 import { ArrowUpRight, Search, UsersRound } from "lucide-react";
@@ -109,6 +109,7 @@ export default async function Customers({
               className="panel customer-row"
               href={`${path}/${customer.id}`}
               key={customer.id}
+              prefetch={false}
             >
               <span className={`avatar avatar-${i % 4}`}>
                 {initials(customer.display_name)}

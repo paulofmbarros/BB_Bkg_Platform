@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { WorkspaceLink as Link } from "@/components/workspace-link";
 import { ArrowRight, CalendarClock, UsersRound } from "lucide-react";
 import { getRebookingOpportunities } from "@/modules/customers/opportunities";
 import {
@@ -93,12 +93,14 @@ export default async function RebookingOpportunities({
                 <Link
                   className="button secondary"
                   href={`${path}/${opportunity.id}`}
+                  prefetch={false}
                 >
                   View profile
                 </Link>
                 <Link
                   className="button primary"
                   href={`${path}/${opportunity.id}/book`}
+                  prefetch={false}
                 >
                   Book next visit
                 </Link>

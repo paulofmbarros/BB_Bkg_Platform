@@ -1,7 +1,7 @@
-import Link from "next/link";
+import { WorkspaceLink as Link } from "@/components/workspace-link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Pencil } from "lucide-react";
-import { getBusiness } from "@/modules/businesses/queries";
+import { getStaffBusiness } from "@/modules/businesses/queries";
 import { StaffForm, HoursEditor, Exceptions } from "@/components/forms";
 import { Modal } from "@/components/ui";
 export default async function StaffProfile({
@@ -10,7 +10,7 @@ export default async function StaffProfile({
   params: Promise<{ slug: string; id: string }>;
 }) {
   const { slug, id } = await params;
-  const b = await getBusiness(slug);
+  const b = await getStaffBusiness(slug);
   const s = b.staff.find((s) => s.id === id);
   if (!s) notFound();
   const canEdit = b.role === "owner" || b.role === "manager";

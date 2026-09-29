@@ -1,5 +1,5 @@
 import { Clock3 } from "lucide-react";
-import { getBusiness } from "@/modules/businesses/queries";
+import { getHoursBusiness } from "@/modules/businesses/queries";
 import { HoursEditor, Exceptions } from "@/components/forms";
 export default async function Hours({
   params,
@@ -7,7 +7,7 @@ export default async function Hours({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const b = await getBusiness(slug);
+  const b = await getHoursBusiness(slug);
   const canEdit = b.role === "owner" || b.role === "manager";
   return (
     <>

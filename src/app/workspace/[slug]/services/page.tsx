@@ -1,5 +1,5 @@
 import { Plus } from "lucide-react";
-import { getBusiness } from "@/modules/businesses/queries";
+import { getServiceBusiness } from "@/modules/businesses/queries";
 import { ServiceList } from "@/components/service-list";
 import { ServiceForm } from "@/components/forms";
 import { Modal } from "@/components/ui";
@@ -9,7 +9,7 @@ export default async function Services({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const b = await getBusiness(slug);
+  const b = await getServiceBusiness(slug);
   const canEdit = b.role === "owner" || b.role === "manager";
   return (
     <>
