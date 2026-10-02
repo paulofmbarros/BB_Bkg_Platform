@@ -89,3 +89,11 @@ Every new appointment receives an audited protection snapshot after insertion, r
 Deposit and reminder records are tenant-owned, RLS-protected evidence. Managers mutate them only through narrow authorized transactions. Guest capabilities can request a Stripe Checkout session only for their own appointment. Stripe secrets remain server-only, webhook payloads require a current HMAC signature, and service-role-only finalizers make webhook retries idempotent. The application never handles payment credentials.
 
 The reporting view is security-invoker. Protected value is limited to paid, unrefunded deposits retained after a no-show or late cancellation. It deliberately excludes appointment prices, pending or refundable deposits, completed-service value and forecasts. See `revenue-protection.md`.
+
+## Revenue recovery
+
+Managers create bounded waitlist requests only for retained customer profiles with current, evidenced email consent. A request selects one service, a 90-day-or-shorter date window and an optional preferred staff member. Waitlist rows and recovery actions are tenant-owned, RLS-protected and audited; staff, other tenants, anonymous callers and platform support cannot use the workflow.
+
+The security-invoker opportunity view matches active requests to future cancelled appointments by service, date window and optional staff preference. It suppresses a released interval as soon as any non-cancelled appointment overlaps it. Outreach remains an explicit evidence action through an external approved channel: Noma does not send the message. An accepted offer reuses the locked profile-rebooking transaction to fill the exact released start time, then atomically links the new appointment to the waitlist contact.
+
+Booked service value is kept separate from recovered value. The latter counts only attributed appointments subsequently marked completed; it is not payment or collected revenue. See `revenue-recovery.md`.

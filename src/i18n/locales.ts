@@ -18,6 +18,7 @@ const portuguese: Record<string, string> = {
   Overview: "Visão geral",
   Calendar: "Agenda",
   "Revenue protection": "Proteção de receita",
+  "Revenue recovery": "Recuperação de receita",
   Customers: "Clientes",
   Services: "Serviços",
   Team: "Equipa",
@@ -521,6 +522,59 @@ const portuguese: Record<string, string> = {
   "This deposit cannot be refunded.": "Este depósito não pode ser reembolsado.",
   "Stripe refunds are not configured.":
     "Os reembolsos Stripe não estão configurados.",
+  "REVENUE RECOVERY": "RECUPERAÇÃO DE RECEITA",
+  "Put released time back to work.": "Volte a rentabilizar o tempo libertado.",
+  "Match cancelled appointments to consented customer requests, with evidence from contact to outcome.":
+    "Associe marcações canceladas a pedidos consentidos de clientes, com evidência desde o contacto até ao resultado.",
+  "Add waitlist request": "Adicionar pedido à lista de espera",
+  "Add a customer to the waitlist": "Adicionar cliente à lista de espera",
+  "Open cancelled slots": "Vagas de cancelamento abertas",
+  "Customer matches": "Clientes correspondentes",
+  "Recovery contacts": "Contactos de recuperação",
+  "booked service value": "valor de serviços marcados",
+  "Recovered value counts only attributed appointments that were completed.":
+    "O valor recuperado conta apenas marcações atribuídas que foram concluídas.",
+  "Noma does not send messages. Matches require recorded email consent and use only the requested service, date window and optional team preference.":
+    "A Noma não envia mensagens. As correspondências exigem consentimento de email registado e utilizam apenas o serviço, o intervalo de datas e a preferência opcional de profissional.",
+  "Cancellation matches": "Correspondências de cancelamentos",
+  "RELEASED TIME": "HORÁRIO LIBERTADO",
+  "current service value": "valor atual do serviço",
+  "WAITLIST MATCH": "CORRESPONDÊNCIA NA LISTA",
+  "Service and date window match; any team member accepted":
+    "Serviço e intervalo de datas correspondem; qualquer profissional aceite",
+  "Service, preferred team member and date window match":
+    "Serviço, profissional preferido e intervalo de datas correspondem",
+  "Recovery contact recorded": "Contacto de recuperação registado",
+  "Record contact": "Registar contacto",
+  "No cancellation matches right now.":
+    "Não existem correspondências de cancelamentos neste momento.",
+  "Future cancellations appear here when they match an active waitlist request.":
+    "Os cancelamentos futuros aparecem aqui quando correspondem a um pedido ativo na lista de espera.",
+  WAITLIST: "LISTA DE ESPERA",
+  "Active customer requests": "Pedidos ativos de clientes",
+  "Customer unavailable": "Cliente indisponível",
+  "Service unavailable": "Serviço indisponível",
+  "Date window": "Intervalo de datas",
+  "Team preference": "Preferência de profissional",
+  "Any available team member": "Qualquer profissional disponível",
+  "No active waitlist requests.":
+    "Não existem pedidos ativos na lista de espera.",
+  Customer: "Cliente",
+  "Preferred team member": "Profissional preferido",
+  From: "De",
+  Until: "Até",
+  "Add to waitlist": "Adicionar à lista de espera",
+  "Record email consent on a customer profile before adding a waitlist request.":
+    "Registe o consentimento de email no perfil do cliente antes de adicionar um pedido à lista de espera.",
+  "Add an active service before creating a waitlist request.":
+    "Adicione um serviço ativo antes de criar um pedido na lista de espera.",
+  "Close request": "Fechar pedido",
+  "Noma records this action but does not send the email.":
+    "A Noma regista esta ação, mas não envia o email.",
+  "Record recovery contact": "Registar contacto de recuperação",
+  "The customer accepted this exact time.":
+    "O cliente aceitou este horário exato.",
+  "Book released time": "Marcar horário libertado",
   "Cancel this appointment? Your time will be released.":
     "Cancelar esta marcação? O horário ficará novamente disponível.",
   "Copy the full address from your browser to save your link.":

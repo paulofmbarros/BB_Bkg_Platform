@@ -1244,6 +1244,176 @@ export type Database = {
         }
         Relationships: []
       }
+      waitlist_entries: {
+        Row: {
+          closed_at: string | null
+          created_at: string
+          created_by: string
+          customer_id: string
+          earliest_date: string
+          id: string
+          latest_date: string
+          preferred_staff_id: string | null
+          service_id: string
+          status: string
+          tenant_id: string
+        }
+        Insert: {
+          closed_at?: string | null
+          created_at?: string
+          created_by?: string
+          customer_id: string
+          earliest_date: string
+          id?: string
+          latest_date: string
+          preferred_staff_id?: string | null
+          service_id: string
+          status?: string
+          tenant_id: string
+        }
+        Update: {
+          closed_at?: string | null
+          created_at?: string
+          created_by?: string
+          customer_id?: string
+          earliest_date?: string
+          id?: string
+          latest_date?: string
+          preferred_staff_id?: string | null
+          service_id?: string
+          status?: string
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "waitlist_entries_tenant_id_customer_id_fkey"
+            columns: ["tenant_id", "customer_id"]
+            isOneToOne: false
+            referencedRelation: "customer_rebooking_opportunities"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "waitlist_entries_tenant_id_customer_id_fkey"
+            columns: ["tenant_id", "customer_id"]
+            isOneToOne: false
+            referencedRelation: "customer_retention_health"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "waitlist_entries_tenant_id_customer_id_fkey"
+            columns: ["tenant_id", "customer_id"]
+            isOneToOne: false
+            referencedRelation: "customer_segments"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "waitlist_entries_tenant_id_customer_id_fkey"
+            columns: ["tenant_id", "customer_id"]
+            isOneToOne: false
+            referencedRelation: "customer_summaries"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "waitlist_entries_tenant_id_customer_id_fkey"
+            columns: ["tenant_id", "customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "waitlist_entries_tenant_id_preferred_staff_id_fkey"
+            columns: ["tenant_id", "preferred_staff_id"]
+            isOneToOne: false
+            referencedRelation: "staff_members"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "waitlist_entries_tenant_id_service_id_fkey"
+            columns: ["tenant_id", "service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["tenant_id", "id"]
+          },
+        ]
+      }
+      waitlist_recovery_actions: {
+        Row: {
+          attributed_appointment_id: string | null
+          attributed_at: string | null
+          channel: string
+          consent_event_id: string
+          contacted_at: string
+          contacted_by: string
+          id: string
+          message: string
+          source_appointment_id: string
+          tenant_id: string
+          waitlist_entry_id: string
+        }
+        Insert: {
+          attributed_appointment_id?: string | null
+          attributed_at?: string | null
+          channel: string
+          consent_event_id: string
+          contacted_at?: string
+          contacted_by?: string
+          id?: string
+          message: string
+          source_appointment_id: string
+          tenant_id: string
+          waitlist_entry_id: string
+        }
+        Update: {
+          attributed_appointment_id?: string | null
+          attributed_at?: string | null
+          channel?: string
+          consent_event_id?: string
+          contacted_at?: string
+          contacted_by?: string
+          id?: string
+          message?: string
+          source_appointment_id?: string
+          tenant_id?: string
+          waitlist_entry_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "waitlist_recovery_actions_tenant_id_attributed_appointment_fkey"
+            columns: ["tenant_id", "attributed_appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "waitlist_recovery_actions_tenant_id_consent_event_id_fkey"
+            columns: ["tenant_id", "consent_event_id"]
+            isOneToOne: false
+            referencedRelation: "customer_consent_events"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "waitlist_recovery_actions_tenant_id_source_appointment_id_fkey"
+            columns: ["tenant_id", "source_appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "waitlist_recovery_actions_tenant_id_waitlist_entry_id_fkey"
+            columns: ["tenant_id", "waitlist_entry_id"]
+            isOneToOne: false
+            referencedRelation: "revenue_recovery_opportunities"
+            referencedColumns: ["tenant_id", "waitlist_entry_id"]
+          },
+          {
+            foreignKeyName: "waitlist_recovery_actions_tenant_id_waitlist_entry_id_fkey"
+            columns: ["tenant_id", "waitlist_entry_id"]
+            isOneToOne: false
+            referencedRelation: "waitlist_entries"
+            referencedColumns: ["tenant_id", "id"]
+          },
+        ]
+      }
     }
     Views: {
       customer_rebooking_opportunities: {
@@ -1405,9 +1575,90 @@ export type Database = {
           },
         ]
       }
+      revenue_recovery_opportunities: {
+        Row: {
+          attributed_appointment_id: string | null
+          blocked_until: string | null
+          cancelled_at: string | null
+          contacted_at: string | null
+          customer_email: string | null
+          customer_id: string | null
+          customer_name: string | null
+          earliest_date: string | null
+          ends_at: string | null
+          latest_date: string | null
+          match_reason: string | null
+          preferred_staff_id: string | null
+          price_minor: number | null
+          recovery_action_id: string | null
+          service_id: string | null
+          service_name: string | null
+          source_appointment_id: string | null
+          staff_id: string | null
+          staff_name: string | null
+          starts_at: string | null
+          tenant_id: string | null
+          waitlist_entry_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "waitlist_entries_tenant_id_customer_id_fkey"
+            columns: ["tenant_id", "customer_id"]
+            isOneToOne: false
+            referencedRelation: "customer_rebooking_opportunities"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "waitlist_entries_tenant_id_customer_id_fkey"
+            columns: ["tenant_id", "customer_id"]
+            isOneToOne: false
+            referencedRelation: "customer_retention_health"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "waitlist_entries_tenant_id_customer_id_fkey"
+            columns: ["tenant_id", "customer_id"]
+            isOneToOne: false
+            referencedRelation: "customer_segments"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "waitlist_entries_tenant_id_customer_id_fkey"
+            columns: ["tenant_id", "customer_id"]
+            isOneToOne: false
+            referencedRelation: "customer_summaries"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "waitlist_entries_tenant_id_customer_id_fkey"
+            columns: ["tenant_id", "customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "waitlist_entries_tenant_id_preferred_staff_id_fkey"
+            columns: ["tenant_id", "preferred_staff_id"]
+            isOneToOne: false
+            referencedRelation: "staff_members"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "waitlist_entries_tenant_id_service_id_fkey"
+            columns: ["tenant_id", "service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["tenant_id", "id"]
+          },
+        ]
+      }
     }
     Functions: {
       accept_platform_invitation: { Args: { p_id: string }; Returns: string }
+      book_waitlist_recovery: {
+        Args: { p_action: string; p_request: string; p_tenant: string }
+        Returns: string
+      }
       booking_deposit_details: {
         Args: { p_host: string; p_token: string }
         Returns: Json
@@ -1425,6 +1676,10 @@ export type Database = {
         Args: { p_actor: string; p_id: string }
         Returns: Json
       }
+      close_waitlist_entry: {
+        Args: { p_entry: string; p_tenant: string }
+        Returns: undefined
+      }
       create_booking: {
         Args: {
           p_email: string
@@ -1435,6 +1690,17 @@ export type Database = {
           p_staff: string
           p_start: string
           p_token: string
+        }
+        Returns: string
+      }
+      create_waitlist_entry: {
+        Args: {
+          p_customer: string
+          p_earliest: string
+          p_latest: string
+          p_service: string
+          p_staff: string
+          p_tenant: string
         }
         Returns: string
       }
@@ -1558,11 +1824,22 @@ export type Database = {
         Args: { p_appointment: string; p_tenant: string }
         Returns: string
       }
+      record_waitlist_recovery_contact: {
+        Args: {
+          p_confirmed: boolean
+          p_entry: string
+          p_message: string
+          p_source: string
+          p_tenant: string
+        }
+        Returns: string
+      }
       register_stripe_deposit_checkout: {
         Args: { p_host: string; p_session: string; p_token: string }
         Returns: string
       }
       revenue_protection_summary: { Args: { p_tenant: string }; Returns: Json }
+      revenue_recovery_summary: { Args: { p_tenant: string }; Returns: Json }
       save_branding: {
         Args: {
           p_accent: string

@@ -15,6 +15,7 @@ import {
   LogOut,
   PanelLeftClose,
   ShieldCheck,
+  RefreshCw,
 } from "lucide-react";
 import { signOut } from "@/modules/identity/actions";
 import { initials } from "@/lib/format";
@@ -47,6 +48,11 @@ export function Navigation({
             path: "/revenue-protection",
             label: t("Revenue protection"),
             icon: ShieldCheck,
+          },
+          {
+            path: "/revenue-recovery",
+            label: t("Revenue recovery"),
+            icon: RefreshCw,
           },
         ]
       : []),
