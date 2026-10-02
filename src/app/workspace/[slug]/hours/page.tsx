@@ -1,6 +1,7 @@
 import { Clock3 } from "lucide-react";
 import { getHoursBusiness } from "@/modules/businesses/queries";
 import { HoursEditor, Exceptions } from "@/components/forms";
+import { localeOrEnglish, translator } from "@/i18n/locales";
 export default async function Hours({
   params,
 }: {
@@ -8,16 +9,24 @@ export default async function Hours({
 }) {
   const { slug } = await params;
   const b = await getHoursBusiness(slug);
+  const t = translator(
+    b.supportMode ? "en" : localeOrEnglish(b.tenant.workspace_locale),
+  );
   const canEdit = b.role === "owner" || b.role === "manager";
   return (
     <>
       <div className="page-heading">
         <div>
-          <span className="eyebrow">ROOM FOR WORK. TIME FOR LIFE.</span>
+          <span className="eyebrow">{t("ROOM FOR WORK. TIME FOR LIFE.")}</span>
           <h1>
-            Your regular rhythm<span className="accent-period">.</span>
+            {t("Your regular rhythm")}
+            <span className="accent-period">.</span>
           </h1>
-          <p>Set the shop’s opening hours and make space for a proper break.</p>
+          <p>
+            {t(
+              "Set the shop’s opening hours and make space for a proper break.",
+            )}
+          </p>
         </div>
         <span className="timezone-label">
           <Clock3 size={16} />
@@ -27,10 +36,10 @@ export default async function Hours({
       <section className="panel">
         <div className="panel-heading">
           <div>
-            <h2>Opening hours</h2>
-            <p>Your customer page uses this weekly schedule.</p>
+            <h2>{t("Opening hours")}</h2>
+            <p>{t("Your customer page uses this weekly schedule.")}</p>
           </div>
-          <span className="status-pill">Weekly schedule</span>
+          <span className="status-pill">{t("Weekly schedule")}</span>
         </div>
         <HoursEditor
           slug={slug}
@@ -45,8 +54,9 @@ export default async function Hours({
         readOnly={!canEdit}
       />
       <p className="section-note">
-        Individual working hours and time off can be adjusted in each team
-        member’s profile.
+        {t(
+          "Individual working hours and time off can be adjusted in each team member’s profile.",
+        )}
       </p>
     </>
   );

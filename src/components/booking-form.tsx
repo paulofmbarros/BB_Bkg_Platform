@@ -11,6 +11,7 @@ import {
   type Slot,
 } from "@/modules/bookings/types";
 import { money } from "@/lib/format";
+import { useLocale, useTranslations } from "@/i18n/provider";
 
 export function SlotPicker({
   service,
@@ -31,6 +32,8 @@ export function SlotPicker({
   refresh?: number;
   api?: string;
 }) {
+  const t = useTranslations();
+  const locale = useLocale();
   const requestKey = JSON.stringify([service, staff, day, refresh, api]);
   const [result, setResult] = useState<{
     key: string;
@@ -61,15 +64,17 @@ export function SlotPicker({
             key: requestKey,
             slots: [],
             error:
-              error instanceof Error ? error.message : "Unable to load times.",
+              error instanceof Error
+                ? t(error.message)
+                : t("Unable to load times."),
           });
       });
     return () => controller.abort();
-  }, [service, staff, day, refresh, api, requestKey]);
+  }, [service, staff, day, refresh, api, requestKey, t]);
   return (
     <div className="slot-picker">
       <label className="field">
-        Date
+        {t("Date")}
         <input
           type="date"
           required
@@ -83,23 +88,23 @@ export function SlotPicker({
         />
       </label>
       <p className="field-help">
-        Times in Portugal · Book 30 minutes to 90 days ahead.
+        {t("Times in Portugal · Book 30 minutes to 90 days ahead.")}
       </p>
       {loading ? (
-        <p role="status">Finding available times…</p>
+        <p role="status">{t("Finding available times…")}</p>
       ) : error ? (
         <p role="alert" className="notice failure">
           {error}
         </p>
       ) : !service || !staff ? (
-        <p>Choose your service and barber first.</p>
+        <p>{t("Choose your service and barber first.")}</p>
       ) : slots.length === 0 ? (
         <p role="status" className="empty-times">
-          No times available. Try another day or barber.
+          {t("No times available. Try another day or barber.")}
         </p>
       ) : (
         <fieldset className="slot-fieldset">
-          <legend>Available times</legend>
+          <legend>{t("Available times")}</legend>
           <div className="slot-grid">
             {slots.map((slot) => (
               <button
@@ -109,7 +114,7 @@ export function SlotPicker({
                 aria-pressed={selected === slot.starts_at}
                 onClick={() => onSelect(slot.starts_at)}
               >
-                {slotLabel(slot.starts_at)}
+                {slotLabel(slot.starts_at, locale)}
               </button>
             ))}
           </div>
@@ -125,6 +130,8 @@ export function BookingForm({
   shop: PublicShop;
   initialService?: string;
 }) {
+  const t = useTranslations();
+  const locale = useLocale();
   const router = useRouter();
   const [service, setService] = useState(
     shop.services.some((s) => s.id === initialService)
@@ -185,8 +192,8 @@ export function BookingForm({
         } catch (error) {
           setError(
             error instanceof Error
-              ? error.message
-              : "Couldn’t book. Please try again.",
+              ? t(error.message)
+              : t("Couldn’t book. Please try again."),
           );
           setRefresh((n) => n + 1);
           setBusy(false);
@@ -194,9 +201,9 @@ export function BookingForm({
       }}
     >
       <div className="booking-step">
-        <span className="eyebrow">01 · YOUR VISIT</span>
+        <span className="eyebrow">{t("01 · YOUR VISIT")}</span>
         <label className="field">
-          Service
+          {t("Service")}
           <select
             value={service}
             onChange={(e) => {
@@ -206,13 +213,14 @@ export function BookingForm({
           >
             {shop.services.map((s) => (
               <option key={s.id} value={s.id}>
-                {s.name} · {money(s.price_minor)} · {s.duration_minutes} min
+                {s.name} · {money(s.price_minor, locale)} · {s.duration_minutes}{" "}
+                min
               </option>
             ))}
           </select>
         </label>
         <label className="field">
-          Barber
+          {t("Barber")}
           <select
             value={selectedStaff}
             onChange={(e) => {
@@ -229,7 +237,7 @@ export function BookingForm({
         </label>
       </div>
       <div className="booking-step">
-        <span className="eyebrow">02 · MAKE TIME FOR YOURSELF</span>
+        <span className="eyebrow">{t("02 · MAKE TIME FOR YOURSELF")}</span>
         <SlotPicker
           service={service}
           staff={selectedStaff}
@@ -241,9 +249,9 @@ export function BookingForm({
         />
       </div>
       <div className="booking-step">
-        <span className="eyebrow">03 · A FEW DETAILS</span>
+        <span className="eyebrow">{t("03 · A FEW DETAILS")}</span>
         <label className="field">
-          Your name
+          {t("Your name")}
           <input
             name="name"
             autoComplete="name"
@@ -253,7 +261,7 @@ export function BookingForm({
           />
         </label>
         <label className="field">
-          Email address
+          {t("Email address")}
           <input
             name="email"
             type="email"
@@ -263,27 +271,31 @@ export function BookingForm({
           />
         </label>
         <p className="field-help">
-          We use these details for your appointment. You are not signing up for
-          marketing.
+          {t(
+            "We use these details for your appointment. You are not signing up for marketing.",
+          )}
         </p>
       </div>
       <div className="booking-summary">
         <strong>
-          {selectedService?.name} · {money(selectedService?.price_minor ?? 0)}
+          {selectedService?.name} ·{" "}
+          {money(selectedService?.price_minor ?? 0, locale)}
         </strong>
         <p>
           {start
             ? `${day} at ${slotLabel(start)}`
-            : "Choose an available time to continue."}
+            : t("Choose an available time to continue.")}
         </p>
         <p>
-          Pay at the shop. Cancel or reschedule free before your appointment
-          starts using your private link.
+          {t(
+            "Pay at the shop. Cancel or reschedule free before your appointment starts using your private link.",
+          )}
         </p>
         {shop.is_demo && (
           <p>
-            Fictional shop: use made-up contact details. No email or payment is
-            sent.
+            {t(
+              "Fictional shop: use made-up contact details. No email or payment is sent.",
+            )}
           </p>
         )}
       </div>
@@ -293,10 +305,10 @@ export function BookingForm({
         </p>
       )}
       <button className="button shop-button" disabled={busy || !start}>
-        {busy ? "Booking your visit…" : "Confirm appointment"}
+        {t(busy ? "Booking your visit…" : "Confirm appointment")}
       </button>
       <Link href="/" className="text-link">
-        Back to the shop
+        {t("Back to the shop")}
       </Link>
     </form>
   );

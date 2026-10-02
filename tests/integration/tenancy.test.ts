@@ -116,6 +116,39 @@ describe("Database-enforced tenant boundaries", () => {
       .eq("id", A);
     expect(active.error).not.toBeNull();
   });
+  it("lets only the owner configure private and public tenant languages", async () => {
+    const managerUpdate = await manager
+      .from("tenants")
+      .update({ workspace_locale: "pt", public_locale: "pt" })
+      .eq("id", A)
+      .select();
+    expect(managerUpdate.data).toEqual([]);
+
+    const ownerUpdate = await owner
+      .from("tenants")
+      .update({ workspace_locale: "pt", public_locale: "pt" })
+      .eq("id", A)
+      .select("workspace_locale,public_locale")
+      .single();
+    expect(ownerUpdate.error).toBeNull();
+    expect(ownerUpdate.data).toEqual({
+      workspace_locale: "pt",
+      public_locale: "pt",
+    });
+    try {
+      const anon = client();
+      const publicShop = await anon.rpc("get_public_shop", {
+        p_hostname: "porto-gentlemen.localhost",
+      });
+      expect(publicShop.error).toBeNull();
+      expect(publicShop.data.public_locale).toBe("pt");
+    } finally {
+      await owner
+        .from("tenants")
+        .update({ workspace_locale: "en", public_locale: "en" })
+        .eq("id", A);
+    }
+  });
   it("cannot attach a service from another tenant to local staff", async () => {
     const { error } = await owner.from("staff_services").insert({
       tenant_id: A,

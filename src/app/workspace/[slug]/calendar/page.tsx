@@ -11,6 +11,7 @@ import {
 import { publicShopUrl } from "@/modules/bookings/public-context";
 import { money } from "@/lib/format";
 import { AppointmentControls } from "@/components/appointment-controls";
+import { localeOrEnglish, translator } from "@/i18n/locales";
 
 type CustomerBrief = { display_name: string; email: string };
 export default async function Calendar({
@@ -26,6 +27,10 @@ export default async function Calendar({
   const day = z.iso.date().safeParse(search.day).success
     ? search.day!
     : shopDate();
+  const locale = b.supportMode
+    ? "en"
+    : localeOrEnglish(b.tenant.workspace_locale);
+  const t = translator(locale);
   const { data, error } = b.supportMode
     ? await b.db
         .from("appointments")
@@ -60,12 +65,12 @@ export default async function Calendar({
     <>
       <div className="page-heading">
         <div>
-          <span className="eyebrow">TIME WELL SPENT</span>
-          <h1>Your day, in good hands.</h1>
+          <span className="eyebrow">{t("TIME WELL SPENT")}</span>
+          <h1>{t("Your day, in good hands.")}</h1>
           <p>
             {b.role === "staff"
-              ? "Your appointments and the people coming to see you."
-              : "A clear view of who’s coming in and what’s next."}
+              ? t("Your appointments and the people coming to see you.")
+              : t("A clear view of who’s coming in and what’s next.")}
           </p>
         </div>
         {domain && b.role !== "staff" && !b.supportMode && (
@@ -76,7 +81,7 @@ export default async function Calendar({
             rel="noreferrer"
           >
             <Plus size={16} />
-            New appointment
+            {t("New appointment")}
           </a>
         )}
       </div>
@@ -85,25 +90,29 @@ export default async function Calendar({
           <Link
             className="icon-button"
             href={dayLink(-1)}
-            aria-label="Previous day"
+            aria-label={t("Previous day")}
           >
             <ArrowLeft size={18} />
           </Link>
-          <h2>{appointmentDate(`${day}T12:00:00Z`)}</h2>
-          <Link className="icon-button" href={dayLink(1)} aria-label="Next day">
+          <h2>{appointmentDate(`${day}T12:00:00Z`, locale)}</h2>
+          <Link
+            className="icon-button"
+            href={dayLink(1)}
+            aria-label={t("Next day")}
+          >
             <ArrowRight size={18} />
           </Link>
         </div>
         <form className="calendar-filters">
           <label>
-            Date
+            {t("Date")}
             <input type="date" name="day" defaultValue={day} required />
           </label>
           <label>
-            Barber
+            {t("Barber")}
             <select name="staff" defaultValue={search.staff ?? ""}>
               <option value="">
-                {b.role === "staff" ? "My schedule" : "All barbers"}
+                {b.role === "staff" ? t("My schedule") : t("All barbers")}
               </option>
               {visibleStaff.map((s) => (
                 <option key={s.id} value={s.id}>
@@ -112,34 +121,37 @@ export default async function Calendar({
               ))}
             </select>
           </label>
-          <button className="button secondary">Show day</button>
+          <button className="button secondary">{t("Show day")}</button>
           <Link className="text-link" href={path}>
-            Today
+            {t("Today")}
           </Link>
         </form>
       </section>
       <div className="calendar-summary">
         <span>
-          <strong>{confirmed.length}</strong> confirmed visits
+          <strong>{confirmed.length}</strong> {t("confirmed visits")}
         </span>
         <span>
           <strong>
-            {money(confirmed.reduce((sum, a) => sum + a.price_minor, 0))}
+            {money(
+              confirmed.reduce((sum, a) => sum + a.price_minor, 0),
+              locale,
+            )}
           </strong>{" "}
-          scheduled value · unpaid
+          {t("scheduled value · unpaid")}
         </span>
-        <span>Portugal local time</span>
+        <span>{t("Portugal local time")}</span>
       </div>
       <section
         className="calendar-agenda"
-        aria-label="Appointments for selected day"
+        aria-label={t("Appointments for selected day")}
       >
         {appointments.length === 0 ? (
           <div className="panel calendar-empty">
             <CalendarDays size={34} />
-            <h2>A little room in the day.</h2>
-            <p>No appointments for this date and barber.</p>
-            <p>New bookings will appear here once confirmed.</p>
+            <h2>{t("A little room in the day.")}</h2>
+            <p>{t("No appointments for this date and barber.")}</p>
+            <p>{t("New bookings will appear here once confirmed.")}</p>
           </div>
         ) : (
           appointments.map((a) => (
@@ -148,16 +160,18 @@ export default async function Calendar({
               key={a.id}
             >
               <div className="appointment-time">
-                <strong>{slotLabel(a.starts_at)}</strong>
-                <span>to {slotLabel(a.ends_at)}</span>
+                <strong>{slotLabel(a.starts_at, locale)}</strong>
+                <span>
+                  {t("to")} {slotLabel(a.ends_at, locale)}
+                </span>
               </div>
               <div className="appointment-detail">
                 <span className={`status-badge status-${a.status}`}>
-                  {a.status.replace("_", " ")}
+                  {t(a.status.replace("_", " "))}
                 </span>
                 <h2>
                   {b.supportMode ? (
-                    "Customer details hidden"
+                    t("Customer details hidden")
                   ) : (
                     <Link
                       href={`/workspace/${slug}/customers/${a.customer_id}`}
@@ -177,7 +191,7 @@ export default async function Calendar({
                     {(a.customers as CustomerBrief | null)?.email}
                   </p>
                 )}
-                <strong>{money(a.price_minor)}</strong>
+                <strong>{money(a.price_minor, locale)}</strong>
                 {a.status === "confirmed" &&
                   b.role !== "staff" &&
                   !b.supportMode && (
@@ -197,8 +211,9 @@ export default async function Calendar({
         )}
       </section>
       <p className="field-help">
-        Changes to working hours apply to new bookings. Review existing
-        appointments before adding leave or closures.
+        {t(
+          "Changes to working hours apply to new bookings. Review existing appointments before adding leave or closures.",
+        )}
       </p>
     </>
   );

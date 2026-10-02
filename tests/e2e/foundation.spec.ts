@@ -220,6 +220,43 @@ test("branding reaches the verified public domain without leaking another shop",
   await expect(guest.locator("body")).not.toContainText("Porto Gentlemen");
   await guestContext.close();
 });
+test("owner can set separate workspace and public languages", async ({
+  page,
+  browser,
+}) => {
+  await login(page);
+  await page.getByRole("link", { name: "Brand & business" }).click();
+  await page.getByLabel("Owner workspace language").selectOption("pt");
+  await page.getByLabel("Public shop and booking language").selectOption("pt");
+  await page.getByRole("button", { name: "Save language settings" }).click();
+  await expect(page.getByRole("status")).toContainText("Idiomas guardados");
+  await expect(page.getByRole("link", { name: "Visão geral" })).toBeVisible();
+
+  const guestContext = await browser.newContext();
+  const guest = await guestContext.newPage();
+  await guest.goto("http://porto-gentlemen.localhost:3000");
+  await expect(
+    guest.getByRole("link", { name: "Marcar uma visita", exact: true }),
+  ).toBeVisible();
+  await guest
+    .getByRole("link", { name: "Marcar uma visita", exact: true })
+    .click();
+  await expect(guest.getByRole("heading", { level: 1 })).toHaveText(
+    "Marque a sua próxima visita.",
+  );
+  await expect(guest.getByLabel("Serviço")).toBeVisible();
+  await guestContext.close();
+
+  await page.getByLabel("Idioma da área do proprietário").selectOption("en");
+  await page
+    .getByLabel("Idioma da página pública e das marcações")
+    .selectOption("en");
+  await page.getByRole("button", { name: "Guardar idiomas" }).click();
+  await expect(page.getByRole("status")).toContainText(
+    "Language settings saved",
+  );
+  await expect(page.getByRole("link", { name: "Overview" })).toBeVisible();
+});
 test("other tenants and staff cannot enter management actions", async ({
   page,
 }) => {

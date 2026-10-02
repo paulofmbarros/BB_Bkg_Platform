@@ -18,6 +18,7 @@ import {
   type ActionResult,
 } from "@/modules/businesses/actions";
 import type { Database } from "@/lib/supabase/database.types";
+import { useLocale, useTranslations } from "@/i18n/provider";
 type Service = Database["public"]["Tables"]["services"]["Row"];
 type ServiceStatus = "current" | "archived" | "all";
 export function ServiceList({
@@ -29,6 +30,8 @@ export function ServiceList({
   services: Service[];
   canEdit: boolean;
 }) {
+  const t = useTranslations();
+  const locale = useLocale();
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All services");
   const [status, setStatus] = useState<ServiceStatus>("current");
@@ -44,21 +47,21 @@ export function ServiceList({
   const statuses: { value: ServiceStatus; label: string; count: number }[] = [
     {
       value: "current",
-      label: "Current",
+      label: t("Current"),
       count: services.filter((service) => service.active).length,
     },
     {
       value: "archived",
-      label: "Archived",
+      label: t("Archived"),
       count: services.filter((service) => !service.active).length,
     },
-    { value: "all", label: "All", count: services.length },
+    { value: "all", label: t("All"), count: services.length },
   ];
   return (
     <>
       <div className="list-toolbar">
         <div className="service-filters">
-          <div className="filter-tabs" aria-label="Service status">
+          <div className="filter-tabs" aria-label={t("Service status")}>
             {statuses.map((option) => (
               <button
                 key={option.value}
@@ -70,7 +73,7 @@ export function ServiceList({
               </button>
             ))}
           </div>
-          <div className="filter-tabs" aria-label="Service category">
+          <div className="filter-tabs" aria-label={t("Service category")}>
             {["All services", "Hair", "Beard", "Rituals"].map((c) => (
               <button
                 key={c}
@@ -78,7 +81,7 @@ export function ServiceList({
                 className={category === c ? "selected" : ""}
                 onClick={() => setCategory(c)}
               >
-                {c}
+                {t(c)}
               </button>
             ))}
           </div>
@@ -86,8 +89,8 @@ export function ServiceList({
         <label className="search-field">
           <Search size={17} />
           <input
-            aria-label="Search services"
-            placeholder="Find a service…"
+            aria-label={t("Search services")}
+            placeholder={t("Find a service…")}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -109,25 +112,27 @@ export function ServiceList({
                 <Scissors size={23} strokeWidth={1.4} />
               </span>
               <span className={`status-pill ${s.active ? "" : "inactive"}`}>
-                {s.active ? "On the menu" : "Archived"}
+                {t(s.active ? "On the menu" : "Archived")}
               </span>
             </div>
-            <span className="eyebrow">{s.category.toUpperCase()}</span>
+            <span className="eyebrow">{t(s.category).toUpperCase()}</span>
             <h2>{s.name}</h2>
-            <p>{s.description || "No description added yet."}</p>
+            <p>{s.description || t("No description added yet.")}</p>
             <div className="service-details">
               <span>
                 <Clock3 size={15} />
                 {s.duration_minutes} min{" "}
-                <small>+ {s.buffer_minutes} min buffer</small>
+                <small>
+                  + {s.buffer_minutes} {t("min buffer")}
+                </small>
               </span>
-              <strong>{money(s.price_minor)}</strong>
+              <strong>{money(s.price_minor, locale)}</strong>
             </div>
             {canEdit && (
               <div className="service-action">
                 <Modal
-                  label="Edit service"
-                  title={`Edit ${s.name}`}
+                  label={t("Edit service")}
+                  title={`${t("Edit")} ${s.name}`}
                   className="text-link"
                   icon={<ArrowUpRight size={15} />}
                 >
@@ -141,7 +146,9 @@ export function ServiceList({
                     if (
                       s.active &&
                       !window.confirm(
-                        `Archive ${s.name}? It will disappear from new bookings, but existing appointments and reporting will be preserved.`,
+                        locale === "pt"
+                          ? `Arquivar ${s.name}? Deixará de aparecer em novas marcações, mas as marcações existentes e o histórico serão preservados.`
+                          : `Archive ${s.name}? It will disappear from new bookings, but existing appointments and reporting will be preserved.`,
                       )
                     )
                       return;
@@ -159,10 +166,10 @@ export function ServiceList({
                 >
                   {s.active ? <Archive size={15} /> : <RotateCcw size={15} />}
                   {pending
-                    ? "Updating…"
+                    ? t("Updating…")
                     : s.active
-                      ? "Archive service"
-                      : "Restore service"}
+                      ? t("Archive service")
+                      : t("Restore service")}
                 </button>
               </div>
             )}
@@ -174,28 +181,32 @@ export function ServiceList({
           <Scissors />
           <h2>
             {status === "archived" && category === "All services" && !search
-              ? "No archived services"
-              : "No services found"}
+              ? t("No archived services")
+              : t("No services found")}
           </h2>
           <p>
             {search || category !== "All services"
-              ? "Try another name or category."
+              ? t("Try another name or category.")
               : status === "archived"
-                ? "Services you archive will appear here with their history preserved."
-                : "Add the first service to your menu."}
+                ? t(
+                    "Services you archive will appear here with their history preserved.",
+                  )
+                : t("Add the first service to your menu.")}
           </p>
         </div>
       )}
       {canEdit && (
         <div className="inline-add">
           <Modal
-            label="Add another service"
-            title="Add a service"
+            label={t("Add another service")}
+            title={t("Add a service")}
             icon={<Plus size={16} />}
           >
             <ServiceForm slug={slug} />
           </Modal>
-          <span>Prices and durations are always set by your business.</span>
+          <span>
+            {t("Prices and durations are always set by your business.")}
+          </span>
         </div>
       )}
     </>

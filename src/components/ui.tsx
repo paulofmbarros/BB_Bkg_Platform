@@ -3,6 +3,7 @@ import { useRef, type ReactNode } from "react";
 import { useFormStatus } from "react-dom";
 import { Check, LoaderCircle, X } from "lucide-react";
 import type { ActionResult } from "@/modules/businesses/actions";
+import { useTranslations } from "@/i18n/provider";
 
 export function SubmitButton({
   children = "Save changes",
@@ -12,21 +13,23 @@ export function SubmitButton({
   className?: string;
 }) {
   const { pending } = useFormStatus();
+  const t = useTranslations();
   return (
     <button className={className} type="submit" disabled={pending}>
       {pending ? <LoaderCircle size={16} className="spin" /> : null}
-      {pending ? "Saving…" : children}
+      {pending ? t("Saving…") : children}
     </button>
   );
 }
 export function FormNotice({ state }: { state: ActionResult }) {
+  const t = useTranslations();
   if (!state.message) return null;
   return (
     <p
       role={state.ok ? "status" : "alert"}
       className={`notice ${state.ok ? "success" : "failure"}`}
     >
-      {state.ok && <Check size={16} />} {state.message}
+      {state.ok && <Check size={16} />} {t(state.message)}
     </p>
   );
 }
@@ -44,6 +47,7 @@ export function Modal({
   icon?: ReactNode;
 }) {
   const ref = useRef<HTMLDialogElement>(null);
+  const t = useTranslations();
   return (
     <>
       <button className={className} onClick={() => ref.current?.showModal()}>
@@ -63,7 +67,7 @@ export function Modal({
           <button
             type="button"
             className="icon-button"
-            aria-label="Close dialog"
+            aria-label={t("Close dialog")}
             onClick={() => ref.current?.close()}
           >
             <X size={20} />

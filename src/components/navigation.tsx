@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { signOut } from "@/modules/identity/actions";
 import { initials } from "@/lib/format";
+import { useTranslations } from "@/i18n/provider";
 
 export function Navigation({
   slug,
@@ -31,18 +32,19 @@ export function Navigation({
   email: string;
   supportMode?: boolean;
 }) {
+  const t = useTranslations();
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [pendingPath, setPendingPath] = useState("");
   const base = `/workspace/${slug}`;
   const links = [
-    { path: "", label: "Overview", icon: LayoutDashboard },
-    { path: "/calendar", label: "Calendar", icon: CalendarDays },
-    { path: "/customers", label: "Customers", icon: UsersRound },
-    { path: "/services", label: "Services", icon: Scissors },
-    { path: "/team", label: "Team", icon: UsersRound },
-    { path: "/hours", label: "Opening hours", icon: Clock3 },
-    { path: "/settings", label: "Brand & business", icon: Palette },
+    { path: "", label: t("Overview"), icon: LayoutDashboard },
+    { path: "/calendar", label: t("Calendar"), icon: CalendarDays },
+    { path: "/customers", label: t("Customers"), icon: UsersRound },
+    { path: "/services", label: t("Services"), icon: Scissors },
+    { path: "/team", label: t("Team"), icon: UsersRound },
+    { path: "/hours", label: t("Opening hours"), icon: Clock3 },
+    { path: "/settings", label: t("Brand & business"), icon: Palette },
   ].filter(({ path }) => !supportMode || path !== "/customers");
   return (
     <>
@@ -53,7 +55,7 @@ export function Navigation({
         <button
           className="icon-button"
           onClick={() => setOpen(!open)}
-          aria-label={open ? "Close menu" : "Open menu"}
+          aria-label={t(open ? "Close menu" : "Open menu")}
           aria-expanded={open}
         >
           {open ? <X /> : <Menu />}
@@ -62,7 +64,7 @@ export function Navigation({
       {open && (
         <button
           className="sidebar-scrim"
-          aria-label="Close menu"
+          aria-label={t("Close menu")}
           onClick={() => setOpen(false)}
         />
       )}
@@ -79,15 +81,15 @@ export function Navigation({
             <strong>{name}</strong>
             <span>
               {supportMode
-                ? "Platform support"
+                ? t("Platform support")
                 : role === "staff"
-                  ? "Team workspace"
-                  : "Business workspace"}
+                  ? t("Team workspace")
+                  : t("Business workspace")}
             </span>
           </div>
           <PanelLeftClose size={15} />
         </div>
-        <p className="nav-label">YOUR BUSINESS</p>
+        <p className="nav-label">{t("YOUR BUSINESS")}</p>
         <nav aria-label="Main navigation">
           {links.map(({ path, label, icon: Icon }) => (
             <Link
@@ -119,13 +121,9 @@ export function Navigation({
         <div className="sidebar-bottom">
           <div className="preview-note">
             <span className="eyebrow">MADE TO FEEL LIKE YOU</span>
-            <p>
-              Your shop.
-              <br />
-              Your own experience.
-            </p>
+            <p>{t("Your shop. Your own experience.")}</p>
             <Link href={`/preview/${slug}`} target="_blank" prefetch={false}>
-              Preview your page <ArrowUpRight size={16} />
+              {t("Preview your page")} <ArrowUpRight size={16} />
             </Link>
           </div>
           <div className="user-row">
@@ -135,15 +133,15 @@ export function Navigation({
                 {supportMode
                   ? "Platform administrator"
                   : role === "owner"
-                    ? "Business owner"
+                    ? t("Business owner")
                     : role === "manager"
-                      ? "Manager"
-                      : "Staff member"}
+                      ? t("Manager")
+                      : t("Staff member")}
               </strong>
               <span title={email}>{email}</span>
             </div>
             <form action={signOut}>
-              <button className="icon-button" aria-label="Sign out">
+              <button className="icon-button" aria-label={t("Sign out")}>
                 <LogOut size={17} />
               </button>
             </form>
