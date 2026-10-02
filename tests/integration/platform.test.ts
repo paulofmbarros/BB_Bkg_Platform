@@ -68,6 +68,7 @@ afterAll(() => {
     delete from public.locations where tenant_id='${id}';
     delete from public.tenant_branding where tenant_id='${id}';
     delete from public.feature_entitlements where tenant_id='${id}';
+    delete from public.revenue_protection_policies where tenant_id='${id}';
     delete from public.audit_events where tenant_id='${id}';
     alter table public.tenants disable trigger audit_changes;
     delete from public.tenants where id='${id}';
