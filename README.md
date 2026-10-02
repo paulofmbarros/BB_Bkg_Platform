@@ -1,6 +1,6 @@
 # Barbershop OS
 
-The approved V0 foundation, booking engine and CRM/retention increments: guest booking, a daily calendar, customer profiles, visit history and pilot revenue protection. The app runs locally and in a private hosted staging environment with synthetic data. Stripe remains optional and is not configured for the fictional demo.
+The approved V0 foundation, booking engine and CRM/retention increments: guest booking, a daily calendar, customer profiles, visit history, pilot revenue protection and cancellation recovery. The app runs locally and in a private hosted staging environment with synthetic data. Stripe remains optional and is not configured for the fictional demo.
 
 Product direction, validation gates and current phase status are tracked in the [Noma product roadmap](docs/product-roadmap.md). The numbered phase documents in `docs/` are technical delivery handoffs and do not use the same phase numbering as the product roadmap.
 
@@ -28,6 +28,7 @@ Product direction, validation gates and current phase status are tracked in the 
 - Explainable rebooking opportunities based on each repeat customer's median visit interval, with potential value kept distinct from recovered revenue.
 - Deterministic retention-health explanations, explicit email consent evidence, recorded rebooking outreach and direct appointment attribution. Noma does not send outreach yet.
 - Explainable no-show risk, configurable deposit/refund policies, Stripe Checkout boundaries, manual pilot payment evidence, reminder tracking and conservative protected-value reporting. Noma does not send reminders yet.
+- Consent-aware waitlists, deterministic cancelled-slot matching, recorded recovery outreach, exact-slot rebooking and conservative recovered-value attribution. Noma does not send recovery messages yet.
 
 The overview reports actual configuration counts. It does not invent bookings, revenue or customer metrics.
 
@@ -112,7 +113,7 @@ npm run demo:segments
 
 `src/app` contains thin Next.js routes. `src/modules` owns identity, tenancy, validation and business operations. `src/components` owns UI. Database constraints, atomic operations and policies live in `supabase/migrations`; reproducible business fixtures live in `supabase/seed.sql`. Generated database types are committed under `src/lib/supabase`.
 
-Read [the architecture decisions](docs/architecture.md) and [the booking handoff](docs/phase-2.md) and [customer profile handoff](docs/phase-3-customers.md) before extending the system.
+Read [the architecture decisions](docs/architecture.md), [the booking handoff](docs/phase-2.md), [customer profile handoff](docs/phase-3-customers.md) and [revenue recovery handoff](docs/revenue-recovery.md) before extending the system.
 
 ## Hosted pilot prerequisites
 
