@@ -28,7 +28,7 @@ export default async function Manage() {
           {shop.name}
         </Link>
         <h1>{t("Your appointment.")}</h1>
-        <ManageBooking />
+        <ManageBooking demo={shop.is_demo} />
       </main>
     </LocaleProvider>
   );

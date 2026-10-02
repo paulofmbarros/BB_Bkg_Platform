@@ -16,6 +16,7 @@ export const getBusiness = cache(async (slug: string) => {
     exceptions,
     domains,
     entitlements,
+    protectionPolicy,
   ] = await Promise.all([
     db.from("tenant_branding").select("*").eq("tenant_id", tenant.id).single(),
     db.from("locations").select("*").eq("tenant_id", tenant.id).single(),
@@ -40,6 +41,11 @@ export const getBusiness = cache(async (slug: string) => {
       .order("start_date"),
     db.from("tenant_domains").select("*").eq("tenant_id", tenant.id),
     db.from("feature_entitlements").select("*").eq("tenant_id", tenant.id),
+    db
+      .from("revenue_protection_policies")
+      .select("*")
+      .eq("tenant_id", tenant.id)
+      .single(),
   ]);
   for (const result of [
     branding,
@@ -52,6 +58,7 @@ export const getBusiness = cache(async (slug: string) => {
     exceptions,
     domains,
     entitlements,
+    protectionPolicy,
   ]) {
     if (result.error)
       throw new Error("Could not load your business. Please try again.");
@@ -68,6 +75,7 @@ export const getBusiness = cache(async (slug: string) => {
     exceptions: exceptions.data!,
     domains: domains.data!,
     entitlements: entitlements.data!,
+    protectionPolicy: protectionPolicy.data!,
   };
 });
 export type Business = Awaited<ReturnType<typeof getBusiness>>;

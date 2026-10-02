@@ -1,6 +1,6 @@
 # Barbershop OS
 
-The approved V0 foundation, booking engine and first CRM increment: guest booking, a daily calendar, customer profiles and visit history. The app runs locally and in a private hosted staging environment with synthetic data. Payments are not connected.
+The approved V0 foundation, booking engine and CRM/retention increments: guest booking, a daily calendar, customer profiles, visit history and pilot revenue protection. The app runs locally and in a private hosted staging environment with synthetic data. Stripe remains optional and is not configured for the fictional demo.
 
 Product direction, validation gates and current phase status are tracked in the [Noma product roadmap](docs/product-roadmap.md). The numbered phase documents in `docs/` are technical delivery handoffs and do not use the same phase numbering as the product roadmap.
 
@@ -27,6 +27,7 @@ Product direction, validation gates and current phase status are tracked in the 
 - A daily business brief with upcoming visits, outstanding outcomes and completed-service value clearly separated from collected revenue.
 - Explainable rebooking opportunities based on each repeat customer's median visit interval, with potential value kept distinct from recovered revenue.
 - Deterministic retention-health explanations, explicit email consent evidence, recorded rebooking outreach and direct appointment attribution. Noma does not send outreach yet.
+- Explainable no-show risk, configurable deposit/refund policies, Stripe Checkout boundaries, manual pilot payment evidence, reminder tracking and conservative protected-value reporting. Noma does not send reminders yet.
 
 The overview reports actual configuration counts. It does not invent bookings, revenue or customer metrics.
 
@@ -117,7 +118,7 @@ Read [the architecture decisions](docs/architecture.md) and [the booking handoff
 
 A protected synthetic staging deployment is available; see [staging access and verification](docs/staging.md). No paid plan upgrade has been performed. Use a separate EU Supabase project and Vercel Pro for a commercial pilot. Apply migrations without the synthetic seed; provision the owner and membership through a trusted administrative process. Configure `APP_ORIGIN` to the central HTTPS workspace, the publishable Supabase settings, recovery redirect allowlist, transactional SMTP, backup/restore procedures, monitoring and verified tenant domains. Never deploy the local `.env.local` or use localhost domain entries for a live tenant.
 
-The Next.js runtime needs the environment's service-role credential for the authenticated, server-only platform support path. It must never be exposed to browser code. Public booking is enabled only for fictional demo tenants. Before enabling it for a live shop, add verified email delivery/recovery, production abuse protection, reviewed booking/privacy policies, and the remaining release checks in `docs/phase-2.md`. Payments remain unimplemented.
+The Next.js runtime needs the environment's service-role credential for the authenticated, server-only platform support path. It must never be exposed to browser code. Public booking is enabled only for fictional demo tenants. Before enabling it for a live shop, add verified email delivery/recovery, production abuse protection, reviewed booking/privacy and deposit/refund policies, and the remaining release checks in `docs/phase-2.md`. For Stripe deposits, configure both server-only Stripe secrets and the signed `/api/stripe/webhook` endpoint; the fictional demo intentionally refuses real payments.
 
 ## Continuous delivery
 

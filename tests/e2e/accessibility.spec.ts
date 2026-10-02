@@ -12,6 +12,7 @@ test("owner screens and customer page meet automated WCAG AA checks", async ({
     "/workspace/porto-gentlemen",
     "/workspace/porto-gentlemen/services",
     "/workspace/porto-gentlemen/hours",
+    "/workspace/porto-gentlemen/revenue-protection",
     "/preview/porto-gentlemen",
   ]) {
     await page.goto(path);

@@ -48,7 +48,8 @@ export async function rebookCustomer(
           ? error.message
           : "This appointment could not be booked.",
     };
-  revalidatePath(`/workspace/${slug}/customers`, "layout");
+  revalidatePath(`/workspace/${slug}/customers`);
+  revalidatePath(`/workspace/${slug}/customers/${v.customer}`);
   revalidatePath(`/workspace/${slug}/calendar`);
   revalidatePath(`/workspace/${slug}/opportunities/rebooking`);
   return {

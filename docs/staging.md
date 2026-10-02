@@ -20,6 +20,8 @@ Set these values in Vercel for the environment used by this dedicated staging pr
 | `SUPABASE_SERVICE_ROLE_KEY`            | Server-only support-mode credential    |
 | `LOCAL_DEMO`                           | `false`                                |
 
+Optional revenue-protection payment settings must be configured as a pair: `STRIPE_SECRET_KEY` and `STRIPE_WEBHOOK_SECRET`. Register the stable workspace URL ending in `/api/stripe/webhook` in Stripe. Leave both unset for a synthetic review that uses only manual payment evidence; never use live payment keys with fictional customer data.
+
 Do not copy `.env.local`. Set only the staging project's service-role key for the authenticated server-side support path. Database passwords, management access tokens, JWT secrets and connection strings do not belong in Vercel. The deployment build runs `scripts/check-hosted-env.mjs` first and reports configuration problems without printing credentials. `.vercelignore` excludes local environment files and generated output from CLI uploads. These checks do not validate account permissions, deployment protection or database migrations.
 
 ## Provisioning order

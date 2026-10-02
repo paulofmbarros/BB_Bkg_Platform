@@ -30,6 +30,15 @@ export default async function Preview({
         address: b.location.address,
         phone: b.location.phone,
         timezone: b.location.timezone,
+        protection_policy: {
+          enabled: b.protectionPolicy.enabled,
+          deposit_rule: b.protectionPolicy.deposit_rule as
+            "none" | "risk_based" | "all",
+          deposit_percent: b.protectionPolicy.deposit_percent,
+          cancellation_window_hours:
+            b.protectionPolicy.cancellation_window_hours,
+          reminder_lead_hours: b.protectionPolicy.reminder_lead_hours,
+        },
         services: b.services.filter((s) => s.active),
         staff: b.staff
           .filter((s) => s.active)

@@ -15,7 +15,7 @@ function subscribeHash(onChange: () => void) {
   window.addEventListener("hashchange", onChange);
   return () => window.removeEventListener("hashchange", onChange);
 }
-export function ManageBooking() {
+export function ManageBooking({ demo = false }: { demo?: boolean }) {
   const t = useTranslations();
   const token = useSyncExternalStore(
     subscribeHash,
@@ -28,9 +28,9 @@ export function ManageBooking() {
         {t("Open the complete private link you saved after booking.")}
       </p>
     );
-  return <BookingReceipt key={token} token={token} />;
+  return <BookingReceipt key={token} token={token} demo={demo} />;
 }
-function BookingReceipt({ token }: { token: string }) {
+function BookingReceipt({ token, demo }: { token: string; demo: boolean }) {
   const t = useTranslations();
   const locale = useLocale();
   const [receipt, setReceipt] = useState<Receipt | null>(null),
@@ -39,7 +39,8 @@ function BookingReceipt({ token }: { token: string }) {
     [editing, setEditing] = useState(false),
     [day, setDay] = useState(shopDate()),
     [start, setStart] = useState(""),
-    [copied, setCopied] = useState(false);
+    [copied, setCopied] = useState(false),
+    [paying, setPaying] = useState(false);
   useEffect(() => {
     const controller = new AbortController();
     fetch("/api/booking", {
@@ -85,6 +86,29 @@ function BookingReceipt({ token }: { token: string }) {
       setBusy(false);
     }
   }
+  async function payDeposit() {
+    if (!receipt || paying) return;
+    setPaying(true);
+    setError("");
+    try {
+      const response = await fetch("/api/booking/deposit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token }),
+      });
+      const data = (await response.json()) as { url?: string; error?: string };
+      if (!response.ok || !data.url)
+        throw new Error(data.error ?? "The payment page could not be opened.");
+      window.location.assign(data.url);
+    } catch (error) {
+      setError(
+        error instanceof Error
+          ? t(error.message)
+          : t("The payment page could not be opened."),
+      );
+      setPaying(false);
+    }
+  }
   return (
     <div className="manage-booking">
       {error && (
@@ -120,10 +144,49 @@ function BookingReceipt({ token }: { token: string }) {
               {slotLabel(receipt.starts_at, locale)} –{" "}
               {slotLabel(receipt.ends_at, locale)}
             </p>
-            <strong>
-              {money(receipt.price_minor, locale)} · {t("Pay at the shop")}
-            </strong>
+            <strong>{money(receipt.price_minor, locale)}</strong>
           </div>
+          {receipt.deposit_required_minor > 0 ? (
+            <section
+              className="deposit-summary"
+              aria-label={t("Deposit status")}
+            >
+              <div>
+                <span className="eyebrow">{t("BOOKING DEPOSIT")}</span>
+                <h3>
+                  {money(receipt.deposit_required_minor, locale)} ·{" "}
+                  {t(receipt.deposit_status.replaceAll("_", " "))}
+                </h3>
+                <p>
+                  {locale === "pt"
+                    ? `Reembolsável até ${new Intl.DateTimeFormat("pt-PT", { dateStyle: "medium", timeStyle: "short", timeZone: "Europe/Lisbon" }).format(new Date(receipt.cancellation_deadline))}.`
+                    : `Refundable until ${new Intl.DateTimeFormat("en-GB", { dateStyle: "medium", timeStyle: "short", timeZone: "Europe/Lisbon" }).format(new Date(receipt.cancellation_deadline))}.`}
+                </p>
+              </div>
+              {receipt.deposit_status === "pending" && (
+                <button
+                  className="button shop-button"
+                  disabled={paying || demo}
+                  onClick={() => void payDeposit()}
+                >
+                  {t(
+                    demo
+                      ? "Demo payment disabled"
+                      : paying
+                        ? "Opening payment…"
+                        : "Pay deposit",
+                  )}
+                </button>
+              )}
+              {receipt.deposit_status === "refund_due" && (
+                <p className="notice success">
+                  {t("Your deposit refund is due.")}
+                </p>
+              )}
+            </section>
+          ) : (
+            <p className="field-help">{t("No booking deposit is required.")}</p>
+          )}
           <div className="private-link-note">
             <strong>{t("Save your private booking link")}</strong>
             <p>
@@ -153,9 +216,13 @@ function BookingReceipt({ token }: { token: string }) {
             new Date(receipt.starts_at) > new Date() && (
               <>
                 <p className="field-help">
-                  {t(
-                    "Free cancellation and rescheduling before the appointment starts.",
-                  )}
+                  {receipt.deposit_required_minor > 0
+                    ? t(
+                        "Cancel before the refund deadline to keep the deposit refundable. Rescheduling moves the deadline with the appointment.",
+                      )
+                    : t(
+                        "Free cancellation and rescheduling before the appointment starts.",
+                      )}
                 </p>
                 <div className="booking-actions">
                   <button

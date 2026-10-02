@@ -81,3 +81,11 @@ The workspace overview derives a request-time operating snapshot from RLS-protec
 ## Rebooking opportunities
 
 The manager-only opportunity view derives a customer's typical return interval from the median gap between at least three distinct completed visit days. It excludes profiles with future bookings, unresolved outcomes or possible duplicate identities. A bounded, cadence-relative lead window surfaces customers who are due soon or overdue. Potential value uses the most recent completed service snapshot and is explicitly not forecast, booked, collected or recovered revenue. The view and summary function execute with caller privileges over RLS-protected data; staff, other tenants, anonymous callers and platform support cannot access the customer signals. See `rebooking-opportunities.md`.
+
+## Revenue protection
+
+Every new appointment receives an audited protection snapshot after insertion, regardless of whether it came from the public or owner rebooking path. The snapshot freezes the policy version, deterministic attendance evidence, deposit requirement, cancellation window and reminder lead time; rescheduling moves only the resulting deadlines. Existing appointments are never assigned a retroactive deposit.
+
+Deposit and reminder records are tenant-owned, RLS-protected evidence. Managers mutate them only through narrow authorized transactions. Guest capabilities can request a Stripe Checkout session only for their own appointment. Stripe secrets remain server-only, webhook payloads require a current HMAC signature, and service-role-only finalizers make webhook retries idempotent. The application never handles payment credentials.
+
+The reporting view is security-invoker. Protected value is limited to paid, unrefunded deposits retained after a no-show or late cancellation. It deliberately excludes appointment prices, pending or refundable deposits, completed-service value and forecasts. See `revenue-protection.md`.

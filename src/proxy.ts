@@ -18,14 +18,21 @@ export async function proxy(request: NextRequest) {
       request.method !== "GET" &&
       request.method !== "HEAD" &&
       !(
-        request.method === "POST" && request.nextUrl.pathname === "/api/booking"
+        request.method === "POST" &&
+        ["/api/booking", "/api/booking/deposit"].includes(
+          request.nextUrl.pathname,
+        )
       )
     )
       return new NextResponse("Method not allowed", { status: 405 });
     if (
-      !["/", "/book", "/manage", "/api/booking"].includes(
-        request.nextUrl.pathname,
-      )
+      ![
+        "/",
+        "/book",
+        "/manage",
+        "/api/booking",
+        "/api/booking/deposit",
+      ].includes(request.nextUrl.pathname)
     )
       return new NextResponse("Not found", { status: 404 });
     const publicResponse = NextResponse.next({

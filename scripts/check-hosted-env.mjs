@@ -34,6 +34,10 @@ export function checkHostedEnv(env) {
     );
   if (env.LOCAL_DEMO !== "false")
     errors.push("Set LOCAL_DEMO=false for hosting.");
+  if (!!env.STRIPE_SECRET_KEY !== !!env.STRIPE_WEBHOOK_SECRET)
+    errors.push(
+      "Set both STRIPE_SECRET_KEY and STRIPE_WEBHOOK_SECRET, or leave both unset.",
+    );
   for (const name of [
     "SUPABASE_SECRET_KEY",
     "SUPABASE_ACCESS_TOKEN",

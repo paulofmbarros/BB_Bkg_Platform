@@ -16,6 +16,18 @@ export const receiptSchema = z.object({
   ends_at: z.string(),
   status: z.enum(["confirmed", "cancelled", "completed", "no_show"]),
   version: z.number(),
+  deposit_required_minor: z.number().int().nonnegative(),
+  deposit_paid_minor: z.number().int().nonnegative(),
+  deposit_refunded_minor: z.number().int().nonnegative(),
+  deposit_status: z.enum([
+    "not_required",
+    "pending",
+    "paid",
+    "refund_due",
+    "refunded",
+    "retained",
+  ]),
+  cancellation_deadline: z.string(),
 });
 export type Receipt = z.infer<typeof receiptSchema>;
 export function shopDate(date = new Date()) {

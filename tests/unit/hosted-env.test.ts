@@ -54,4 +54,18 @@ describe("hosted configuration guard", () => {
       checkHostedEnv({ ...valid, LOCAL_DEMO: "true" }).length,
     ).toBeGreaterThan(0);
   });
+  it("requires Stripe checkout and webhook secrets as a pair", () => {
+    expect(
+      checkHostedEnv({ ...valid, STRIPE_SECRET_KEY: "sk_test_synthetic" }),
+    ).toContain(
+      "Set both STRIPE_SECRET_KEY and STRIPE_WEBHOOK_SECRET, or leave both unset.",
+    );
+    expect(
+      checkHostedEnv({
+        ...valid,
+        STRIPE_SECRET_KEY: "sk_test_synthetic",
+        STRIPE_WEBHOOK_SECRET: "whsec_synthetic",
+      }),
+    ).toEqual([]);
+  });
 });
