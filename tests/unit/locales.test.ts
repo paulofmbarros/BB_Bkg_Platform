@@ -14,6 +14,9 @@ describe("tenant locale helpers", () => {
     expect(translate("pt", "Tenant-owned content")).toBe(
       "Tenant-owned content",
     );
+    expect(translate("pt", "Right customer. Right moment.")).toBe(
+      "O cliente certo. No momento certo.",
+    );
   });
 
   it("uses database weekday indexes for the Portuguese locale", () => {

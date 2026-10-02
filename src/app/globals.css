@@ -4153,3 +4153,198 @@ textarea {
     font-size: 8px;
   }
 }
+
+/* Revenue protection */
+.protection-summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+.protection-summary article {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  align-items: center;
+  padding: 22px;
+}
+.protection-summary article > span {
+  color: var(--muted);
+  font-size: 13px;
+}
+.protection-summary article > strong {
+  grid-column: 1 / -1;
+  font-family: var(--font-heading);
+  font-size: 30px;
+  letter-spacing: -0.04em;
+}
+.protection-summary svg {
+  color: var(--accent);
+}
+.protection-definition {
+  margin: 12px 0 28px;
+}
+.protection-policy {
+  padding: 28px;
+  margin-bottom: 34px;
+}
+.protection-policy-form {
+  margin: 22px 0 16px;
+}
+.protection-policy-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin: 18px 0 12px;
+}
+.toggle-row {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+.toggle-row input {
+  margin-top: 4px;
+}
+.toggle-row span {
+  display: grid;
+  gap: 3px;
+}
+.toggle-row small {
+  color: var(--muted);
+}
+.protection-list-section {
+  margin-bottom: 34px;
+}
+.protection-list {
+  display: grid;
+  gap: 14px;
+  margin-top: 18px;
+}
+.protection-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(230px, 0.35fr);
+  gap: 24px;
+  padding: 24px;
+}
+.protection-card-title {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+}
+.protection-card-title h3 {
+  margin: 8px 0 4px;
+}
+.protection-card-main > p {
+  margin: 7px 0;
+}
+.protection-states {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+.protection-states span {
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 5px 10px;
+  color: var(--muted);
+  font-size: 12px;
+}
+.protection-card-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 10px;
+  border-left: 1px solid var(--border);
+  padding-left: 24px;
+}
+.protection-card-actions p {
+  margin: 0;
+}
+.protection-action-form {
+  width: 100%;
+}
+.protection-action-form .button {
+  width: 100%;
+}
+.reminder-action label {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+.risk-standard {
+  background: var(--surface-strong);
+}
+.risk-elevated {
+  background: #fff4d8;
+  color: #75520b;
+}
+.risk-high {
+  background: #fae5e1;
+  color: #8c2e20;
+}
+.refund-due {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #8c2e20;
+}
+.protected-evidence {
+  padding: 26px;
+}
+.protected-evidence-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 14px 0;
+  border-top: 1px solid var(--border);
+}
+.protected-evidence-row span {
+  display: grid;
+  gap: 3px;
+  color: var(--muted);
+}
+.protected-evidence-row span strong {
+  color: var(--ink);
+}
+.deposit-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 18px;
+  margin: 18px 0;
+  border: 1px solid var(--shop-border, var(--border));
+  border-radius: 14px;
+  background: var(--shop-surface, var(--surface));
+}
+.deposit-summary h3,
+.deposit-summary p {
+  margin: 4px 0 0;
+}
+
+@media (max-width: 1100px) {
+  .protection-summary,
+  .protection-policy-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 700px) {
+  .protection-summary,
+  .protection-policy-grid,
+  .protection-card {
+    grid-template-columns: 1fr;
+  }
+  .protection-card-actions {
+    border-left: 0;
+    border-top: 1px solid var(--border);
+    padding: 18px 0 0;
+  }
+  .deposit-summary {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}

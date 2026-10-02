@@ -286,15 +286,33 @@ export function BookingForm({
             ? `${day} at ${slotLabel(start)}`
             : t("Choose an available time to continue.")}
         </p>
-        <p>
-          {t(
-            "Pay at the shop. Cancel or reschedule free before your appointment starts using your private link.",
-          )}
-        </p>
+        {shop.protection_policy.enabled &&
+        shop.protection_policy.deposit_rule !== "none" ? (
+          <p>
+            {shop.protection_policy.deposit_rule === "all"
+              ? locale === "pt"
+                ? `É necessário um depósito de ${money(Math.ceil(((selectedService?.price_minor ?? 0) * shop.protection_policy.deposit_percent) / 100), locale)} após a confirmação.`
+                : `A ${money(Math.ceil(((selectedService?.price_minor ?? 0) * shop.protection_policy.deposit_percent) / 100), locale)} deposit is required after confirmation.`
+              : locale === "pt"
+                ? `Poderá ser necessário um depósito de ${shop.protection_policy.deposit_percent}% com base no histórico de comparência.`
+                : `A ${shop.protection_policy.deposit_percent}% deposit may be required based on prior attendance.`}{" "}
+            {locale === "pt"
+              ? `Os depósitos são reembolsáveis até ${shop.protection_policy.cancellation_window_hours} horas antes da marcação.`
+              : `Deposits are refundable until ${shop.protection_policy.cancellation_window_hours} hours before the appointment.`}
+          </p>
+        ) : (
+          <p>
+            {t(
+              "Pay at the shop. Cancel or reschedule free before your appointment starts using your private link.",
+            )}
+          </p>
+        )}
         {shop.is_demo && (
           <p>
             {t(
-              "Fictional shop: use made-up contact details. No email or payment is sent.",
+              shop.protection_policy.enabled
+                ? "Fictional shop: use made-up contact details. Deposit decisions are simulated; no payment is processed."
+                : "Fictional shop: use made-up contact details. No email or payment is sent.",
             )}
           </p>
         )}

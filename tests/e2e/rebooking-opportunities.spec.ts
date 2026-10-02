@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
+import { createClient } from "@supabase/supabase-js";
 
 test("owner reviews explainable rebooking opportunities from the daily brief", async ({
   page,
@@ -41,4 +42,58 @@ test("owner reviews explainable rebooking opportunities from the daily brief", a
       () => document.documentElement.scrollWidth <= innerWidth,
     ),
   ).toBe(true);
+});
+
+test("rebooking opportunities follow the Portuguese workspace language", async ({
+  page,
+}) => {
+  const db = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    { auth: { persistSession: false } },
+  );
+  const tenant = "11111111-1111-4111-8111-111111111111";
+  try {
+    expect(
+      (
+        await db
+          .from("tenants")
+          .update({ workspace_locale: "pt" })
+          .eq("id", tenant)
+      ).error,
+    ).toBeNull();
+    await page.goto("/login");
+    await page
+      .getByLabel("Email address")
+      .fill("owner@porto-gentlemen.example");
+    await page.getByLabel("Password", { exact: true }).fill("PortoDemo!2026");
+    await page
+      .getByRole("button", { name: "Sign in to your workspace" })
+      .click();
+    await expect(page).toHaveURL("/workspace/porto-gentlemen");
+    await page.goto("/workspace/porto-gentlemen/opportunities/rebooking");
+
+    await expect(
+      page.getByRole("heading", {
+        name: "O cliente certo. No momento certo.",
+      }),
+    ).toBeVisible();
+    await expect(
+      page.getByText(/Regressa habitualmente a cada \d+ dias/).first(),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("link", { name: "Marcar próxima visita" }).first(),
+    ).toBeVisible();
+    await expect(
+      page.getByText("Sem consentimento de marketing").first(),
+    ).toBeVisible();
+    await expect(page.locator("body")).not.toContainText(
+      "Right customer. Right moment.",
+    );
+  } finally {
+    await db
+      .from("tenants")
+      .update({ workspace_locale: "en" })
+      .eq("id", tenant);
+  }
 });

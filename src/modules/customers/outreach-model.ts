@@ -1,4 +1,5 @@
 import { z } from "zod";
+import type { Locale } from "@/i18n/locales";
 
 export const outreachActionSchema = z.object({
   id: z.uuid(),
@@ -26,7 +27,10 @@ export function rebookingMessage(
   customerName: string,
   serviceName: string,
   businessName: string,
+  locale: Locale = "en",
 ) {
   const firstName = customerName.trim().split(/\s+/)[0] || customerName;
+  if (locale === "pt")
+    return `Olá ${firstName}, parece que está na altura do seu próximo serviço de ${serviceName}. Responda se quiser ajuda para encontrar um horário. — ${businessName}`;
   return `Hi ${firstName}, it looks like you may be due for your next ${serviceName}. Reply if you’d like us to help find a time. — ${businessName}`;
 }

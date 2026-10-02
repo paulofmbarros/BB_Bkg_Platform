@@ -14,6 +14,7 @@ import {
   X,
   LogOut,
   PanelLeftClose,
+  ShieldCheck,
 } from "lucide-react";
 import { signOut } from "@/modules/identity/actions";
 import { initials } from "@/lib/format";
@@ -40,6 +41,15 @@ export function Navigation({
   const links = [
     { path: "", label: t("Overview"), icon: LayoutDashboard },
     { path: "/calendar", label: t("Calendar"), icon: CalendarDays },
+    ...(role !== "staff" && !supportMode
+      ? [
+          {
+            path: "/revenue-protection",
+            label: t("Revenue protection"),
+            icon: ShieldCheck,
+          },
+        ]
+      : []),
     { path: "/customers", label: t("Customers"), icon: UsersRound },
     { path: "/services", label: t("Services"), icon: Scissors },
     { path: "/team", label: t("Team"), icon: UsersRound },

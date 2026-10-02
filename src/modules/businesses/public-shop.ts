@@ -21,6 +21,13 @@ export const publicShopSchema = z.object({
   address: z.string(),
   phone: z.string(),
   timezone: z.string(),
+  protection_policy: z.object({
+    enabled: z.boolean(),
+    deposit_rule: z.enum(["none", "risk_based", "all"]),
+    deposit_percent: z.number().int().min(10).max(100),
+    cancellation_window_hours: z.number().int().min(0).max(168),
+    reminder_lead_hours: z.number().int().min(1).max(168),
+  }),
   services: z.array(
     z.object({
       id: z.string(),

@@ -17,6 +17,7 @@ export const languageNames: Record<Locale, string> = {
 const portuguese: Record<string, string> = {
   Overview: "Visão geral",
   Calendar: "Agenda",
+  "Revenue protection": "Proteção de receita",
   Customers: "Clientes",
   Services: "Serviços",
   Team: "Equipa",
@@ -214,6 +215,47 @@ const portuguese: Record<string, string> = {
     "concluídos hoje · não representa receita recebida",
   "Customers due": "Clientes a contactar",
   "potential service value": "valor potencial de serviços",
+  "REBOOKING OPPORTUNITIES": "OPORTUNIDADES DE REMARCAÇÃO",
+  "Right customer. Right moment.": "O cliente certo. No momento certo.",
+  "Explainable timing signals based on each customer’s completed visit history.":
+    "Sinais de tempo explicáveis com base no histórico de visitas concluídas de cada cliente.",
+  "Open all customers": "Ver todos os clientes",
+  Summary: "Resumo",
+  "Customers due or due soon": "Clientes na data habitual ou quase",
+  "Potential service value": "Valor potencial dos serviços",
+  "Recorded outreach actions": "Contactos registados",
+  "Appointments attributed": "Marcações atribuídas",
+  "service value": "valor dos serviços",
+  "Potential and attributed service values use appointment prices. They are not collected or recovered revenue.":
+    "Os valores potenciais e atribuídos utilizam os preços das marcações. Não representam receita recebida ou recuperada.",
+  "Noma records outreach but does not send messages. Outreach is available only after an explicit email opt-in has been recorded. Profiles with future bookings, unresolved visits or possible duplicate identities are excluded.":
+    "A Noma regista o contacto, mas não envia mensagens. O contacto só está disponível depois de ser registado um consentimento explícito por email. São excluídos os perfis com marcações futuras, visitas por resolver ou possíveis identidades duplicadas.",
+  "Customers due to return": "Clientes na altura habitual de regressar",
+  "Most recent service": "Serviço mais recente",
+  "Previous team member unavailable": "Membro anterior da equipa indisponível",
+  "Potential value": "Valor potencial",
+  "not recovered revenue": "não representa receita recuperada",
+  "Email outreach recorded": "Contacto por email registado",
+  "appointment attributed": "marcação atribuída",
+  "awaiting outcome": "a aguardar resultado",
+  "No marketing opt-in": "Sem consentimento de marketing",
+  "Record outreach": "Registar contacto",
+  "View profile": "Ver perfil",
+  "Book & attribute": "Marcar e atribuir",
+  "Book next visit": "Marcar próxima visita",
+  "No customers are due right now.":
+    "Não há clientes na data habitual de regresso neste momento.",
+  "Opportunities appear after at least three completed visit days establish a customer’s typical return interval.":
+    "As oportunidades aparecem depois de pelo menos três dias de visitas concluídas estabelecerem o intervalo habitual de regresso do cliente.",
+  "Showing the 100 most overdue opportunities.":
+    "A mostrar as 100 oportunidades mais atrasadas.",
+  "Message sent": "Mensagem enviada",
+  "I sent this message through an approved business email channel.":
+    "Enviei esta mensagem através de um canal de email aprovado pelo negócio.",
+  "Noma records this action but does not send the email. A booking can be attributed to it for 30 days.":
+    "A Noma regista esta ação, mas não envia o email. Uma marcação pode ser-lhe atribuída durante 30 dias.",
+  "Record email outreach": "Registar contacto por email",
+  "Outreach recorded for attribution.": "Contacto registado para atribuição.",
   "Coming up": "A seguir",
   "Portugal local time": "Hora local de Portugal",
   "Customer details hidden": "Dados do cliente ocultos",
@@ -358,6 +400,8 @@ const portuguese: Record<string, string> = {
     "Pague no local. Cancele ou altere gratuitamente antes da marcação através da sua ligação privada.",
   "Fictional shop: use made-up contact details. No email or payment is sent.":
     "Espaço fictício: utilize dados de contacto inventados. Não é enviado qualquer email ou pagamento.",
+  "Fictional shop: use made-up contact details. Deposit decisions are simulated; no payment is processed.":
+    "Espaço fictício: utilize dados de contacto inventados. As decisões de depósito são simuladas; nenhum pagamento é processado.",
   "Booking your visit…": "A marcar a sua visita…",
   "Confirm appointment": "Confirmar marcação",
   "Unable to load times.": "Não foi possível carregar os horários.",
@@ -386,6 +430,97 @@ const portuguese: Record<string, string> = {
   "Confirm new time": "Confirmar novo horário",
   "Book another visit": "Marcar outra visita",
   "Please try again.": "Tente novamente.",
+  "Deposit status": "Estado do depósito",
+  "BOOKING DEPOSIT": "DEPÓSITO DA MARCAÇÃO",
+  "Demo payment disabled": "Pagamento de demonstração desativado",
+  "Opening payment…": "A abrir pagamento…",
+  "Pay deposit": "Pagar depósito",
+  "Your deposit refund is due.": "O reembolso do seu depósito está pendente.",
+  "No booking deposit is required.":
+    "Não é necessário depósito para esta marcação.",
+  "Cancel before the refund deadline to keep the deposit refundable. Rescheduling moves the deadline with the appointment.":
+    "Cancele antes do prazo de reembolso para manter o depósito reembolsável. Ao alterar a marcação, o prazo acompanha a nova data.",
+  "The payment page could not be opened.":
+    "Não foi possível abrir a página de pagamento.",
+  "Payments are disabled for this fictional shop.":
+    "Os pagamentos estão desativados neste espaço fictício.",
+  "Online deposit payments are not configured.":
+    "Os pagamentos de depósitos online não estão configurados.",
+  "The deposit is already paid.": "O depósito já está pago.",
+  "This appointment cannot accept a deposit.":
+    "Esta marcação não pode receber um depósito.",
+  "REVENUE PROTECTION": "PROTEÇÃO DE RECEITA",
+  "Protect the appointment, fairly.": "Proteja a marcação de forma justa.",
+  "Explainable attendance risk, clear deposit terms and conservative reporting.":
+    "Risco de comparência explicável, condições de depósito claras e relatórios conservadores.",
+  "At-risk upcoming visits": "Próximas visitas em risco",
+  "Deposits secured": "Depósitos garantidos",
+  "Reminders due": "Lembretes pendentes",
+  "Protected value": "Valor protegido",
+  "Protected value counts only paid deposits retained after a no-show or a cancellation after the refund deadline. It is not total revenue or forecast revenue.":
+    "O valor protegido conta apenas depósitos pagos retidos após uma falta ou um cancelamento depois do prazo de reembolso. Não representa receita total nem prevista.",
+  POLICY: "POLÍTICA",
+  "Set transparent rules": "Defina regras transparentes",
+  "Attendance history determines a visible risk tier. No opaque score or protected characteristic is used.":
+    "O histórico de comparência determina um nível de risco visível. Não são usadas pontuações opacas nem características protegidas.",
+  "Revenue protection enabled": "Proteção de receita ativa",
+  "New appointments receive a policy and risk snapshot.":
+    "As novas marcações recebem um registo da política e do risco.",
+  "Deposit rule": "Regra de depósito",
+  "No deposits": "Sem depósitos",
+  "Elevated risk only": "Apenas risco elevado",
+  "Every appointment": "Todas as marcações",
+  "Deposit percentage": "Percentagem do depósito",
+  "Refund deadline (hours before)": "Prazo de reembolso (horas antes)",
+  "Reminder lead time (hours)": "Antecedência do lembrete (horas)",
+  "Policy changes apply only to new appointments. Existing appointments keep the terms agreed when they were booked.":
+    "As alterações à política aplicam-se apenas a novas marcações. As marcações existentes mantêm as condições acordadas quando foram efetuadas.",
+  "Save protection policy": "Guardar política de proteção",
+  "Revenue protection policy saved.":
+    "Política de proteção de receita guardada.",
+  "Stripe Checkout is configured. Eligible local payment methods are controlled in the Stripe account.":
+    "O Stripe Checkout está configurado. Os métodos de pagamento locais elegíveis são controlados na conta Stripe.",
+  "Stripe Checkout is not configured. Deposits can be recorded manually for the pilot workflow.":
+    "O Stripe Checkout não está configurado. Os depósitos podem ser registados manualmente no fluxo piloto.",
+  "ACTION QUEUE": "FILA DE AÇÕES",
+  "Visits needing attention": "Visitas que precisam de atenção",
+  "standard risk": "risco normal",
+  "elevated risk": "risco elevado",
+  "high risk": "risco alto",
+  Deposit: "Depósito",
+  Reminder: "Lembrete",
+  "not required": "não necessário",
+  pending: "pendente",
+  paid: "pago",
+  "refund due": "reembolso pendente",
+  refunded: "reembolsado",
+  retained: "retido",
+  upcoming: "agendado",
+  due: "pendente",
+  sent: "enviado",
+  "deposit due": "de depósito pendente",
+  "Record deposit paid": "Registar depósito pago",
+  "Deposit recorded.": "Depósito registado.",
+  "I sent the appointment reminder through an approved channel.":
+    "Enviei o lembrete da marcação através de um canal aprovado.",
+  "Record reminder": "Registar lembrete",
+  "Reminder recorded.": "Lembrete registado.",
+  "Refund deposit": "Reembolsar depósito",
+  "Deposit refunded.": "Depósito reembolsado.",
+  "Refund due": "Reembolso pendente",
+  "Nothing needs attention.": "Nada precisa de atenção.",
+  "Deposits, refunds and reminders are up to date.":
+    "Os depósitos, reembolsos e lembretes estão atualizados.",
+  EVIDENCE: "EVIDÊNCIA",
+  "Protected value ledger": "Registo de valor protegido",
+  "late cancellation": "cancelamento tardio",
+  "Check the protection policy.": "Verifique a política de proteção.",
+  "The change could not be saved.": "Não foi possível guardar a alteração.",
+  "Invalid appointment.": "Marcação inválida.",
+  "Invalid payment.": "Pagamento inválido.",
+  "This deposit cannot be refunded.": "Este depósito não pode ser reembolsado.",
+  "Stripe refunds are not configured.":
+    "Os reembolsos Stripe não estão configurados.",
   "Cancel this appointment? Your time will be released.":
     "Cancelar esta marcação? O horário ficará novamente disponível.",
   "Copy the full address from your browser to save your link.":

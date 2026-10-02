@@ -28,6 +28,9 @@ describe("rebooking opportunity explanations", () => {
     expect(opportunityReason(opportunity(-6))).toBe(
       "Usually returns every 28 days. Last completed visit was 34 days ago.",
     );
+    expect(opportunityReason(opportunity(-6), "pt")).toBe(
+      "Regressa habitualmente a cada 28 dias. A última visita concluída foi há 34 dias.",
+    );
   });
 
   it("labels future, current and overdue timing", () => {
@@ -36,5 +39,12 @@ describe("rebooking opportunity explanations", () => {
     expect(opportunityTiming(opportunity(0))).toBe("Due today");
     expect(opportunityTiming(opportunity(-1))).toBe("1 day overdue");
     expect(opportunityTiming(opportunity(-6))).toBe("6 days overdue");
+    expect(opportunityTiming(opportunity(3), "pt")).toBe(
+      "Data habitual dentro de 3 dias",
+    );
+    expect(opportunityTiming(opportunity(0), "pt")).toBe("Data habitual hoje");
+    expect(opportunityTiming(opportunity(-1), "pt")).toBe(
+      "1 dia após a data habitual",
+    );
   });
 });

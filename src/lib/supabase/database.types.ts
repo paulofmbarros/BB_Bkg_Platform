@@ -34,9 +34,166 @@ export type Database = {
   }
   public: {
     Tables: {
+      appointment_deposit_payments: {
+        Row: {
+          amount_minor: number
+          appointment_id: string
+          created_at: string
+          id: string
+          paid_at: string | null
+          provider: string
+          provider_payment_intent: string | null
+          provider_reference: string
+          refund_reference: string | null
+          refunded_at: string | null
+          refunded_minor: number
+          status: string
+          tenant_id: string
+          updated_at: string
+        }
+        Insert: {
+          amount_minor: number
+          appointment_id: string
+          created_at?: string
+          id?: string
+          paid_at?: string | null
+          provider: string
+          provider_payment_intent?: string | null
+          provider_reference: string
+          refund_reference?: string | null
+          refunded_at?: string | null
+          refunded_minor?: number
+          status: string
+          tenant_id: string
+          updated_at?: string
+        }
+        Update: {
+          amount_minor?: number
+          appointment_id?: string
+          created_at?: string
+          id?: string
+          paid_at?: string | null
+          provider?: string
+          provider_payment_intent?: string | null
+          provider_reference?: string
+          refund_reference?: string | null
+          refunded_at?: string | null
+          refunded_minor?: number
+          status?: string
+          tenant_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "appointment_deposit_payments_tenant_id_appointment_id_fkey"
+            columns: ["tenant_id", "appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["tenant_id", "id"]
+          },
+        ]
+      }
+      appointment_protections: {
+        Row: {
+          appointment_id: string
+          cancellation_deadline: string
+          cancellation_window_hours: number
+          cancelled_count: number
+          completed_count: number
+          created_at: string
+          deposit_percent: number
+          deposit_required_minor: number
+          no_show_count: number
+          policy_version: number
+          reminder_due_at: string
+          reminder_lead_hours: number
+          risk_level: string
+          tenant_id: string
+        }
+        Insert: {
+          appointment_id: string
+          cancellation_deadline: string
+          cancellation_window_hours: number
+          cancelled_count: number
+          completed_count: number
+          created_at?: string
+          deposit_percent: number
+          deposit_required_minor: number
+          no_show_count: number
+          policy_version: number
+          reminder_due_at: string
+          reminder_lead_hours: number
+          risk_level: string
+          tenant_id: string
+        }
+        Update: {
+          appointment_id?: string
+          cancellation_deadline?: string
+          cancellation_window_hours?: number
+          cancelled_count?: number
+          completed_count?: number
+          created_at?: string
+          deposit_percent?: number
+          deposit_required_minor?: number
+          no_show_count?: number
+          policy_version?: number
+          reminder_due_at?: string
+          reminder_lead_hours?: number
+          risk_level?: string
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "appointment_protections_tenant_id_appointment_id_fkey"
+            columns: ["tenant_id", "appointment_id"]
+            isOneToOne: true
+            referencedRelation: "appointments"
+            referencedColumns: ["tenant_id", "id"]
+          },
+        ]
+      }
+      appointment_reminders: {
+        Row: {
+          appointment_id: string
+          channel: string
+          created_at: string
+          id: string
+          recorded_by: string
+          sent_at: string
+          tenant_id: string
+        }
+        Insert: {
+          appointment_id: string
+          channel?: string
+          created_at?: string
+          id?: string
+          recorded_by?: string
+          sent_at?: string
+          tenant_id: string
+        }
+        Update: {
+          appointment_id?: string
+          channel?: string
+          created_at?: string
+          id?: string
+          recorded_by?: string
+          sent_at?: string
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "appointment_reminders_tenant_id_appointment_id_fkey"
+            columns: ["tenant_id", "appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["tenant_id", "id"]
+          },
+        ]
+      }
       appointments: {
         Row: {
           blocked_until: string
+          cancelled_at: string | null
           created_at: string
           customer_id: string
           ends_at: string
@@ -54,6 +211,7 @@ export type Database = {
         }
         Insert: {
           blocked_until: string
+          cancelled_at?: string | null
           created_at?: string
           customer_id: string
           ends_at: string
@@ -71,6 +229,7 @@ export type Database = {
         }
         Update: {
           blocked_until?: string
+          cancelled_at?: string | null
           created_at?: string
           customer_id?: string
           ends_at?: string
@@ -750,6 +909,50 @@ export type Database = {
           },
         ]
       }
+      revenue_protection_policies: {
+        Row: {
+          cancellation_window_hours: number
+          created_at: string
+          deposit_percent: number
+          deposit_rule: string
+          enabled: boolean
+          reminder_lead_hours: number
+          tenant_id: string
+          updated_at: string
+          version: number
+        }
+        Insert: {
+          cancellation_window_hours?: number
+          created_at?: string
+          deposit_percent?: number
+          deposit_rule?: string
+          enabled?: boolean
+          reminder_lead_hours?: number
+          tenant_id: string
+          updated_at?: string
+          version?: number
+        }
+        Update: {
+          cancellation_window_hours?: number
+          created_at?: string
+          deposit_percent?: number
+          deposit_rule?: string
+          enabled?: boolean
+          reminder_lead_hours?: number
+          tenant_id?: string
+          updated_at?: string
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "revenue_protection_policies_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: true
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       services: {
         Row: {
           active: boolean
@@ -1164,9 +1367,51 @@ export type Database = {
           },
         ]
       }
+      revenue_protection_appointments: {
+        Row: {
+          appointment_id: string | null
+          appointment_status: string | null
+          cancellation_deadline: string | null
+          cancellation_window_hours: number | null
+          cancelled_at: string | null
+          cancelled_count: number | null
+          completed_count: number | null
+          customer_email: string | null
+          customer_id: string | null
+          customer_name: string | null
+          deposit_paid_minor: number | null
+          deposit_percent: number | null
+          deposit_refunded_minor: number | null
+          deposit_required_minor: number | null
+          deposit_state: string | null
+          no_show_count: number | null
+          price_minor: number | null
+          protected_value_minor: number | null
+          reminder_due_at: string | null
+          reminder_lead_hours: number | null
+          reminder_state: string | null
+          risk_level: string | null
+          service_name: string | null
+          starts_at: string | null
+          tenant_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "appointment_protections_tenant_id_appointment_id_fkey"
+            columns: ["tenant_id", "appointment_id"]
+            isOneToOne: true
+            referencedRelation: "appointments"
+            referencedColumns: ["tenant_id", "id"]
+          },
+        ]
+      }
     }
     Functions: {
       accept_platform_invitation: { Args: { p_id: string }; Returns: string }
+      booking_deposit_details: {
+        Args: { p_host: string; p_token: string }
+        Returns: Json
+      }
       booking_slots: {
         Args: {
           p_day: string
@@ -1201,6 +1446,14 @@ export type Database = {
       customer_segment_counts: {
         Args: { p_query?: string; p_tenant: string }
         Returns: Json
+      }
+      finalize_stripe_deposit: {
+        Args: { p_paid: boolean; p_payment_intent: string; p_session: string }
+        Returns: undefined
+      }
+      finalize_stripe_refund: {
+        Args: { p_amount: number; p_payment_intent: string; p_refund: string }
+        Returns: undefined
       }
       get_public_shop: { Args: { p_hostname: string }; Returns: Json }
       is_platform_admin: { Args: never; Returns: boolean }
@@ -1280,6 +1533,10 @@ export type Database = {
         }
         Returns: string
       }
+      record_appointment_reminder: {
+        Args: { p_appointment: string; p_confirmed: boolean; p_tenant: string }
+        Returns: string
+      }
       record_customer_outreach: {
         Args: {
           p_confirmed: boolean
@@ -1289,6 +1546,23 @@ export type Database = {
         }
         Returns: string
       }
+      record_deposit_refund: {
+        Args: {
+          p_payment: string
+          p_provider_reference?: string
+          p_tenant: string
+        }
+        Returns: undefined
+      }
+      record_manual_deposit: {
+        Args: { p_appointment: string; p_tenant: string }
+        Returns: string
+      }
+      register_stripe_deposit_checkout: {
+        Args: { p_host: string; p_session: string; p_token: string }
+        Returns: string
+      }
+      revenue_protection_summary: { Args: { p_tenant: string }; Returns: Json }
       save_branding: {
         Args: {
           p_accent: string
@@ -1306,6 +1580,17 @@ export type Database = {
           p_rows: Json
           p_staff: boolean
           p_subject: string
+          p_tenant: string
+        }
+        Returns: undefined
+      }
+      save_revenue_protection_policy: {
+        Args: {
+          p_cancellation_window_hours: number
+          p_deposit_percent: number
+          p_deposit_rule: string
+          p_enabled: boolean
+          p_reminder_lead_hours: number
           p_tenant: string
         }
         Returns: undefined

@@ -52,6 +52,7 @@ test.afterAll(() => {
     delete from public.locations where tenant_id in (${list});
     delete from public.tenant_branding where tenant_id in (${list});
     delete from public.feature_entitlements where tenant_id in (${list});
+    delete from public.revenue_protection_policies where tenant_id in (${list});
     delete from public.audit_events where tenant_id in (${list});
     alter table public.tenants disable trigger audit_changes;
     delete from public.tenants where id in (${list});
