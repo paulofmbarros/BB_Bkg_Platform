@@ -3541,12 +3541,14 @@ textarea {
   margin-top: 0;
 }
 .segment-explanation,
-.segment-rules {
+.segment-rules,
+.retention-health {
   margin: 20px 0;
 }
 .segment-explanation p,
 .segment-rules p,
-.segment-rules li {
+.segment-rules li,
+.retention-health p {
   line-height: 1.7;
 }
 .segment-rules summary {
@@ -3565,6 +3567,69 @@ textarea {
 .segment-needs_review {
   background: #f3edcd;
   color: #68531b;
+}
+.health-overdue,
+.health-inactive,
+.health-at_risk {
+  background: #f4e8de;
+  color: #824127;
+}
+.health-due_soon,
+.health-needs_review {
+  background: #f3edcd;
+  color: #68531b;
+}
+.health-booked,
+.health-on_track {
+  background: #e4efe7;
+  color: #28563b;
+}
+.consent-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 20px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+}
+.consent-form .customer-link-ack,
+.customer-outreach-form .customer-link-ack {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  align-items: flex-start;
+  line-height: 1.6;
+}
+.consent-latest {
+  margin-top: 14px;
+}
+.customer-outreach-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: min(520px, 75vw);
+}
+.customer-outreach-form > label:first-child {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  font-weight: 600;
+}
+.customer-outreach-form textarea {
+  width: 100%;
+  resize: vertical;
+  padding: 12px;
+  border: 1px solid #b8c1b8;
+  border-radius: 7px;
+  font: inherit;
+  line-height: 1.5;
+}
+.customer-outreach-history {
+  margin: 20px 0;
+}
+.outreach-message {
+  max-width: 720px;
+  font-style: italic;
 }
 .customer-identity .status-badge {
   margin: 3px 0 9px;
@@ -3598,6 +3663,11 @@ textarea {
   font:
     600 28px "Manrope",
     sans-serif;
+}
+.opportunity-summary small {
+  grid-column: 1 / -1;
+  color: var(--muted);
+  font-size: 11px;
 }
 .opportunity-summary > p {
   grid-column: 1 / -1;
@@ -3655,6 +3725,12 @@ textarea {
   display: flex;
   flex-direction: column;
   gap: 8px;
+}
+.outreach-status {
+  max-width: 210px;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.5;
 }
 .opportunity-limit {
   margin-top: 18px;

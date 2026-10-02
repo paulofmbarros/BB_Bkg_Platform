@@ -1,0 +1,15 @@
+begin;
+create extension if not exists pgtap with schema extensions;
+select plan(10);
+select ok((select reloptions @> array['security_invoker=true'] from pg_class where oid='public.customer_retention_health'::regclass),'Retention health preserves caller RLS');
+select has_table('public','customer_consent_events','Consent evidence is durable');
+select has_table('public','customer_outreach_actions','Outreach evidence is durable');
+select has_function('public','set_customer_marketing_consent',array['uuid','uuid','integer','boolean','boolean'],'Consent mutation is exposed through a narrow function');
+select has_function('public','record_customer_outreach',array['uuid','uuid','text','boolean'],'Outreach mutation is exposed through a narrow function');
+select has_function('public','rebook_customer_from_outreach',array['uuid','uuid','integer','uuid','uuid','timestamp with time zone','integer','integer','uuid','uuid'],'Attributed rebooking is atomic');
+select col_is_pk('public','customer_consent_events','id','Consent events have a primary key');
+select col_is_pk('public','customer_outreach_actions','id','Outreach actions have a primary key');
+select col_is_unique('public','customer_outreach_actions','attributed_appointment_id','An appointment can be attributed only once');
+select ok((select relrowsecurity from pg_class where oid='public.customer_outreach_actions'::regclass),'Outreach actions enforce row-level security');
+select * from finish();
+rollback;

@@ -17,12 +17,13 @@ export async function rebookCustomer(
       price: z.number().int().nonnegative(),
       duration: z.number().int().positive(),
       request: z.uuid(),
+      outreach: z.uuid().optional(),
     })
     .safeParse(input);
   if (!parsed.success)
     return { ok: false, message: "Check the booking details." };
   const v = parsed.data;
-  const { data, error } = await db.rpc("rebook_customer", {
+  const booking = {
     p_tenant: tenant.id,
     p_customer: v.customer,
     p_customer_version: v.version,
@@ -32,7 +33,13 @@ export async function rebookCustomer(
     p_price: v.price,
     p_duration: v.duration,
     p_request: v.request,
-  });
+  };
+  const { data, error } = v.outreach
+    ? await db.rpc("rebook_customer_from_outreach", {
+        ...booking,
+        p_outreach: v.outreach,
+      })
+    : await db.rpc("rebook_customer", booking);
   if (error)
     return {
       ok: false,
@@ -43,5 +50,12 @@ export async function rebookCustomer(
     };
   revalidatePath(`/workspace/${slug}/customers`, "layout");
   revalidatePath(`/workspace/${slug}/calendar`);
-  return { ok: true, message: "Next visit booked.", id: data };
+  revalidatePath(`/workspace/${slug}/opportunities/rebooking`);
+  return {
+    ok: true,
+    message: v.outreach
+      ? "Next visit booked and attributed to outreach."
+      : "Next visit booked.",
+    id: data,
+  };
 }

@@ -23,6 +23,15 @@ test("owner filters segments and reads the explanation and rules", async ({
   await expect(page.locator(".segment-explanation")).toContainText(
     "threshold is 60 days",
   );
+  await expect(
+    page.getByRole("heading", { name: "Retention health" }),
+  ).toBeVisible();
+  await expect(page.locator(".retention-health")).toContainText(
+    "recorded visits and fixed rules",
+  );
+  await expect(
+    page.getByRole("button", { name: "Record email opt-in" }),
+  ).toBeVisible();
   await page.getByText("How customer segments work", { exact: true }).click();
   await expect(page.locator(".segment-rules")).toContainText("120 days");
   await page.setViewportSize({ width: 390, height: 844 });

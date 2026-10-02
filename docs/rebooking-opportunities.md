@@ -15,7 +15,7 @@ A customer becomes eligible when:
 
 The lead window is 20% of the typical interval, rounded to a whole day, with a minimum of two and maximum of seven days. Visit cadence uses local calendar days so daylight-saving changes do not alter the interval.
 
-The displayed potential value is the quoted price of the most recent completed service. It is not a forecast and is never described as booked, collected or recovered revenue. No message is sent and no marketing consent is inferred. The booking action uses the existing manager-only profile rebooking transaction.
+The displayed potential value is the quoted price of the most recent completed service. It is not a forecast and is never described as booked, collected or recovered revenue. Marketing consent is never inferred. Owners can now record explicit consent and externally sent outreach, then carry that outreach into the existing profile-rebooking transaction for direct attribution; see [Retention health and attributable outreach](retention-outreach.md).
 
 ## Verification
 

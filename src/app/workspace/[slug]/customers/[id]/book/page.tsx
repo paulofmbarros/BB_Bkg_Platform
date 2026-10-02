@@ -3,14 +3,23 @@ import { notFound } from "next/navigation";
 import { getCustomer } from "@/modules/customers/queries";
 import { getBusiness } from "@/modules/businesses/queries";
 import { CustomerRebooking } from "@/components/customer-rebooking";
+import { getBookingOutreach } from "@/modules/customers/outreach";
+import { customerDate } from "@/modules/customers/format";
 export default async function Rebook({
   params,
+  searchParams,
 }: {
   params: Promise<{ slug: string; id: string }>;
+  searchParams: Promise<{ outreach?: string | string[] }>;
 }) {
   const { slug, id } = await params,
-    c = await getCustomer(slug, id, {});
+    c = await getCustomer(slug, id, {}),
+    outreachValue = (await searchParams).outreach,
+    outreachId = typeof outreachValue === "string" ? outreachValue : undefined;
   if (c.role === "staff") notFound();
+  const outreach = outreachId
+    ? await getBookingOutreach(slug, id, outreachId)
+    : null;
   const b = await getBusiness(slug);
   const { data: previous, error } = await b.db
     .from("appointments")
@@ -45,6 +54,13 @@ export default async function Rebook({
           before adding another.
         </p>
       )}
+      {outreach && (
+        <p className="notice success">
+          This booking will be attributed to the rebooking email recorded on{" "}
+          {customerDate(outreach.contacted_at)}. Attribution records influence,
+          not payment or recovered revenue.
+        </p>
+      )}
       <div className="customer-rebooking">
         <CustomerRebooking
           slug={slug}
@@ -75,6 +91,7 @@ export default async function Rebook({
             previousService: previous?.service_id,
             previousStaff: previous?.staff_id,
           }}
+          outreachId={outreach?.id}
         />
       </div>
     </>
