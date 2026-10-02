@@ -51,5 +51,15 @@ describe("rebooking outreach copy", () => {
     ).toBe(
       "Hi Paulo, it looks like you may be due for your next Signature cut. Reply if you’d like us to help find a time. — Porto Gentlemen",
     );
+    expect(
+      rebookingMessage(
+        "Paulo Silva",
+        "Corte assinatura",
+        "Porto Gentlemen",
+        "pt",
+      ),
+    ).toBe(
+      "Olá Paulo, parece que está na altura do seu próximo serviço de Corte assinatura. Responda se quiser ajuda para encontrar um horário. — Porto Gentlemen",
+    );
   });
 });

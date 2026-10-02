@@ -214,6 +214,47 @@ const portuguese: Record<string, string> = {
     "concluídos hoje · não representa receita recebida",
   "Customers due": "Clientes a contactar",
   "potential service value": "valor potencial de serviços",
+  "REBOOKING OPPORTUNITIES": "OPORTUNIDADES DE REMARCAÇÃO",
+  "Right customer. Right moment.": "O cliente certo. No momento certo.",
+  "Explainable timing signals based on each customer’s completed visit history.":
+    "Sinais de tempo explicáveis com base no histórico de visitas concluídas de cada cliente.",
+  "Open all customers": "Ver todos os clientes",
+  Summary: "Resumo",
+  "Customers due or due soon": "Clientes na data habitual ou quase",
+  "Potential service value": "Valor potencial dos serviços",
+  "Recorded outreach actions": "Contactos registados",
+  "Appointments attributed": "Marcações atribuídas",
+  "service value": "valor dos serviços",
+  "Potential and attributed service values use appointment prices. They are not collected or recovered revenue.":
+    "Os valores potenciais e atribuídos utilizam os preços das marcações. Não representam receita recebida ou recuperada.",
+  "Noma records outreach but does not send messages. Outreach is available only after an explicit email opt-in has been recorded. Profiles with future bookings, unresolved visits or possible duplicate identities are excluded.":
+    "A Noma regista o contacto, mas não envia mensagens. O contacto só está disponível depois de ser registado um consentimento explícito por email. São excluídos os perfis com marcações futuras, visitas por resolver ou possíveis identidades duplicadas.",
+  "Customers due to return": "Clientes na altura habitual de regressar",
+  "Most recent service": "Serviço mais recente",
+  "Previous team member unavailable": "Membro anterior da equipa indisponível",
+  "Potential value": "Valor potencial",
+  "not recovered revenue": "não representa receita recuperada",
+  "Email outreach recorded": "Contacto por email registado",
+  "appointment attributed": "marcação atribuída",
+  "awaiting outcome": "a aguardar resultado",
+  "No marketing opt-in": "Sem consentimento de marketing",
+  "Record outreach": "Registar contacto",
+  "View profile": "Ver perfil",
+  "Book & attribute": "Marcar e atribuir",
+  "Book next visit": "Marcar próxima visita",
+  "No customers are due right now.":
+    "Não há clientes na data habitual de regresso neste momento.",
+  "Opportunities appear after at least three completed visit days establish a customer’s typical return interval.":
+    "As oportunidades aparecem depois de pelo menos três dias de visitas concluídas estabelecerem o intervalo habitual de regresso do cliente.",
+  "Showing the 100 most overdue opportunities.":
+    "A mostrar as 100 oportunidades mais atrasadas.",
+  "Message sent": "Mensagem enviada",
+  "I sent this message through an approved business email channel.":
+    "Enviei esta mensagem através de um canal de email aprovado pelo negócio.",
+  "Noma records this action but does not send the email. A booking can be attributed to it for 30 days.":
+    "A Noma regista esta ação, mas não envia o email. Uma marcação pode ser-lhe atribuída durante 30 dias.",
+  "Record email outreach": "Registar contacto por email",
+  "Outreach recorded for attribution.": "Contacto registado para atribuição.",
   "Coming up": "A seguir",
   "Portugal local time": "Hora local de Portugal",
   "Customer details hidden": "Dados do cliente ocultos",

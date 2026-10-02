@@ -1,4 +1,5 @@
 import { z } from "zod";
+import type { Locale } from "@/i18n/locales";
 
 export const rebookingOpportunitySchema = z.object({
   id: z.uuid(),
@@ -25,13 +26,27 @@ export const opportunitySummarySchema = z.object({
   potential_value_minor: z.number().int().nonnegative(),
 });
 
-export function opportunityTiming(opportunity: RebookingOpportunity) {
+export function opportunityTiming(
+  opportunity: RebookingOpportunity,
+  locale: Locale = "en",
+) {
+  if (locale === "pt") {
+    if (opportunity.due_in_days < 0)
+      return `${Math.abs(opportunity.due_in_days)} ${opportunity.due_in_days === -1 ? "dia" : "dias"} após a data habitual`;
+    if (opportunity.due_in_days === 0) return "Data habitual hoje";
+    return `Data habitual dentro de ${opportunity.due_in_days} ${opportunity.due_in_days === 1 ? "dia" : "dias"}`;
+  }
   if (opportunity.due_in_days < 0)
     return `${Math.abs(opportunity.due_in_days)} ${opportunity.due_in_days === -1 ? "day" : "days"} overdue`;
   if (opportunity.due_in_days === 0) return "Due today";
   return `Due in ${opportunity.due_in_days} ${opportunity.due_in_days === 1 ? "day" : "days"}`;
 }
 
-export function opportunityReason(opportunity: RebookingOpportunity) {
+export function opportunityReason(
+  opportunity: RebookingOpportunity,
+  locale: Locale = "en",
+) {
+  if (locale === "pt")
+    return `Regressa habitualmente a cada ${opportunity.typical_interval_days} dias. A última visita concluída foi há ${opportunity.days_since_visit} dias.`;
   return `Usually returns every ${opportunity.typical_interval_days} days. Last completed visit was ${opportunity.days_since_visit} days ago.`;
 }

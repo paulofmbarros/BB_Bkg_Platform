@@ -3,6 +3,7 @@
 import { useActionState } from "react";
 import { recordCustomerOutreach } from "@/modules/customers/outreach";
 import { FormNotice, SubmitButton } from "./ui";
+import { useTranslations } from "@/i18n/provider";
 
 export function CustomerOutreach({
   slug,
@@ -13,6 +14,7 @@ export function CustomerOutreach({
   customerId: string;
   message: string;
 }) {
+  const t = useTranslations();
   const [state, action] = useActionState(
     recordCustomerOutreach.bind(null, slug, customerId),
     { ok: false, message: "" },
@@ -20,7 +22,7 @@ export function CustomerOutreach({
   return (
     <form action={action} className="customer-outreach-form">
       <label>
-        Message sent
+        {t("Message sent")}
         <textarea
           name="message"
           defaultValue={message}
@@ -31,15 +33,16 @@ export function CustomerOutreach({
         />
       </label>
       <label className="customer-link-ack">
-        <input type="checkbox" name="confirmed" required />I sent this message
-        through an approved business email channel.
+        <input type="checkbox" name="confirmed" required />
+        {t("I sent this message through an approved business email channel.")}
       </label>
       <p className="field-help">
-        Noma records this action but does not send the email. A booking can be
-        attributed to it for 30 days.
+        {t(
+          "Noma records this action but does not send the email. A booking can be attributed to it for 30 days.",
+        )}
       </p>
       <FormNotice state={state} />
-      <SubmitButton>Record email outreach</SubmitButton>
+      <SubmitButton>{t("Record email outreach")}</SubmitButton>
     </form>
   );
 }
