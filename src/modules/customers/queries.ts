@@ -11,6 +11,8 @@ import {
   type QueryValues,
 } from "./model";
 import { segments, segmentFields } from "./segments";
+import { retentionHealthSchema } from "./health";
+import { outreachActionSchema } from "./outreach-model";
 export const PAGE_SIZE = 20;
 export async function getCustomers(slug: string, search: QueryValues) {
   const context = await requireTenant(slug);
@@ -103,6 +105,17 @@ export async function getCustomer(
       : null;
   if (segmentation?.error)
     throw new Error("Could not load the customer segment.");
+  const health =
+    context.role !== "staff"
+      ? await context.db
+          .from("customer_retention_health")
+          .select("*")
+          .eq("tenant_id", context.tenant.id)
+          .eq("id", id)
+          .single()
+      : null;
+  if (health?.error)
+    throw new Error("Could not load customer retention health.");
   const customer = customerSummarySchema.parse(data),
     page = pageNumber(search.page),
     filter = historyFilter(search.filter);
@@ -119,29 +132,54 @@ export async function getCustomer(
       .eq("status", "confirmed")
       .gt("starts_at", new Date().toISOString());
   else if (filter !== "all") query = query.eq("status", filter);
-  const [history, duplicates, links] = await Promise.all([
-    query
-      .order("starts_at", { ascending: false })
-      .order("id")
-      .range((page - 1) * PAGE_SIZE, page * PAGE_SIZE - 1),
-    context.db
-      .from("customers")
-      .select("id", { count: "exact", head: true })
-      .eq("tenant_id", context.tenant.id)
-      .eq("email", customer.email)
-      .neq("id", id)
-      .is("linked_customer_id", null),
-    context.db
-      .from("customer_links")
-      .select("id,source_id,confirmation,created_at")
-      .eq("tenant_id", context.tenant.id)
-      .eq("target_id", id)
-      .is("undone_at", null)
-      .order("created_at", { ascending: false }),
-  ]);
+  const [history, duplicates, links, consentEvents, outreachActions] =
+    await Promise.all([
+      query
+        .order("starts_at", { ascending: false })
+        .order("id")
+        .range((page - 1) * PAGE_SIZE, page * PAGE_SIZE - 1),
+      context.db
+        .from("customers")
+        .select("id", { count: "exact", head: true })
+        .eq("tenant_id", context.tenant.id)
+        .eq("email", customer.email)
+        .neq("id", id)
+        .is("linked_customer_id", null),
+      context.db
+        .from("customer_links")
+        .select("id,source_id,confirmation,created_at")
+        .eq("tenant_id", context.tenant.id)
+        .eq("target_id", id)
+        .is("undone_at", null)
+        .order("created_at", { ascending: false }),
+      context.role !== "staff"
+        ? context.db
+            .from("customer_consent_events")
+            .select("id,marketing_consent,recorded_at")
+            .eq("tenant_id", context.tenant.id)
+            .eq("customer_id", id)
+            .order("recorded_at", { ascending: false })
+            .limit(5)
+        : Promise.resolve({ data: [], error: null }),
+      context.role !== "staff"
+        ? context.db
+            .from("customer_outreach_actions")
+            .select("*")
+            .eq("tenant_id", context.tenant.id)
+            .eq("customer_id", id)
+            .order("contacted_at", { ascending: false })
+            .limit(10)
+        : Promise.resolve({ data: [], error: null }),
+    ]);
   if (history.error?.code === "PGRST103")
     redirect(`/workspace/${slug}/customers/${id}?filter=${filter}`);
-  if (history.error || duplicates.error || links.error)
+  if (
+    history.error ||
+    duplicates.error ||
+    links.error ||
+    consentEvents.error ||
+    outreachActions.error
+  )
     throw new Error("Could not load customer history.");
   const sourceIds = (links.data ?? []).map((l) => l.source_id);
   const sources = sourceIds.length
@@ -159,6 +197,11 @@ export async function getCustomer(
       source: sources.data?.find((s) => s.id === l.source_id),
     })),
     segmentation: segmentation ? segmentFields.parse(segmentation.data) : null,
+    health: health ? retentionHealthSchema.parse(health.data) : null,
+    consentEvents: consentEvents.data ?? [],
+    outreachActions: (outreachActions.data ?? []).map((row) =>
+      outreachActionSchema.parse(row),
+    ),
     customer,
     page,
     filter,

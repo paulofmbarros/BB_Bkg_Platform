@@ -21,6 +21,7 @@ export function CustomerRebooking({
   slug,
   customer,
   options,
+  outreachId,
 }: {
   slug: string;
   customer: {
@@ -30,6 +31,7 @@ export function CustomerRebooking({
     email: string;
   };
   options: RebookingOptions;
+  outreachId?: string;
 }) {
   const [service, setService] = useState(
       options.services.some((s) => s.id === options.previousService)
@@ -60,8 +62,11 @@ export function CustomerRebooking({
           {customerDate(start)} at {slotLabel(start)}
         </p>
         <p>
-          This appointment is saved in the existing customer’s history. No email
-          or payment was sent.
+          This appointment is saved in the existing customer’s history.
+          {outreachId
+            ? " The recorded outreach is attributed to this appointment."
+            : ""}{" "}
+          No email or payment was sent.
         </p>
         <div className="booking-actions">
           <Link
@@ -100,6 +105,7 @@ export function CustomerRebooking({
           start,
           price: selectedService.price_minor,
           duration: selectedService.duration_minutes,
+          outreach: outreachId,
         };
         const signature = JSON.stringify(values);
         if (request.current?.signature !== signature)
@@ -192,6 +198,9 @@ export function CustomerRebooking({
         </p>
         <p>
           Pay at the shop. No email is sent. Manage changes from the calendar.
+          {outreachId
+            ? " The existing outreach record will be attributed when you confirm."
+            : ""}
         </p>
       </div>
       {error && (

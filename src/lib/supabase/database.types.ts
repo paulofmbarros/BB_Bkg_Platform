@@ -98,6 +98,13 @@ export type Database = {
             foreignKeyName: "appointments_tenant_id_customer_id_fkey"
             columns: ["tenant_id", "customer_id"]
             isOneToOne: false
+            referencedRelation: "customer_retention_health"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "appointments_tenant_id_customer_id_fkey"
+            columns: ["tenant_id", "customer_id"]
+            isOneToOne: false
             referencedRelation: "customer_segments"
             referencedColumns: ["tenant_id", "id"]
           },
@@ -269,6 +276,72 @@ export type Database = {
           },
         ]
       }
+      customer_consent_events: {
+        Row: {
+          confirmation: string
+          customer_id: string
+          id: string
+          marketing_consent: boolean
+          recorded_at: string
+          recorded_by: string
+          tenant_id: string
+        }
+        Insert: {
+          confirmation: string
+          customer_id: string
+          id?: string
+          marketing_consent: boolean
+          recorded_at?: string
+          recorded_by?: string
+          tenant_id: string
+        }
+        Update: {
+          confirmation?: string
+          customer_id?: string
+          id?: string
+          marketing_consent?: boolean
+          recorded_at?: string
+          recorded_by?: string
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customer_consent_events_tenant_id_customer_id_fkey"
+            columns: ["tenant_id", "customer_id"]
+            isOneToOne: false
+            referencedRelation: "customer_rebooking_opportunities"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "customer_consent_events_tenant_id_customer_id_fkey"
+            columns: ["tenant_id", "customer_id"]
+            isOneToOne: false
+            referencedRelation: "customer_retention_health"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "customer_consent_events_tenant_id_customer_id_fkey"
+            columns: ["tenant_id", "customer_id"]
+            isOneToOne: false
+            referencedRelation: "customer_segments"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "customer_consent_events_tenant_id_customer_id_fkey"
+            columns: ["tenant_id", "customer_id"]
+            isOneToOne: false
+            referencedRelation: "customer_summaries"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "customer_consent_events_tenant_id_customer_id_fkey"
+            columns: ["tenant_id", "customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["tenant_id", "id"]
+          },
+        ]
+      }
       customer_links: {
         Row: {
           actor_id: string
@@ -325,6 +398,13 @@ export type Database = {
             foreignKeyName: "customer_links_tenant_id_source_id_fkey"
             columns: ["tenant_id", "source_id"]
             isOneToOne: false
+            referencedRelation: "customer_retention_health"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "customer_links_tenant_id_source_id_fkey"
+            columns: ["tenant_id", "source_id"]
+            isOneToOne: false
             referencedRelation: "customer_segments"
             referencedColumns: ["tenant_id", "id"]
           },
@@ -353,6 +433,13 @@ export type Database = {
             foreignKeyName: "customer_links_tenant_id_target_id_fkey"
             columns: ["tenant_id", "target_id"]
             isOneToOne: false
+            referencedRelation: "customer_retention_health"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "customer_links_tenant_id_target_id_fkey"
+            columns: ["tenant_id", "target_id"]
+            isOneToOne: false
             referencedRelation: "customer_segments"
             referencedColumns: ["tenant_id", "id"]
           },
@@ -366,6 +453,98 @@ export type Database = {
           {
             foreignKeyName: "customer_links_tenant_id_target_id_fkey"
             columns: ["tenant_id", "target_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["tenant_id", "id"]
+          },
+        ]
+      }
+      customer_outreach_actions: {
+        Row: {
+          attributed_appointment_id: string | null
+          attributed_at: string | null
+          channel: string
+          consent_event_id: string
+          contacted_at: string
+          customer_id: string
+          id: string
+          message: string
+          purpose: string
+          recorded_by: string
+          tenant_id: string
+        }
+        Insert: {
+          attributed_appointment_id?: string | null
+          attributed_at?: string | null
+          channel: string
+          consent_event_id: string
+          contacted_at?: string
+          customer_id: string
+          id?: string
+          message: string
+          purpose: string
+          recorded_by?: string
+          tenant_id: string
+        }
+        Update: {
+          attributed_appointment_id?: string | null
+          attributed_at?: string | null
+          channel?: string
+          consent_event_id?: string
+          contacted_at?: string
+          customer_id?: string
+          id?: string
+          message?: string
+          purpose?: string
+          recorded_by?: string
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customer_outreach_actions_tenant_id_attributed_appointment_fkey"
+            columns: ["tenant_id", "attributed_appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "customer_outreach_actions_tenant_id_consent_event_id_fkey"
+            columns: ["tenant_id", "consent_event_id"]
+            isOneToOne: false
+            referencedRelation: "customer_consent_events"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "customer_outreach_actions_tenant_id_customer_id_fkey"
+            columns: ["tenant_id", "customer_id"]
+            isOneToOne: false
+            referencedRelation: "customer_rebooking_opportunities"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "customer_outreach_actions_tenant_id_customer_id_fkey"
+            columns: ["tenant_id", "customer_id"]
+            isOneToOne: false
+            referencedRelation: "customer_retention_health"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "customer_outreach_actions_tenant_id_customer_id_fkey"
+            columns: ["tenant_id", "customer_id"]
+            isOneToOne: false
+            referencedRelation: "customer_segments"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "customer_outreach_actions_tenant_id_customer_id_fkey"
+            columns: ["tenant_id", "customer_id"]
+            isOneToOne: false
+            referencedRelation: "customer_summaries"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "customer_outreach_actions_tenant_id_customer_id_fkey"
+            columns: ["tenant_id", "customer_id"]
             isOneToOne: false
             referencedRelation: "customers"
             referencedColumns: ["tenant_id", "id"]
@@ -415,6 +594,13 @@ export type Database = {
             columns: ["tenant_id", "linked_customer_id"]
             isOneToOne: false
             referencedRelation: "customer_rebooking_opportunities"
+            referencedColumns: ["tenant_id", "id"]
+          },
+          {
+            foreignKeyName: "customer_link_tenant_fk"
+            columns: ["tenant_id", "linked_customer_id"]
+            isOneToOne: false
+            referencedRelation: "customer_retention_health"
             referencedColumns: ["tenant_id", "id"]
           },
           {
@@ -885,6 +1071,28 @@ export type Database = {
           },
         ]
       }
+      customer_retention_health: {
+        Row: {
+          completed_visit_days: number | null
+          days_since_visit: number | null
+          due_in_days: number | null
+          duplicate_records: number | null
+          health_status: string | null
+          id: string | null
+          segment: string | null
+          tenant_id: string | null
+          typical_interval_days: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customers_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       customer_segments: {
         Row: {
           appointment_count: number | null
@@ -985,6 +1193,7 @@ export type Database = {
         }
         Returns: string
       }
+      customer_outreach_summary: { Args: { p_tenant: string }; Returns: Json }
       customer_rebooking_opportunity_summary: {
         Args: { p_tenant: string }
         Returns: Json
@@ -1056,6 +1265,30 @@ export type Database = {
         }
         Returns: string
       }
+      rebook_customer_from_outreach: {
+        Args: {
+          p_customer: string
+          p_customer_version: number
+          p_duration: number
+          p_outreach: string
+          p_price: number
+          p_request: string
+          p_service: string
+          p_staff: string
+          p_start: string
+          p_tenant: string
+        }
+        Returns: string
+      }
+      record_customer_outreach: {
+        Args: {
+          p_confirmed: boolean
+          p_customer: string
+          p_message: string
+          p_tenant: string
+        }
+        Returns: string
+      }
       save_branding: {
         Args: {
           p_accent: string
@@ -1086,6 +1319,16 @@ export type Database = {
           p_services: string[]
           p_tenant: string
           p_title: string
+        }
+        Returns: string
+      }
+      set_customer_marketing_consent: {
+        Args: {
+          p_confirmed: boolean
+          p_consent: boolean
+          p_customer: string
+          p_tenant: string
+          p_version: number
         }
         Returns: string
       }

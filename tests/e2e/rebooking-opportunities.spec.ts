@@ -23,6 +23,7 @@ test("owner reviews explainable rebooking opportunities from the daily brief", a
     page.getByText(/Usually returns every \d+ days/).first(),
   ).toBeVisible();
   await expect(page.getByText("not recovered revenue").first()).toBeVisible();
+  await expect(page.getByText("No marketing opt-in").first()).toBeVisible();
   await expect(
     page.getByRole("link", { name: "Book next visit" }).first(),
   ).toBeVisible();

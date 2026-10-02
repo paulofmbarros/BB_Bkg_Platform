@@ -26,6 +26,7 @@ Product direction, validation gates and current phase status are tracked in the 
 - Explainable customer segments with directory filters and profile-level reasons.
 - A daily business brief with upcoming visits, outstanding outcomes and completed-service value clearly separated from collected revenue.
 - Explainable rebooking opportunities based on each repeat customer's median visit interval, with potential value kept distinct from recovered revenue.
+- Deterministic retention-health explanations, explicit email consent evidence, recorded rebooking outreach and direct appointment attribution. Noma does not send outreach yet.
 
 The overview reports actual configuration counts. It does not invent bookings, revenue or customer metrics.
 

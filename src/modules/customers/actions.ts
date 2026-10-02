@@ -34,6 +34,52 @@ export async function editCustomer(
   return { ok: true, message: "Customer details saved." };
 }
 
+export async function setCustomerMarketingConsent(
+  slug: string,
+  id: string,
+  _previous: { ok: boolean; message: string },
+  form: FormData,
+) {
+  const { db, tenant } = await requireMemberManager(slug);
+  const parsed = z
+    .object({
+      version: z.coerce.number().int().positive(),
+      consent: z.enum(["grant", "withdraw"]),
+      confirmed: z.literal("on"),
+    })
+    .safeParse(Object.fromEntries(form));
+  if (!parsed.success || !z.uuid().safeParse(id).success)
+    return {
+      ok: false,
+      message: "Confirm that the customer directly requested this change.",
+    };
+  const { error } = await db.rpc("set_customer_marketing_consent", {
+    p_tenant: tenant.id,
+    p_customer: id,
+    p_version: parsed.data.version,
+    p_consent: parsed.data.consent === "grant",
+    p_confirmed: true,
+  });
+  if (error)
+    return {
+      ok: false,
+      message:
+        error.code === "P0001"
+          ? error.message
+          : "Marketing consent could not be updated.",
+    };
+  revalidatePath(`/workspace/${slug}/customers`, "layout");
+  revalidatePath(`/workspace/${slug}/customers/${id}`);
+  revalidatePath(`/workspace/${slug}/opportunities/rebooking`);
+  return {
+    ok: true,
+    message:
+      parsed.data.consent === "grant"
+        ? "Customer opt-in recorded."
+        : "Customer opt-out recorded. No further marketing outreach is allowed.",
+  };
+}
+
 export async function linkCustomers(
   slug: string,
   source: string,

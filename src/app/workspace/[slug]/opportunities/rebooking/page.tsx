@@ -1,11 +1,20 @@
 import { WorkspaceLink as Link } from "@/components/workspace-link";
-import { ArrowRight, CalendarClock, UsersRound } from "lucide-react";
+import {
+  ArrowRight,
+  CalendarCheck,
+  CalendarClock,
+  MailCheck,
+  UsersRound,
+} from "lucide-react";
+import { Modal } from "@/components/ui";
+import { CustomerOutreach } from "@/components/customer-outreach";
 import { getRebookingOpportunities } from "@/modules/customers/opportunities";
 import {
   opportunityReason,
   opportunityTiming,
 } from "@/modules/customers/opportunity-model";
 import { customerDate } from "@/modules/customers/format";
+import { rebookingMessage } from "@/modules/customers/outreach-model";
 import { money } from "@/lib/format";
 
 export default async function RebookingOpportunities({
@@ -44,17 +53,31 @@ export default async function RebookingOpportunities({
           <span>Potential service value</span>
           <strong>{money(result.summary.potential_value_minor)}</strong>
         </div>
+        <div>
+          <MailCheck size={20} />
+          <span>Recorded outreach actions</span>
+          <strong>{result.outreachSummary.outreach_count}</strong>
+        </div>
+        <div>
+          <CalendarCheck size={20} />
+          <span>Appointments attributed</span>
+          <strong>{result.outreachSummary.attributed_bookings}</strong>
+          <small>
+            {money(result.outreachSummary.attributed_service_value_minor)}{" "}
+            service value
+          </small>
+        </div>
         <p>
-          Potential value uses each customer’s most recent completed service. It
-          is not forecast, booked, collected or recovered revenue.
+          Potential and attributed service values use appointment prices. They
+          are not collected or recovered revenue.
         </p>
       </section>
 
       <p className="field-help opportunity-guidance">
-        No message is sent from this screen. Confirm the customer wants an
-        appointment before booking, and use contact details only with an
-        appropriate lawful basis. Profiles with future bookings, unresolved
-        visits or possible duplicate identities are excluded.
+        Noma records outreach but does not send messages. Outreach is available
+        only after an explicit email opt-in has been recorded. Profiles with
+        future bookings, unresolved visits or possible duplicate identities are
+        excluded.
       </p>
 
       <section
@@ -62,51 +85,86 @@ export default async function RebookingOpportunities({
         aria-label="Customers due to return"
       >
         {result.opportunities.length ? (
-          result.opportunities.map((opportunity) => (
-            <article className="panel opportunity-card" key={opportunity.id}>
-              <div className="opportunity-customer">
-                <span className="eyebrow">
-                  {opportunityTiming(opportunity)}
-                </span>
-                <h2>{opportunity.display_name}</h2>
-                <p>{opportunityReason(opportunity)}</p>
-                <small>
-                  Last visit {customerDate(opportunity.last_visit_at)} ·{" "}
-                  {opportunity.completed_visit_days} completed visit days
-                </small>
-              </div>
-              <div className="opportunity-service">
-                <span>Most recent service</span>
-                <strong>{opportunity.service_name}</strong>
-                <small>
-                  {opportunity.staff_name
-                    ? `with ${opportunity.staff_name}`
-                    : "Previous team member unavailable"}
-                </small>
-              </div>
-              <div className="opportunity-value">
-                <span>Potential value</span>
-                <strong>{money(opportunity.potential_value_minor)}</strong>
-                <small>not recovered revenue</small>
-              </div>
-              <div className="opportunity-actions">
-                <Link
-                  className="button secondary"
-                  href={`${path}/${opportunity.id}`}
-                  prefetch={false}
-                >
-                  View profile
-                </Link>
-                <Link
-                  className="button primary"
-                  href={`${path}/${opportunity.id}/book`}
-                  prefetch={false}
-                >
-                  Book next visit
-                </Link>
-              </div>
-            </article>
-          ))
+          result.opportunities.map((opportunity) => {
+            return (
+              <article className="panel opportunity-card" key={opportunity.id}>
+                <div className="opportunity-customer">
+                  <span className="eyebrow">
+                    {opportunityTiming(opportunity)}
+                  </span>
+                  <h2>{opportunity.display_name}</h2>
+                  <p>{opportunityReason(opportunity)}</p>
+                  <small>
+                    Last visit {customerDate(opportunity.last_visit_at)} ·{" "}
+                    {opportunity.completed_visit_days} completed visit days
+                  </small>
+                </div>
+                <div className="opportunity-service">
+                  <span>Most recent service</span>
+                  <strong>{opportunity.service_name}</strong>
+                  <small>
+                    {opportunity.staff_name
+                      ? `with ${opportunity.staff_name}`
+                      : "Previous team member unavailable"}
+                  </small>
+                </div>
+                <div className="opportunity-value">
+                  <span>Potential value</span>
+                  <strong>{money(opportunity.potential_value_minor)}</strong>
+                  <small>not recovered revenue</small>
+                </div>
+                <div className="opportunity-actions">
+                  {opportunity.latestOutreach && (
+                    <p className="outreach-status">
+                      Email outreach recorded{" "}
+                      {customerDate(opportunity.latestOutreach.contacted_at)}
+                      {opportunity.latestOutreach.attributed_appointment_id
+                        ? " · appointment attributed"
+                        : " · awaiting outcome"}
+                    </p>
+                  )}
+                  {!opportunity.marketing_consent ? (
+                    <span className="status-badge segment-needs_review">
+                      No marketing opt-in
+                    </span>
+                  ) : (
+                    <Modal
+                      label="Record outreach"
+                      title={`Record outreach to ${opportunity.display_name}`}
+                      className="button secondary"
+                      icon={<MailCheck size={16} />}
+                    >
+                      <CustomerOutreach
+                        slug={slug}
+                        customerId={opportunity.id}
+                        message={rebookingMessage(
+                          opportunity.display_name,
+                          opportunity.service_name,
+                          result.tenant.name,
+                        )}
+                      />
+                    </Modal>
+                  )}
+                  <Link
+                    className="button secondary"
+                    href={`${path}/${opportunity.id}`}
+                    prefetch={false}
+                  >
+                    View profile
+                  </Link>
+                  <Link
+                    className="button primary"
+                    href={`${path}/${opportunity.id}/book${opportunity.attributable ? `?outreach=${opportunity.latestOutreach!.id}` : ""}`}
+                    prefetch={false}
+                  >
+                    {opportunity.attributable
+                      ? "Book & attribute"
+                      : "Book next visit"}
+                  </Link>
+                </div>
+              </article>
+            );
+          })
         ) : (
           <div className="panel calendar-empty">
             <CalendarClock size={32} />

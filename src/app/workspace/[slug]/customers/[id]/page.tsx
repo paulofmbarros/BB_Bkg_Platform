@@ -7,6 +7,8 @@ import { shopDate, slotLabel } from "@/modules/bookings/types";
 import { customerDate } from "@/modules/customers/format";
 import { initials, money } from "@/lib/format";
 import { CustomerEdit } from "@/components/customer-edit";
+import { CustomerHealth } from "@/components/customer-health";
+import { CustomerConsent } from "@/components/customer-consent";
 import { CustomerPagination } from "@/components/customer-pagination";
 import { UndoCustomerLink } from "@/components/customer-link";
 import { Modal } from "@/components/ui";
@@ -93,6 +95,7 @@ export default async function CustomerProfile({
           <SegmentRules />
         </>
       )}
+      {c.health && <CustomerHealth health={c.health} />}
       <div className="customer-profile-grid">
         <section className="panel customer-contact">
           <h2>Contact & preferences</h2>
@@ -106,6 +109,17 @@ export default async function CustomerProfile({
             <dt>Marketing</dt>
             <dd>{p.marketing_consent ? "Opted in" : "Not subscribed"}</dd>
           </dl>
+          {c.role !== "staff" && <CustomerConsent slug={slug} customer={p} />}
+          {c.consentEvents[0] && (
+            <p className="field-help consent-latest">
+              Latest consent change recorded{" "}
+              {customerDate(c.consentEvents[0].recorded_at)}:{" "}
+              {c.consentEvents[0].marketing_consent
+                ? "customer opted in"
+                : "customer opted out"}
+              .
+            </p>
+          )}
           {c.duplicates > 0 && (
             <div className="customer-duplicate-note">
               <strong>
@@ -154,6 +168,32 @@ export default async function CustomerProfile({
           )}
         </section>
       </div>
+      {c.role !== "staff" && c.outreachActions.length > 0 && (
+        <section className="panel customer-outreach-history">
+          <div className="panel-heading">
+            <div>
+              <span className="eyebrow">MEASURABLE RETENTION ACTIONS</span>
+              <h2>Outreach history</h2>
+            </div>
+          </div>
+          {c.outreachActions.map((outreach) => (
+            <article className="customer-history-row" key={outreach.id}>
+              <div>
+                <h3>Rebooking email recorded</h3>
+                <p>{customerDate(outreach.contacted_at)}</p>
+                <p className="outreach-message">“{outreach.message}”</p>
+              </div>
+              <span
+                className={`status-badge ${outreach.attributed_appointment_id ? "status-completed" : ""}`}
+              >
+                {outreach.attributed_appointment_id
+                  ? "Appointment attributed"
+                  : "Awaiting outcome"}
+              </span>
+            </article>
+          ))}
+        </section>
+      )}
       {c.role !== "staff" && (
         <section className="panel customer-link-panel">
           <h2>Customer records</h2>
