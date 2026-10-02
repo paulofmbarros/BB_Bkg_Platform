@@ -22,6 +22,7 @@ import { getRebookingOpportunitySummary } from "@/modules/customers/opportunitie
 import { appointmentDate, slotLabel } from "@/modules/bookings/types";
 import { weeklyHours, trimHours, weekdays } from "@/modules/scheduling/hours";
 import { money, initials } from "@/lib/format";
+import { localeOrEnglish, translator, weekdayNames } from "@/i18n/locales";
 
 export default async function Overview({
   params,
@@ -34,34 +35,47 @@ export default async function Overview({
     getBusinessBrief(b),
     getRebookingOpportunitySummary(b),
   ]);
+  const locale = b.supportMode
+    ? "en"
+    : localeOrEnglish(b.tenant.workspace_locale);
+  const t = translator(locale);
   const activeServices = b.services.filter((s) => s.active);
   const activeStaff = b.staff.filter((s) => s.active);
   const hours = weeklyHours(b.hours);
   const setup = [
     {
-      label: "Make it your own",
-      detail: "Business name, brand and contact details",
+      label: t("Make it your own"),
+      detail: t("Business name, brand and contact details"),
       done: !!b.branding.tagline && !!b.location.address,
       path: "/settings",
       icon: Palette,
     },
     {
-      label: "Build your service menu",
-      detail: `${activeServices.length} services ready to discover`,
+      label: t("Build your service menu"),
+      detail:
+        locale === "pt"
+          ? `${activeServices.length} serviços prontos a descobrir`
+          : `${activeServices.length} services ready to discover`,
       done: activeServices.length > 0,
       path: "/services",
       icon: Scissors,
     },
     {
-      label: "Bring your team together",
-      detail: `${activeStaff.length} barbers on your team`,
+      label: t("Bring your team together"),
+      detail:
+        locale === "pt"
+          ? `${activeStaff.length} barbeiros na sua equipa`
+          : `${activeStaff.length} barbers on your team`,
       done: activeStaff.length > 0,
       path: "/team",
       icon: UsersRound,
     },
     {
-      label: "Set your working week",
-      detail: `${hours} hours open each week`,
+      label: t("Set your working week"),
+      detail:
+        locale === "pt"
+          ? `${hours} horas de abertura por semana`
+          : `${hours} hours open each week`,
       done: hours > 0,
       path: "/hours",
       icon: Clock3,
@@ -117,18 +131,23 @@ export default async function Overview({
     <>
       <div className="page-heading">
         <div>
-          <span className="eyebrow">THE BIG PICTURE</span>
+          <span className="eyebrow">{t("THE BIG PICTURE")}</span>
           <h1>
-            A good day starts here<span className="accent-period">.</span>
+            {t("A good day starts here")}
+            <span className="accent-period">.</span>
           </h1>
-          <p>Let’s get {b.tenant.name} ready for its next chapter.</p>
+          <p>
+            {locale === "pt"
+              ? `Vamos preparar ${b.tenant.name} para o próximo capítulo.`
+              : `Let’s get ${b.tenant.name} ready for its next chapter.`}
+          </p>
         </div>
         <Link
           className="button secondary"
           href={`/preview/${slug}`}
           target="_blank"
         >
-          Preview your shop <ArrowUpRight size={16} />
+          {t("Preview your shop")} <ArrowUpRight size={16} />
         </Link>
       </div>
       {b.supportMode && (
@@ -188,39 +207,40 @@ export default async function Overview({
       >
         <div className="panel-heading">
           <div>
-            <span className="eyebrow">TODAY AT A GLANCE</span>
+            <span className="eyebrow">{t("TODAY AT A GLANCE")}</span>
             <h2 id="daily-brief-title">
-              {appointmentDate(`${brief.day}T12:00:00Z`)}
+              {appointmentDate(`${brief.day}T12:00:00Z`, locale)}
             </h2>
             <p>
               {b.role === "staff" && !b.supportMode
-                ? "A live snapshot of your own schedule."
-                : "A live operational snapshot for the whole shop."}
+                ? t("A live snapshot of your own schedule.")
+                : t("A live operational snapshot for the whole shop.")}
             </p>
           </div>
           <Link href={`/workspace/${slug}/calendar`} className="text-link">
-            Open calendar <ArrowRight size={15} />
+            {t("Open calendar")} <ArrowRight size={15} />
           </Link>
         </div>
         <div className="brief-metrics">
           <div>
             <CalendarDays size={19} />
-            <span>Still ahead today</span>
+            <span>{t("Still ahead today")}</span>
             <strong>{brief.upcoming.length}</strong>
-            <small>confirmed visits</small>
+            <small>{t("confirmed visits")}</small>
           </div>
           <div className={brief.outstandingOutcomes ? "needs-attention" : ""}>
             <ClipboardCheck size={19} />
-            <span>Needs an outcome</span>
+            <span>{t("Needs an outcome")}</span>
             <strong>{brief.outstandingOutcomes}</strong>
-            <small>past or ongoing confirmed visits</small>
+            <small>{t("past or ongoing confirmed visits")}</small>
           </div>
           <div>
             <BadgeEuro size={19} />
-            <span>Completed-service value</span>
-            <strong>{money(brief.completedValueMinor)}</strong>
+            <span>{t("Completed-service value")}</span>
+            <strong>{money(brief.completedValueMinor, locale)}</strong>
             <small>
-              {brief.completedVisits} completed today · not collected revenue
+              {brief.completedVisits}{" "}
+              {t("completed today · not collected revenue")}
             </small>
           </div>
           {!b.supportMode && b.role !== "staff" && (
@@ -229,18 +249,19 @@ export default async function Overview({
               className={rebooking.count ? "has-opportunity" : ""}
             >
               <RefreshCcw size={19} />
-              <span>Customers due</span>
+              <span>{t("Customers due")}</span>
               <strong>{rebooking.count}</strong>
               <small>
-                {money(rebooking.potential_value_minor)} potential service value
+                {money(rebooking.potential_value_minor, locale)}{" "}
+                {t("potential service value")}
               </small>
             </Link>
           )}
         </div>
         <div className="brief-agenda">
           <div className="brief-agenda-heading">
-            <strong>Coming up</strong>
-            <span>Portugal local time</span>
+            <strong>{t("Coming up")}</strong>
+            <span>{t("Portugal local time")}</span>
           </div>
           {brief.upcoming.length ? (
             brief.upcoming.slice(0, 4).map((appointment) => (
@@ -250,12 +271,12 @@ export default async function Overview({
                 key={appointment.id}
               >
                 <time dateTime={appointment.starts_at}>
-                  {slotLabel(appointment.starts_at)}
+                  {slotLabel(appointment.starts_at, locale)}
                 </time>
                 <span>
                   <strong>
                     {b.supportMode
-                      ? "Customer details hidden"
+                      ? t("Customer details hidden")
                       : appointment.customers?.display_name}
                   </strong>
                   <small>
@@ -269,7 +290,7 @@ export default async function Overview({
           ) : (
             <div className="brief-empty">
               <CalendarDays size={21} />
-              <span>No more confirmed visits today.</span>
+              <span>{t("No more confirmed visits today.")}</span>
             </div>
           )}
           {brief.upcoming.length > 4 && (
@@ -277,7 +298,9 @@ export default async function Overview({
               href={`/workspace/${slug}/calendar?day=${brief.day}`}
               className="brief-more"
             >
-              View {brief.upcoming.length - 4} more in the calendar
+              {locale === "pt"
+                ? `Ver mais ${brief.upcoming.length - 4} na agenda`
+                : `View ${brief.upcoming.length - 4} more in the calendar`}
             </Link>
           )}
         </div>
@@ -286,70 +309,71 @@ export default async function Overview({
         <div className="welcome-copy">
           <span className="pill-light">
             <span />
-            YOUR FOUNDATION IS TAKING SHAPE
+            {t("YOUR FOUNDATION IS TAKING SHAPE")}
           </span>
           <h2>
-            More time for the craft.
+            {t("More time for the craft.")}
             <br />
-            <em>Less time on the rest.</em>
+            <em>{t("Less time on the rest.")}</em>
           </h2>
           <p>
-            Your services, your people, your opening hours.
+            {t("Your services, your people, your opening hours.")}
             <br />
-            Everything starts with a shop that feels like you.
+            {t("Everything starts with a shop that feels like you.")}
           </p>
           <Link href={`/workspace/${slug}/settings`} className="button cream">
-            Make it yours <ArrowRight size={16} />
+            {t("Make it yours")} <ArrowRight size={16} />
           </Link>
         </div>
         <div className="brand-seal">
           <div className="seal-ring">
-            <span>YOUR NEIGHBOURHOOD SHOP</span>
+            <span>{t("YOUR NEIGHBOURHOOD SHOP")}</span>
             <strong>{initials(b.tenant.name)}</strong>
             <div className="seal-line" />
-            <span>CRAFTED AROUND YOU.</span>
+            <span>{t("CRAFTED AROUND YOU.")}</span>
           </div>
         </div>
       </section>
       <div className="stat-grid">
         <Link href={`/workspace/${slug}/services`} className="stat-card">
           <div>
-            <span>On the menu</span>
+            <span>{t("On the menu")}</span>
             <Scissors size={19} />
           </div>
           <strong>
             {activeServices.length.toString().padStart(2, "0")}
-            <span>services</span>
+            <span>{t("services")}</span>
           </strong>
           <p>
-            A considered experience for every customer{" "}
+            {t("A considered experience for every customer")}{" "}
             <ArrowUpRight size={14} />
           </p>
         </Link>
         <Link href={`/workspace/${slug}/team`} className="stat-card">
           <div>
-            <span>Behind the chair</span>
+            <span>{t("Behind the chair")}</span>
             <UsersRound size={19} />
           </div>
           <strong>
             {activeStaff.length.toString().padStart(2, "0")}
-            <span>barbers</span>
+            <span>{t("barbers")}</span>
           </strong>
           <p>
-            The people who make your shop <ArrowUpRight size={14} />
+            {t("The people who make your shop")} <ArrowUpRight size={14} />
           </p>
         </Link>
         <Link href={`/workspace/${slug}/hours`} className="stat-card">
           <div>
-            <span>Your working week</span>
+            <span>{t("Your working week")}</span>
             <Clock3 size={19} />
           </div>
           <strong>
             {hours}
-            <span>hours open</span>
+            <span>{t("hours open")}</span>
           </strong>
           <p>
-            Working time, with breaks accounted for <ArrowUpRight size={14} />
+            {t("Working time, with breaks accounted for")}{" "}
+            <ArrowUpRight size={14} />
           </p>
         </Link>
       </div>
@@ -357,10 +381,14 @@ export default async function Overview({
         <section className="panel setup-panel">
           <div className="panel-heading">
             <div>
-              <span className="eyebrow">A STRONG START</span>
-              <h2>Your shop essentials</h2>
+              <span className="eyebrow">{t("A STRONG START")}</span>
+              <h2>{t("Your shop essentials")}</h2>
             </div>
-            <span className="completion-count">{completed} of 4 ready</span>
+            <span className="completion-count">
+              {locale === "pt"
+                ? `${completed} de 4 prontos`
+                : `${completed} of 4 ready`}
+            </span>
           </div>
           <div className="progress-track">
             <span style={{ width: `${completed * 25}%` }} />
@@ -383,17 +411,17 @@ export default async function Overview({
           ))}
           <div className="setup-footnote">
             <CheckCircle2 size={17} />
-            <span>These details shape your customer experience.</span>
+            <span>{t("These details shape your customer experience.")}</span>
           </div>
         </section>
         <section className="panel week-panel">
           <div className="panel-heading">
             <div>
-              <span className="eyebrow">AT A GLANCE</span>
-              <h2>The regular week</h2>
+              <span className="eyebrow">{t("AT A GLANCE")}</span>
+              <h2>{t("The regular week")}</h2>
             </div>
             <Link href={`/workspace/${slug}/hours`} className="text-link">
-              Edit <ArrowUpRight size={14} />
+              {t("Edit")} <ArrowUpRight size={14} />
             </Link>
           </div>
           {trimHours(b.hours).map((row) => (
@@ -401,25 +429,29 @@ export default async function Overview({
               key={row.weekday}
               className={`week-row ${!row.enabled ? "muted" : ""}`}
             >
-              <span>{weekdays[row.weekday]}</span>
+              <span>
+                {weekdayNames[locale][row.weekday] ?? weekdays[row.weekday]}
+              </span>
               <strong>
-                {row.enabled ? `${row.start_time} – ${row.end_time}` : "Closed"}
+                {row.enabled
+                  ? `${row.start_time} – ${row.end_time}`
+                  : t("Closed")}
               </strong>
             </div>
           ))}
           <p className="week-note">
-            Shop-local time · Breaks shown in working hours
+            {t("Shop-local time · Breaks shown in working hours")}
           </p>
         </section>
       </div>
       <section className="panel">
         <div className="panel-heading">
           <div>
-            <span className="eyebrow">GOOD HANDS</span>
-            <h2>The people behind your shop</h2>
+            <span className="eyebrow">{t("GOOD HANDS")}</span>
+            <h2>{t("The people behind your shop")}</h2>
           </div>
           <Link href={`/workspace/${slug}/team`} className="text-link">
-            Meet the team <ArrowRight size={16} />
+            {t("Meet the team")} <ArrowRight size={16} />
           </Link>
         </div>
         <div className="team-strip">
@@ -443,24 +475,25 @@ export default async function Overview({
           <CalendarDays size={23} />
         </div>
         <div>
-          <span className="eyebrow">YOUR APPOINTMENTS</span>
-          <h3>A calendar built around your day.</h3>
+          <span className="eyebrow">{t("YOUR APPOINTMENTS")}</span>
+          <h3>{t("A calendar built around your day.")}</h3>
           <p>
-            Online appointments, rescheduling and a clear view of what’s ahead.
-            Ready when you are.
+            {t(
+              "Online appointments, rescheduling and a clear view of what’s ahead. Ready when you are.",
+            )}
           </p>
         </div>
         <Link className="button secondary" href={`/workspace/${slug}/calendar`}>
-          Open calendar
+          {t("Open calendar")}
         </Link>
       </div>
       <section className="services-preview">
-        <h2>A taste of your menu</h2>
+        <h2>{t("A taste of your menu")}</h2>
         <div>
           {activeServices.slice(0, 3).map((s) => (
             <Link href={`/workspace/${slug}/services`} key={s.id}>
               <span>{s.name}</span>
-              <strong>{money(s.price_minor)}</strong>
+              <strong>{money(s.price_minor, locale)}</strong>
             </Link>
           ))}
         </div>

@@ -9,6 +9,7 @@ const hours = z.object({
 });
 export const publicShopSchema = z.object({
   booking_enabled: z.boolean(),
+  public_locale: z.enum(["en", "pt"]),
   name: z.string(),
   slug: z.string(),
   is_demo: z.boolean(),

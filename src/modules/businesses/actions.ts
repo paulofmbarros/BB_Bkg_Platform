@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { requireManager } from "@/modules/tenancy/context";
+import { translate } from "@/i18n/locales";
 import {
   serviceSchema,
   staffSchema,
@@ -10,6 +11,7 @@ import {
   hoursSchema,
   exceptionSchema,
   priceToMinorUnits,
+  languageSettingsSchema,
 } from "./validation";
 
 export type ActionResult = { ok: boolean; message: string; id?: string };
@@ -37,6 +39,36 @@ function refreshed(slug: string, message = "Changes saved."): ActionResult {
   revalidatePath(`/workspace/${slug}`, "layout");
   revalidatePath(`/preview/${slug}`);
   return { ok: true, message };
+}
+
+export async function saveLanguageSettings(
+  slug: string,
+  _previous: ActionResult,
+  form: FormData,
+): Promise<ActionResult> {
+  const { db, tenant, role, supportMode } = await requireManager(slug);
+  if (role !== "owner" || supportMode)
+    return {
+      ok: false,
+      message: "Only the business owner can change language settings.",
+    };
+  try {
+    const input = languageSettingsSchema.parse(Object.fromEntries(form));
+    const { error } = await db
+      .from("tenants")
+      .update(input)
+      .eq("id", tenant.id)
+      .select("id")
+      .single();
+    if (error) throw error;
+    revalidatePath("/", "layout");
+    return refreshed(
+      slug,
+      translate(input.workspace_locale, "Language settings saved."),
+    );
+  } catch (error) {
+    return failure(error);
+  }
 }
 
 export async function saveService(

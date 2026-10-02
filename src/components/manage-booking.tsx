@@ -10,11 +10,13 @@ import {
   type Receipt,
 } from "@/modules/bookings/types";
 import { money } from "@/lib/format";
+import { useLocale, useTranslations } from "@/i18n/provider";
 function subscribeHash(onChange: () => void) {
   window.addEventListener("hashchange", onChange);
   return () => window.removeEventListener("hashchange", onChange);
 }
 export function ManageBooking() {
+  const t = useTranslations();
   const token = useSyncExternalStore(
     subscribeHash,
     () => window.location.hash.slice(1),
@@ -23,12 +25,14 @@ export function ManageBooking() {
   if (!/^[a-f0-9]{64}$/.test(token))
     return (
       <p role="alert">
-        Open the complete private link you saved after booking.
+        {t("Open the complete private link you saved after booking.")}
       </p>
     );
   return <BookingReceipt key={token} token={token} />;
 }
 function BookingReceipt({ token }: { token: string }) {
+  const t = useTranslations();
+  const locale = useLocale();
   const [receipt, setReceipt] = useState<Receipt | null>(null),
     [error, setError] = useState(""),
     [busy, setBusy] = useState(false),
@@ -51,10 +55,10 @@ function BookingReceipt({ token }: { token: string }) {
       })
       .then(setReceipt)
       .catch((e) => {
-        if (!controller.signal.aborted) setError(e.message);
+        if (!controller.signal.aborted) setError(t(e.message));
       });
     return () => controller.abort();
-  }, [token]);
+  }, [token, t]);
   async function change(action: "cancel" | "reschedule") {
     if (!receipt || busy) return;
     setBusy(true);
@@ -76,7 +80,7 @@ function BookingReceipt({ token }: { token: string }) {
       setEditing(false);
       setStart("");
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Please try again.");
+      setError(e instanceof Error ? t(e.message) : t("Please try again."));
     } finally {
       setBusy(false);
     }
@@ -88,34 +92,44 @@ function BookingReceipt({ token }: { token: string }) {
           {error}
         </p>
       )}
-      {!receipt && !error && <p role="status">Finding your appointment…</p>}
+      {!receipt && !error && (
+        <p role="status">{t("Finding your appointment…")}</p>
+      )}
       {receipt && (
         <>
           <span className={`status-badge status-${receipt.status}`}>
-            {receipt.status.replace("_", " ")}
+            {t(receipt.status.replace("_", " "))}
           </span>
           <h2>
             {receipt.status === "confirmed"
-              ? "Your time is reserved."
+              ? t("Your time is reserved.")
               : receipt.status === "cancelled"
-                ? "Your appointment is cancelled."
-                : "Your visit."}
+                ? t("Your appointment is cancelled.")
+                : t("Your visit.")}
           </h2>
-          <p>{receipt.customer_name}, here are your appointment details.</p>
+          <p>
+            {receipt.customer_name}, {t("here are your appointment details.")}
+          </p>
           <div className="booking-summary">
             <h3>{receipt.service_name}</h3>
-            <p>With {receipt.barber}</p>
-            <strong>{appointmentDate(receipt.starts_at)}</strong>
             <p>
-              {slotLabel(receipt.starts_at)} – {slotLabel(receipt.ends_at)}
+              {t("With")} {receipt.barber}
             </p>
-            <strong>{money(receipt.price_minor)} · Pay at the shop</strong>
+            <strong>{appointmentDate(receipt.starts_at, locale)}</strong>
+            <p>
+              {slotLabel(receipt.starts_at, locale)} –{" "}
+              {slotLabel(receipt.ends_at, locale)}
+            </p>
+            <strong>
+              {money(receipt.price_minor, locale)} · {t("Pay at the shop")}
+            </strong>
           </div>
           <div className="private-link-note">
-            <strong>Save your private booking link</strong>
+            <strong>{t("Save your private booking link")}</strong>
             <p>
-              This link lets anyone holding it manage this appointment. Keep it
-              private. Email delivery is not enabled in this demo.
+              {t(
+                "This link lets anyone holding it manage this appointment. Keep it private. Email delivery is not enabled in this demo.",
+              )}
             </p>
             <button
               className="button secondary"
@@ -125,20 +139,23 @@ function BookingReceipt({ token }: { token: string }) {
                   setCopied(true);
                 } catch {
                   setError(
-                    "Copy the full address from your browser to save your link.",
+                    t(
+                      "Copy the full address from your browser to save your link.",
+                    ),
                   );
                 }
               }}
             >
-              {copied ? "Link copied" : "Copy private link"}
+              {t(copied ? "Link copied" : "Copy private link")}
             </button>
           </div>
           {receipt.status === "confirmed" &&
             new Date(receipt.starts_at) > new Date() && (
               <>
                 <p className="field-help">
-                  Free cancellation and rescheduling before the appointment
-                  starts.
+                  {t(
+                    "Free cancellation and rescheduling before the appointment starts.",
+                  )}
                 </p>
                 <div className="booking-actions">
                   <button
@@ -148,7 +165,7 @@ function BookingReceipt({ token }: { token: string }) {
                       setStart("");
                     }}
                   >
-                    Choose another time
+                    {t("Choose another time")}
                   </button>
                   <button
                     className="button secondary danger-text"
@@ -156,18 +173,20 @@ function BookingReceipt({ token }: { token: string }) {
                     onClick={() => {
                       if (
                         window.confirm(
-                          "Cancel this appointment? Your time will be released.",
+                          t(
+                            "Cancel this appointment? Your time will be released.",
+                          ),
                         )
                       )
                         void change("cancel");
                     }}
                   >
-                    {busy ? "Saving…" : "Cancel appointment"}
+                    {t(busy ? "Saving…" : "Cancel appointment")}
                   </button>
                 </div>
                 {editing && (
                   <section className="booking-step">
-                    <h3>Choose a new time</h3>
+                    <h3>{t("Choose a new time")}</h3>
                     <SlotPicker
                       service={receipt.service_id}
                       staff={receipt.staff_id}
@@ -181,7 +200,7 @@ function BookingReceipt({ token }: { token: string }) {
                       disabled={!start || busy}
                       onClick={() => void change("reschedule")}
                     >
-                      Confirm new time
+                      {t("Confirm new time")}
                     </button>
                   </section>
                 )}
@@ -190,7 +209,7 @@ function BookingReceipt({ token }: { token: string }) {
         </>
       )}
       <Link className="text-link" href="/book">
-        Book another visit
+        {t("Book another visit")}
       </Link>
     </div>
   );

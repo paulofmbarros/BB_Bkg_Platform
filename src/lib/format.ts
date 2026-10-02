@@ -1,7 +1,7 @@
 import type { CSSProperties } from "react";
 
-export const money = (minor: number) =>
-  new Intl.NumberFormat("en-IE", {
+export const money = (minor: number, locale: "en" | "pt" = "en") =>
+  new Intl.NumberFormat(locale === "pt" ? "pt-PT" : "en-IE", {
     style: "currency",
     currency: "EUR",
     maximumFractionDigits: minor % 100 === 0 ? 0 : 2,

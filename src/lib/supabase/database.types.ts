@@ -827,7 +827,9 @@ export type Database = {
           id: string
           is_demo: boolean
           name: string
+          public_locale: string
           slug: string
+          workspace_locale: string
         }
         Insert: {
           active?: boolean
@@ -836,7 +838,9 @@ export type Database = {
           id?: string
           is_demo?: boolean
           name: string
+          public_locale?: string
           slug: string
+          workspace_locale?: string
         }
         Update: {
           active?: boolean
@@ -845,7 +849,9 @@ export type Database = {
           id?: string
           is_demo?: boolean
           name?: string
+          public_locale?: string
           slug?: string
+          workspace_locale?: string
         }
         Relationships: []
       }

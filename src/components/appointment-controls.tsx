@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { changeAppointment } from "@/modules/bookings/actions";
 import { shopDate } from "@/modules/bookings/types";
 import { SlotPicker } from "./booking-form";
+import { useTranslations } from "@/i18n/provider";
 export function AppointmentControls({
   slug,
   id,
@@ -21,6 +22,7 @@ export function AppointmentControls({
   startsAt: string;
   endsAt: string;
 }) {
+  const t = useTranslations();
   const router = useRouter();
   const [busy, setBusy] = useState(false),
     [notice, setNotice] = useState(""),
@@ -39,14 +41,14 @@ export function AppointmentControls({
         ...(action === "reschedule" ? { start } : {}),
       });
       setOk(result.ok);
-      setNotice(result.message);
+      setNotice(t(result.message));
       if (result.ok) {
         setEditing(false);
         router.refresh();
       }
     } catch {
       setOk(false);
-      setNotice("Couldn’t save the change. Reload and try again.");
+      setNotice(t("Couldn’t save the change. Reload and try again."));
     } finally {
       setBusy(false);
     }
@@ -69,7 +71,7 @@ export function AppointmentControls({
               className="button secondary"
               onClick={() => setEditing(!editing)}
             >
-              Reschedule
+              {t("Reschedule")}
             </button>
             <button
               disabled={busy}
@@ -77,13 +79,13 @@ export function AppointmentControls({
               onClick={() => {
                 if (
                   window.confirm(
-                    "Cancel this appointment and release the time?",
+                    t("Cancel this appointment and release the time?"),
                   )
                 )
                   void change("cancel");
               }}
             >
-              Cancel
+              {t("Cancel")}
             </button>
           </>
         ) : (
@@ -93,17 +95,17 @@ export function AppointmentControls({
               className="button secondary"
               onClick={() => void change("complete")}
             >
-              Mark completed
+              {t("Mark completed")}
             </button>
             <button
               disabled={busy}
               className="button secondary"
               onClick={() => {
-                if (window.confirm("Mark this customer as a no-show?"))
+                if (window.confirm(t("Mark this customer as a no-show?")))
                   void change("no_show");
               }}
             >
-              Mark no-show
+              {t("Mark no-show")}
             </button>
           </>
         )}
@@ -124,7 +126,7 @@ export function AppointmentControls({
             disabled={!start || busy}
             onClick={() => void change("reschedule")}
           >
-            Save new time
+            {t("Save new time")}
           </button>
         </div>
       )}

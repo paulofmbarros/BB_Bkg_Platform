@@ -3,6 +3,7 @@ import { Scissors, MapPin, Clock3, Phone, ArrowDown } from "lucide-react";
 import type { PublicShop } from "@/modules/businesses/public-shop";
 import { initials, money, shopTheme } from "@/lib/format";
 import { trimHours, weekdays } from "@/modules/scheduling/hours";
+import { localeOrEnglish, translator, weekdayNames } from "@/i18n/locales";
 export function ShopPage({
   shop,
   preview = false,
@@ -10,18 +11,24 @@ export function ShopPage({
   shop: PublicShop;
   preview?: boolean;
 }) {
+  const locale = localeOrEnglish(shop.public_locale);
+  const t = translator(locale);
   return (
-    <main className="shop-page" style={shopTheme(shop.accent_color)}>
+    <main
+      className="shop-page"
+      style={shopTheme(shop.accent_color)}
+      lang={locale === "pt" ? "pt-PT" : "en"}
+    >
       {(preview || shop.is_demo) && (
         <div className="shop-preview-bar">
-          {preview ? "Customer page preview" : "Fictional demo shop"}{" "}
+          {t(preview ? "Customer page preview" : "Fictional demo shop")}{" "}
           <span>
             ·{" "}
             {preview
-              ? "Preview only"
+              ? t("Preview only")
               : shop.booking_enabled
-                ? "Demo appointments · No payments"
-                : "Online booking is not open yet"}
+                ? t("Demo appointments · No payments")
+                : t("Online booking is not open yet")}
           </span>
         </div>
       )}
@@ -41,16 +48,16 @@ export function ShopPage({
           <strong>{shop.name}</strong>
         </a>
         <a href="#services" className="shop-nav-link">
-          Our services <ArrowDown size={15} />
+          {t("Our services")} <ArrowDown size={15} />
         </a>
       </header>
       <section className="shop-hero">
         <div>
-          <span className="eyebrow">YOUR NEIGHBOURHOOD BARBERSHOP</span>
+          <span className="eyebrow">{t("YOUR NEIGHBOURHOOD BARBERSHOP")}</span>
           <h1>{shop.tagline}</h1>
           <p>{shop.description}</p>
           <a className="button shop-button" href="#services">
-            Find your next favourite cut <ArrowDown size={17} />
+            {t("Find your next favourite cut")} <ArrowDown size={17} />
           </a>
           <span className="shop-location">
             <MapPin size={15} />
@@ -61,41 +68,41 @@ export function ShopPage({
           <div>
             <Scissors size={48} strokeWidth={1} />
             <strong>{initials(shop.name)}</strong>
-            <span>THE ART OF LOOKING YOURSELF.</span>
+            <span>{t("THE ART OF LOOKING YOURSELF.")}</span>
           </div>
           {!preview && shop.booking_enabled && (
             <a className="button shop-button" href="/book">
-              Book a visit
+              {t("Book a visit")}
             </a>
           )}
         </div>
       </section>
       <section className="shop-menu" id="services">
         <div className="shop-section-heading">
-          <span className="eyebrow">A LITTLE TIME, WELL SPENT</span>
-          <h2>The service menu.</h2>
-          <p>Expert hands. Thoughtful details. No rush.</p>
+          <span className="eyebrow">{t("A LITTLE TIME, WELL SPENT")}</span>
+          <h2>{t("The service menu.")}</h2>
+          <p>{t("Expert hands. Thoughtful details. No rush.")}</p>
         </div>
         <div className="public-services">
           {shop.services.map((s) => (
             <article key={s.id}>
               <div>
-                <span className="eyebrow">{s.category}</span>
+                <span className="eyebrow">{t(s.category)}</span>
                 <h3>{s.name}</h3>
                 <p>{s.description}</p>
                 <span className="duration">
                   <Clock3 size={14} />
-                  {s.duration_minutes} minutes
+                  {s.duration_minutes} {t("minutes")}
                 </span>
               </div>
               <div className="public-service-action">
-                <strong>{money(s.price_minor)}</strong>
+                <strong>{money(s.price_minor, locale)}</strong>
                 {!preview && shop.booking_enabled && (
                   <a
                     className="button secondary"
                     href={`/book?service=${s.id}`}
                   >
-                    Book {s.name}
+                    {locale === "pt" ? `Marcar ${s.name}` : `Book ${s.name}`}
                   </a>
                 )}
               </div>
@@ -107,20 +114,22 @@ export function ShopPage({
           <div>
             <strong>
               {shop.booking_enabled && !preview
-                ? "A good day starts with a little time for you."
-                : "Your customer experience."}
+                ? t("A good day starts with a little time for you.")
+                : t("Your customer experience.")}
             </strong>
             <p>
               {shop.is_demo
-                ? "This is a fictional shop. Demo bookings are saved locally; no payments are accepted."
-                : "Our online appointment service is not open yet."}
+                ? t(
+                    "This is a fictional shop. Demo bookings are saved locally; no payments are accepted.",
+                  )
+                : t("Our online appointment service is not open yet.")}
             </p>
           </div>
         </div>
       </section>
       <section className="shop-team">
-        <span className="eyebrow">GOOD PEOPLE. GREAT CRAFT.</span>
-        <h2>Find your barber.</h2>
+        <span className="eyebrow">{t("GOOD PEOPLE. GREAT CRAFT.")}</span>
+        <h2>{t("Find your barber.")}</h2>
         <div>
           {shop.staff.map((s, i) => (
             <article key={s.id}>
@@ -136,12 +145,8 @@ export function ShopPage({
       </section>
       <section className="shop-visit">
         <div>
-          <span className="eyebrow">COME AS YOU ARE</span>
-          <h2>
-            Make yourself
-            <br />
-            at home.
-          </h2>
+          <span className="eyebrow">{t("COME AS YOU ARE")}</span>
+          <h2>{t("Make yourself at home.")}</h2>
           <p>
             <MapPin size={18} />
             {shop.address}
@@ -150,7 +155,9 @@ export function ShopPage({
             <p>
               <Phone size={18} />
               {shop.is_demo ? (
-                <span>{shop.phone} · demo number</span>
+                <span>
+                  {shop.phone} · {t("demo number")}
+                </span>
               ) : (
                 <a href={`tel:${shop.phone.replace(/\s/g, "")}`}>
                   {shop.phone}
@@ -160,17 +167,19 @@ export function ShopPage({
           )}
         </div>
         <div>
-          <h3>Our regular hours</h3>
+          <h3>{t("Our regular hours")}</h3>
           {trimHours(shop.hours).map((h) => (
             <div className="week-row" key={h.weekday}>
-              <span>{weekdays[h.weekday]}</span>
+              <span>
+                {weekdayNames[locale][h.weekday] ?? weekdays[h.weekday]}
+              </span>
               <strong>
-                {h.enabled ? `${h.start_time} – ${h.end_time}` : "Closed"}
+                {h.enabled ? `${h.start_time} – ${h.end_time}` : t("Closed")}
               </strong>
             </div>
           ))}
           <p className="field-help">
-            {shop.timezone}. Breaks and special closures may apply.
+            {shop.timezone}. {t("Breaks and special closures may apply.")}
           </p>
         </div>
       </section>

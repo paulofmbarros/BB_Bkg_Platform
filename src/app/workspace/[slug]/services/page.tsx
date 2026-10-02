@@ -3,6 +3,7 @@ import { getServiceBusiness } from "@/modules/businesses/queries";
 import { ServiceList } from "@/components/service-list";
 import { ServiceForm } from "@/components/forms";
 import { Modal } from "@/components/ui";
+import { localeOrEnglish, translator } from "@/i18n/locales";
 export default async function Services({
   params,
 }: {
@@ -10,21 +11,25 @@ export default async function Services({
 }) {
   const { slug } = await params;
   const b = await getServiceBusiness(slug);
+  const t = translator(
+    b.supportMode ? "en" : localeOrEnglish(b.tenant.workspace_locale),
+  );
   const canEdit = b.role === "owner" || b.role === "manager";
   return (
     <>
       <div className="page-heading">
         <div>
-          <span className="eyebrow">THE CRAFT, CONSIDERED</span>
+          <span className="eyebrow">{t("THE CRAFT, CONSIDERED")}</span>
           <h1>
-            Your service menu<span className="accent-period">.</span>
+            {t("Your service menu")}
+            <span className="accent-period">.</span>
           </h1>
-          <p>Good experiences start with clear expectations.</p>
+          <p>{t("Good experiences start with clear expectations.")}</p>
         </div>
         {canEdit && (
           <Modal
-            label="Add service"
-            title="Add a service"
+            label={t("Add service")}
+            title={t("Add a service")}
             className="button primary"
             icon={<Plus size={17} />}
           >

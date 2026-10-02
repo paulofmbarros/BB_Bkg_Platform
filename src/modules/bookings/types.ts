@@ -31,16 +31,16 @@ export function addDays(day: string, count: number) {
   d.setUTCDate(d.getUTCDate() + count);
   return d.toISOString().slice(0, 10);
 }
-export function slotLabel(instant: string) {
-  return new Intl.DateTimeFormat("en-GB", {
+export function slotLabel(instant: string, locale: "en" | "pt" = "en") {
+  return new Intl.DateTimeFormat(locale === "pt" ? "pt-PT" : "en-GB", {
     timeZone: "Europe/Lisbon",
     hour: "2-digit",
     minute: "2-digit",
     timeZoneName: "shortOffset",
   }).format(new Date(instant));
 }
-export function appointmentDate(instant: string) {
-  return new Intl.DateTimeFormat("en-GB", {
+export function appointmentDate(instant: string, locale: "en" | "pt" = "en") {
+  return new Intl.DateTimeFormat(locale === "pt" ? "pt-PT" : "en-GB", {
     timeZone: "Europe/Lisbon",
     weekday: "long",
     day: "numeric",

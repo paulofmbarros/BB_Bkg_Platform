@@ -1,5 +1,10 @@
 import { z } from "zod";
 
+export const languageSettingsSchema = z.object({
+  workspace_locale: z.enum(["en", "pt"]),
+  public_locale: z.enum(["en", "pt"]),
+});
+
 export const serviceSchema = z.object({
   name: z.string().trim().min(2).max(80),
   description: z.string().trim().max(240),

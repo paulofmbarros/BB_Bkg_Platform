@@ -1,5 +1,6 @@
 import { getBusiness } from "@/modules/businesses/queries";
 import { ShopPage } from "@/components/shop-page";
+import { localeOrEnglish } from "@/i18n/locales";
 export async function generateMetadata({
   params,
 }: {
@@ -24,6 +25,7 @@ export default async function Preview({
         slug: b.tenant.slug,
         is_demo: b.tenant.is_demo,
         currency: b.tenant.currency,
+        public_locale: localeOrEnglish(b.tenant.public_locale),
         ...b.branding,
         address: b.location.address,
         phone: b.location.phone,

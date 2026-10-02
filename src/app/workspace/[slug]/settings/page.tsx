@@ -2,8 +2,13 @@ import { WorkspaceLink as Link } from "@/components/workspace-link";
 import Image from "next/image";
 import { ArrowUpRight, Globe, LockKeyhole } from "lucide-react";
 import { getSettingsBusiness } from "@/modules/businesses/queries";
-import { BrandingForm, LogoForm } from "@/components/forms";
+import {
+  BrandingForm,
+  LanguageSettingsForm,
+  LogoForm,
+} from "@/components/forms";
 import { initials, contrastText } from "@/lib/format";
+import { localeOrEnglish, translator } from "@/i18n/locales";
 export default async function Settings({
   params,
 }: {
@@ -11,22 +16,29 @@ export default async function Settings({
 }) {
   const { slug } = await params;
   const b = await getSettingsBusiness(slug);
+  const locale = b.supportMode
+    ? "en"
+    : localeOrEnglish(b.tenant.workspace_locale);
+  const t = translator(locale);
   return (
     <>
       <div className="page-heading">
         <div>
-          <span className="eyebrow">UNMISTAKABLY YOURS</span>
+          <span className="eyebrow">{t("UNMISTAKABLY YOURS")}</span>
           <h1>
-            Make yourself known<span className="accent-period">.</span>
+            {t("Make yourself known")}
+            <span className="accent-period">.</span>
           </h1>
-          <p>The details that turn a booking page into your barbershop.</p>
+          <p>
+            {t("The details that turn a booking page into your barbershop.")}
+          </p>
         </div>
         <Link
           className="button secondary"
           href={`/preview/${slug}`}
           target="_blank"
         >
-          Preview customer page <ArrowUpRight size={16} />
+          {t("Preview customer page")} <ArrowUpRight size={16} />
         </Link>
       </div>
       <div className="settings-grid">
@@ -34,8 +46,8 @@ export default async function Settings({
           <section className="panel">
             <div className="panel-heading">
               <div>
-                <h2>Business details</h2>
-                <p>How customers see and find your shop.</p>
+                <h2>{t("Business details")}</h2>
+                <p>{t("How customers see and find your shop.")}</p>
               </div>
             </div>
             {b.role === "owner" ? (
@@ -50,19 +62,42 @@ export default async function Settings({
               />
             ) : (
               <p className="quiet-empty">
-                Only the business owner can change these details.
+                {t("Only the business owner can change these details.")}
               </p>
             )}
           </section>
           <section className="panel">
             <div className="panel-heading">
-              <h2>Your logo</h2>
+              <div>
+                <h2>{t("Language")}</h2>
+                <p>
+                  {t(
+                    "Choose the language used in the private workspace and on the public customer experience.",
+                  )}
+                </p>
+              </div>
+            </div>
+            {b.role === "owner" && !b.supportMode ? (
+              <LanguageSettingsForm
+                slug={slug}
+                workspaceLocale={localeOrEnglish(b.tenant.workspace_locale)}
+                publicLocale={localeOrEnglish(b.tenant.public_locale)}
+              />
+            ) : (
+              <p className="quiet-empty">
+                {t("Only the business owner can change language settings.")}
+              </p>
+            )}
+          </section>
+          <section className="panel">
+            <div className="panel-heading">
+              <h2>{t("Your logo")}</h2>
             </div>
             {b.role === "owner" ? (
               <LogoForm slug={slug} />
             ) : (
               <p className="quiet-empty">
-                Logo uploads are managed by the owner.
+                {t("Logo uploads are managed by the owner.")}
               </p>
             )}
           </section>
@@ -75,7 +110,7 @@ export default async function Settings({
               color: contrastText(b.branding.accent_color),
             }}
           >
-            <span className="eyebrow">YOUR BRAND, AT A GLANCE</span>
+            <span className="eyebrow">{t("YOUR BRAND, AT A GLANCE")}</span>
             {b.branding.logo_path ? (
               <Image
                 unoptimized
@@ -92,24 +127,27 @@ export default async function Settings({
           </div>
           <section className="panel domain-panel">
             <Globe size={23} />
-            <h2>Your booking address</h2>
+            <h2>{t("Your booking address")}</h2>
             {b.domains.map((d) => (
               <div key={d.hostname}>
                 <strong className="domain-name">{d.hostname}</strong>
                 <span className="status-pill">
-                  {d.verified_at ? "Verified" : "Awaiting verification"}
+                  {t(d.verified_at ? "Verified" : "Awaiting verification")}
                 </span>
               </div>
             ))}
             <p>
-              Custom domains use the same tenant registry. Connecting a live
-              domain is a later deployment step.
+              {t(
+                "Custom domains use the same tenant registry. Connecting a live domain is a later deployment step.",
+              )}
             </p>
           </section>
           <div className="privacy-note">
             <LockKeyhole size={18} />
             <p>
-              Your shop’s settings and team are isolated from other businesses.
+              {t(
+                "Your shop’s settings and team are isolated from other businesses.",
+              )}
             </p>
           </div>
         </div>

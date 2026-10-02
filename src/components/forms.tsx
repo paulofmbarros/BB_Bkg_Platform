@@ -9,20 +9,64 @@ import {
   addException,
   removeException,
   uploadLogo,
+  saveLanguageSettings,
   type ActionResult,
 } from "@/modules/businesses/actions";
+import { languageNames, weekdayNames, type Locale } from "@/i18n/locales";
+import { useLocale, useTranslations } from "@/i18n/provider";
 import { FormNotice, SubmitButton, Modal } from "./ui";
-import {
-  trimHours,
-  weekdays,
-  weeklyHours,
-  type Hours,
-} from "@/modules/scheduling/hours";
+import { trimHours, weeklyHours, type Hours } from "@/modules/scheduling/hours";
 import type { Database } from "@/lib/supabase/database.types";
 type Service = Database["public"]["Tables"]["services"]["Row"];
 type Staff = Database["public"]["Tables"]["staff_members"]["Row"];
 type Exception = Database["public"]["Tables"]["availability_exceptions"]["Row"];
 const initial: ActionResult = { ok: false, message: "" };
+
+export function LanguageSettingsForm({
+  slug,
+  workspaceLocale,
+  publicLocale,
+}: {
+  slug: string;
+  workspaceLocale: Locale;
+  publicLocale: Locale;
+}) {
+  const t = useTranslations();
+  const [state, action] = useActionState(
+    saveLanguageSettings.bind(null, slug),
+    initial,
+  );
+  return (
+    <form action={action} className="edit-form">
+      <div className="form-grid">
+        <label>
+          {t("Owner workspace language")}
+          <select name="workspace_locale" defaultValue={workspaceLocale}>
+            {Object.entries(languageNames).map(([value, label]) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label>
+          {t("Public shop and booking language")}
+          <select name="public_locale" defaultValue={publicLocale}>
+            {Object.entries(languageNames).map(([value, label]) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+          </select>
+        </label>
+      </div>
+      <FormNotice state={state} />
+      <div className="form-footer">
+        <SubmitButton>{t("Save language settings")}</SubmitButton>
+      </div>
+    </form>
+  );
+}
 
 export function ServiceForm({
   slug,
@@ -31,6 +75,7 @@ export function ServiceForm({
   slug: string;
   service?: Service;
 }) {
+  const t = useTranslations();
   const [state, action] = useActionState(
     saveService.bind(null, slug, service?.id ?? null),
     initial,
@@ -38,37 +83,37 @@ export function ServiceForm({
   return (
     <form action={action} className="edit-form">
       <label>
-        Service name
+        {t("Service name")}
         <input
           name="name"
           required
           minLength={2}
           maxLength={80}
           defaultValue={service?.name}
-          placeholder="e.g. Signature cut"
+          placeholder={t("e.g. Signature cut")}
         />
       </label>
       <label>
-        Description
+        {t("Description")}
         <textarea
           name="description"
           maxLength={240}
           defaultValue={service?.description}
-          placeholder="What’s included in the experience?"
+          placeholder={t("What’s included in the experience?")}
           rows={3}
         />
       </label>
       <div className="form-grid">
         <label>
-          Category
+          {t("Category")}
           <select name="category" defaultValue={service?.category ?? "Hair"}>
-            <option>Hair</option>
-            <option>Beard</option>
-            <option>Rituals</option>
+            <option value="Hair">{t("Hair")}</option>
+            <option value="Beard">{t("Beard")}</option>
+            <option value="Rituals">{t("Rituals")}</option>
           </select>
         </label>
         <label>
-          Price (€)
+          {t("Price (€)")}
           <input
             name="price"
             inputMode="decimal"
@@ -79,7 +124,7 @@ export function ServiceForm({
           />
         </label>
         <label>
-          Duration (minutes)
+          {t("Duration (minutes)")}
           <input
             name="duration_minutes"
             type="number"
@@ -90,7 +135,7 @@ export function ServiceForm({
           />
         </label>
         <label>
-          Buffer after (minutes)
+          {t("Buffer after (minutes)")}
           <input
             name="buffer_minutes"
             type="number"
@@ -107,17 +152,20 @@ export function ServiceForm({
           name="active"
           defaultChecked={service?.active ?? true}
         />
-        Active and available for new bookings
+        {t("Active and available for new bookings")}
       </label>
       {service && (
         <p className="field-help">
-          Turn this off to archive the service. Existing appointments and
-          reporting history will be preserved.
+          {t(
+            "Turn this off to archive the service. Existing appointments and reporting history will be preserved.",
+          )}
         </p>
       )}
       <FormNotice state={state} />
       <div className="form-footer">
-        <SubmitButton>{service ? "Save service" : "Add service"}</SubmitButton>
+        <SubmitButton>
+          {t(service ? "Save service" : "Add service")}
+        </SubmitButton>
       </div>
     </form>
   );
@@ -133,6 +181,7 @@ export function StaffForm({
   services: Service[];
   assigned?: string[];
 }) {
+  const t = useTranslations();
   const [state, action] = useActionState(
     saveStaff.bind(null, slug, staff?.id ?? null),
     initial,
@@ -140,7 +189,7 @@ export function StaffForm({
   return (
     <form action={action} className="edit-form">
       <label>
-        Full name
+        {t("Full name")}
         <input
           name="display_name"
           required
@@ -150,7 +199,7 @@ export function StaffForm({
         />
       </label>
       <label>
-        Role / title
+        {t("Role / title")}
         <input
           name="title"
           required
@@ -160,7 +209,7 @@ export function StaffForm({
         />
       </label>
       <label>
-        About this barber
+        {t("About this barber")}
         <textarea
           name="bio"
           rows={3}
@@ -169,7 +218,7 @@ export function StaffForm({
         />
       </label>
       <fieldset>
-        <legend>Services they offer</legend>
+        <legend>{t("Services they offer")}</legend>
         <div className="checkbox-grid">
           {services.map((s) => (
             <label className="check-label" key={s.id}>
@@ -180,7 +229,7 @@ export function StaffForm({
                 defaultChecked={assigned.includes(s.id)}
               />
               {s.name}
-              {!s.active ? " (hidden)" : ""}
+              {!s.active ? ` ${t("(hidden)")}` : ""}
             </label>
           ))}
         </div>
@@ -191,15 +240,15 @@ export function StaffForm({
           name="active"
           defaultChecked={staff?.active ?? true}
         />
-        Active team member
+        {t("Active team member")}
       </label>
       <p className="field-help">
-        A team profile does not grant access to the owner workspace.
+        {t("A team profile does not grant access to the owner workspace.")}
       </p>
       <FormNotice state={state} />
       <div className="form-footer">
         <SubmitButton>
-          {staff ? "Save team member" : "Add team member"}
+          {t(staff ? "Save team member" : "Add team member")}
         </SubmitButton>
       </div>
     </form>
@@ -219,6 +268,8 @@ export function HoursEditor({
   initialHours: Hours[];
   readOnly?: boolean;
 }) {
+  const t = useTranslations();
+  const locale = useLocale();
   const [rows, setRows] = useState(() => trimHours(initialHours));
   const [state, setState] = useState(initial);
   const [pending, startTransition] = useTransition();
@@ -241,9 +292,9 @@ export function HoursEditor({
     >
       <div className="hours-table">
         <div className="hours-labels">
-          <span>DAY</span>
-          <span>WORKING HOURS</span>
-          <span>BREAK</span>
+          <span>{t("DAY")}</span>
+          <span>{t("WORKING HOURS")}</span>
+          <span>{t("BREAK")}</span>
         </div>
         {rows.map((row) => (
           <div
@@ -260,13 +311,13 @@ export function HoursEditor({
                   update(row.weekday, "enabled", e.target.checked)
                 }
               />
-              <span>{weekdays[row.weekday]}</span>
+              <span>{weekdayNames[locale][row.weekday]}</span>
             </label>
             {row.enabled ? (
               <>
                 <div className="time-range">
                   <input
-                    aria-label={`${weekdays[row.weekday]} opening time`}
+                    aria-label={`${weekdayNames[locale][row.weekday]} ${t("opening time")}`}
                     type="time"
                     required
                     disabled={readOnly}
@@ -277,7 +328,7 @@ export function HoursEditor({
                   />
                   <span>–</span>
                   <input
-                    aria-label={`${weekdays[row.weekday]} closing time`}
+                    aria-label={`${weekdayNames[locale][row.weekday]} ${t("closing time")}`}
                     type="time"
                     required
                     disabled={readOnly}
@@ -289,7 +340,7 @@ export function HoursEditor({
                 </div>
                 <div className="time-range">
                   <input
-                    aria-label={`${weekdays[row.weekday]} break start`}
+                    aria-label={`${weekdayNames[locale][row.weekday]} ${t("break start")}`}
                     type="time"
                     disabled={readOnly}
                     value={row.break_start ?? ""}
@@ -299,7 +350,7 @@ export function HoursEditor({
                   />
                   <span>–</span>
                   <input
-                    aria-label={`${weekdays[row.weekday]} break end`}
+                    aria-label={`${weekdayNames[locale][row.weekday]} ${t("break end")}`}
                     type="time"
                     disabled={readOnly}
                     value={row.break_end ?? ""}
@@ -310,7 +361,7 @@ export function HoursEditor({
                 </div>
               </>
             ) : (
-              <span className="closed-label">Closed</span>
+              <span className="closed-label">{t("Closed")}</span>
             )}
           </div>
         ))}
@@ -318,16 +369,19 @@ export function HoursEditor({
       <div className="hours-footer">
         <span>
           <strong>
-            {weeklyHours(rows).toLocaleString("en-GB", {
-              maximumFractionDigits: 1,
-            })}{" "}
-            hours
+            {weeklyHours(rows).toLocaleString(
+              locale === "pt" ? "pt-PT" : "en-GB",
+              {
+                maximumFractionDigits: 1,
+              },
+            )}{" "}
+            {t("hours")}
           </strong>{" "}
-          per week · Europe/Lisbon
+          {t("per week")} · Europe/Lisbon
         </span>
         {!readOnly && (
           <button className="button primary" disabled={pending}>
-            {pending ? "Saving…" : "Save working hours"}
+            {pending ? t("Saving…") : t("Save working hours")}
             <Check size={16} />
           </button>
         )}
@@ -344,6 +398,7 @@ function ExceptionForm({
   slug: string;
   staffId: string | null;
 }) {
+  const t = useTranslations();
   const [state, action] = useActionState(
     addException.bind(null, slug, staffId),
     initial,
@@ -351,43 +406,48 @@ function ExceptionForm({
   return (
     <form action={action} className="edit-form">
       <label>
-        Reason
+        {t("Reason")}
         <input
           name="reason"
           required
           minLength={2}
           maxLength={120}
-          placeholder={staffId ? "e.g. Annual leave" : "e.g. Christmas holiday"}
+          placeholder={t(
+            staffId ? "e.g. Annual leave" : "e.g. Christmas holiday",
+          )}
         />
       </label>
       <div className="form-grid">
         <label>
-          First day
+          {t("First day")}
           <input name="start_date" type="date" required />
         </label>
         <label>
-          Last day (inclusive)
+          {t("Last day (inclusive)")}
           <input name="end_date" type="date" required />
         </label>
       </div>
       <p className="field-help">
-        All-day exception, in the shop’s local timezone.
+        {t("All-day exception, in the shop’s local timezone.")}
       </p>
       <FormNotice state={state} />
       <div className="form-footer">
-        <SubmitButton>Add {staffId ? "time off" : "closure"}</SubmitButton>
+        <SubmitButton>
+          {t(staffId ? "Add time off" : "Add closure")}
+        </SubmitButton>
       </div>
     </form>
   );
 }
 function RemoveException({ slug, id }: { slug: string; id: string }) {
+  const t = useTranslations();
   const [state, setState] = useState(initial);
   const [pending, start] = useTransition();
   return (
     <>
       <button
         className="icon-button"
-        aria-label="Remove exception"
+        aria-label={t("Remove exception")}
         disabled={pending}
         onClick={() =>
           start(async () => setState(await removeException(slug, id)))
@@ -410,17 +470,18 @@ export function Exceptions({
   rows: Exception[];
   readOnly?: boolean;
 }) {
+  const t = useTranslations();
   return (
     <section className="panel">
       <div className="panel-heading">
         <div>
-          <h2>{staffId ? "Time off" : "Special closures"}</h2>
-          <p>Exceptions to your regular week.</p>
+          <h2>{t(staffId ? "Time off" : "Special closures")}</h2>
+          <p>{t("Exceptions to your regular week.")}</p>
         </div>
         {!readOnly && (
           <Modal
-            label={staffId ? "Add time off" : "Add closure"}
-            title={staffId ? "Add time off" : "Add a closure"}
+            label={t(staffId ? "Add time off" : "Add closure")}
+            title={t(staffId ? "Add time off" : "Add a closure")}
             icon={<Plus size={16} />}
           >
             <ExceptionForm slug={slug} staffId={staffId} />
@@ -441,7 +502,11 @@ export function Exceptions({
         ))
       ) : (
         <div className="quiet-empty">
-          No {staffId ? "time off" : "special closures"} scheduled.
+          {t(
+            staffId
+              ? "No time off scheduled."
+              : "No special closures scheduled.",
+          )}
         </div>
       )}
     </section>
@@ -462,6 +527,7 @@ export function BrandingForm({
     phone: string;
   };
 }) {
+  const t = useTranslations();
   const [state, action] = useActionState(
     saveBranding.bind(null, slug),
     initial,
@@ -470,7 +536,7 @@ export function BrandingForm({
     <form className="edit-form" action={action}>
       <div className="form-grid">
         <label>
-          Business name
+          {t("Business name")}
           <input
             name="name"
             required
@@ -480,7 +546,7 @@ export function BrandingForm({
           />
         </label>
         <label>
-          Tagline
+          {t("Tagline")}
           <input
             name="tagline"
             required
@@ -491,7 +557,7 @@ export function BrandingForm({
         </label>
       </div>
       <label>
-        About your shop
+        {t("About your shop")}
         <textarea
           name="description"
           rows={3}
@@ -501,7 +567,7 @@ export function BrandingForm({
       </label>
       <div className="form-grid">
         <label>
-          Address
+          {t("Address")}
           <input
             name="address"
             required
@@ -511,7 +577,7 @@ export function BrandingForm({
           />
         </label>
         <label>
-          Contact number
+          {t("Contact number")}
           <input
             name="phone"
             type="tel"
@@ -521,7 +587,7 @@ export function BrandingForm({
         </label>
       </div>
       <label>
-        Brand colour
+        {t("Brand colour")}
         <div className="colour-input">
           <input
             type="color"
@@ -529,25 +595,28 @@ export function BrandingForm({
             defaultValue={values.accent_color}
           />
           <span>
-            Sets the colour system across your customer page and booking flow.
+            {t(
+              "Sets the colour system across your customer page and booking flow.",
+            )}
           </span>
         </div>
       </label>
       <FormNotice state={state} />
       <div className="form-footer">
         <SubmitButton>
-          Save business details <ArrowRight size={16} />
+          {t("Save business details")} <ArrowRight size={16} />
         </SubmitButton>
       </div>
     </form>
   );
 }
 export function LogoForm({ slug }: { slug: string }) {
+  const t = useTranslations();
   const [state, action] = useActionState(uploadLogo.bind(null, slug), initial);
   return (
     <form action={action} className="edit-form">
       <label>
-        Shop logo
+        {t("Shop logo")}
         <input
           type="file"
           name="logo"
@@ -556,12 +625,12 @@ export function LogoForm({ slug }: { slug: string }) {
         />
       </label>
       <p className="field-help">
-        PNG, JPEG or WebP. Up to 2 MB. Your logo is publicly visible.
+        {t("PNG, JPEG or WebP. Up to 2 MB. Your logo is publicly visible.")}
       </p>
       <FormNotice state={state} />
       <SubmitButton className="button secondary">
         <Upload size={16} />
-        Upload logo
+        {t("Upload logo")}
       </SubmitButton>
     </form>
   );
