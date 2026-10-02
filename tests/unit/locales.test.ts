@@ -16,8 +16,9 @@ describe("tenant locale helpers", () => {
     );
   });
 
-  it("uses Portugal weekday labels for the Portuguese locale", () => {
-    expect(weekdayNames.pt[0]).toBe("Segunda-feira");
-    expect(weekdayNames.pt[6]).toBe("Domingo");
+  it("uses database weekday indexes for the Portuguese locale", () => {
+    expect(weekdayNames.pt[0]).toBe("Domingo");
+    expect(weekdayNames.pt[1]).toBe("Segunda-feira");
+    expect(weekdayNames.pt[6]).toBe("Sábado");
   });
 });
