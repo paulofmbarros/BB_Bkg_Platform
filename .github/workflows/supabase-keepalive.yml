@@ -1,0 +1,29 @@
+name: Supabase keep-alive
+on:
+  schedule:
+    # Four database requests per day, away from the busy start of the hour (UTC).
+    - cron: "17 2,8,14,20 * * *"
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: supabase-staging-keepalive
+  cancel-in-progress: false
+jobs:
+  database-check:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    environment: staging
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: 22
+      - name: Query the staging database
+        env:
+          SUPABASE_PROJECT_REF: ${{ vars.SUPABASE_PROJECT_REF }}
+          NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }}
+        run: node scripts/supabase-keepalive.mjs

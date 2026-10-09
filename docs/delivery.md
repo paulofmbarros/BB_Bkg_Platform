@@ -35,3 +35,17 @@ Production remains disabled until a separate database, Vercel project, domain, e
 Deployments apply migrations without seed data or resets. Make migrations compatible with the currently deployed application: the database changes before the new app is published. If a deployment fails after migrations, do not reset the database; repair forward or use a reviewed recovery plan. Rolling back Vercel does not roll back the schema.
 
 Bootstrap configuration and the first staging pipeline run are tracked in the implementation PR. Do not treat committed workflow files alone as proof that deployment credentials or protections are active.
+
+## Free staging database keep-alive
+
+The **Supabase keep-alive** workflow queries the staging database at 02:17, 08:17, 14:17 and 20:17 UTC each day. It calls the same `get_public_shop` RPC as `/api/health`, using `healthcheck.invalid` so the query returns `null` without returning shop or customer data. It is read-only, uses a publishable key, and does not require application dependencies, a service-role key, a Vercel token or database changes. Transient network, rate-limit and server failures receive up to three attempts; persistent errors fail the workflow without logging credentials or response data.
+
+To activate:
+
+1. In GitHub **Settings → Environments → staging**, retain the existing `SUPABASE_PROJECT_REF` variable (`atliuoyvxnpetqhwfakm`) and add an environment secret named `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`. Copy the project's `sb_publishable_…` key from Supabase's API keys settings; do not use a service-role or secret key.
+2. Merge the workflow and script into `main`, the default branch. GitHub scheduled workflows only run from the default branch, and this job is additionally restricted to `main` and the staging environment.
+3. Under **Actions → Supabase keep-alive → Run workflow**, select `main` and confirm the database-check job succeeds. Check scheduled runs for failures thereafter.
+
+For a manual check with the hosted project reference and publishable key already set in your shell, run `npm run db:keepalive`. The script constructs the hosted Supabase URL from the reference and does not load the local `.env.local` file.
+
+This is a best-effort development workaround. Supabase says a few daily user database requests are typically sufficient, but does not guarantee a threshold. GitHub can delay scheduled jobs; in public repositories it disables schedules after 60 days without repository activity. Use Supabase Pro when uninterrupted availability is required. See [Supabase project pausing](https://supabase.com/docs/guides/platform/free-project-pausing) and [GitHub scheduled workflow behavior](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#schedule).
